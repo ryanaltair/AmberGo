@@ -49,15 +49,15 @@ void ofApp::draw(){
     outsideBox.draw();
     }
     if(sliceLayPlaneEnable==1){
-          sliceLayPlane.setPosition(0,0,sliceHeight);
+        sliceLayPlane.setPosition(0,0,sliceHeight);
         ofSetColor(255,0,0,127);
         sliceLayPlane.draw();}
 	cam.end();
     
     if(1) {
-        stringstream ss;
-        ss << "Framerate: " << ofToString(ofGetFrameRate(),0) << "\n";
-        ofDrawBitmapString(ss.str().c_str(), 20, 20);
+        screenText.str("");
+        screenText << "Framerate: " << ofToString(ofGetFrameRate(),0) << "\n";
+        ofDrawBitmapString(screenText.str().c_str(), 20, 20);
     }
 }
 
@@ -119,29 +119,50 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 //addons
 
-
+void fillpointlinelist(ofMesh frommesh){
+    vector<ofVec3f> point = frommesh.getVertices();
+    ofVec3f a,b,c;
+    ofIndexType ia,ib,ic;
+    for(ofIndexType i=0;i<frommesh.getNumIndices();i+=3){
+        ia=frommesh.getIndex(i);
+        a=frommesh.getVertex(ia);
+        
+    }
+}
 
 ofVec3f ofApp::getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z){
-    ofVec3f pointZ;
+    ofVec3f returnPoint;
+    // compare the upper point and the down point
+    if(pointDown.z>pointUp.z){
+        float tempz=pointDown.z;
+        pointDown.z=pointUp.z;
+        pointUp.z=tempz;
+    }
+    //check if the line cross the z plane
     if(pointUp.z>z||pointDown.z<z){
-        pointZ.x=pointZ.y=0;
-        pointZ.z=z;
-        return pointZ;
+        returnPoint.x=returnPoint.y=0;
+        returnPoint.z=-1; //false
+        return returnPoint;
+    }
+    // check if the line parallel to z plane
+    if(pointDown.z==pointUp.z){
+        returnPoint.x=returnPoint.y=0;
+        returnPoint.z=-2; //
     }
     if(pointUp.z==z||pointDown.z==z){
-        pointZ.z=0;
-        pointZ.x=0;
-        pointZ.y=0;
-        return pointZ;
+        returnPoint.z=0;
+        returnPoint.x=0;
+        returnPoint.y=0;
+        return returnPoint;
     }
     float zLength=(pointUp.z-pointDown.z);
     float z1Length=1/zLength;
     float kx=(pointUp.x-pointDown.x)*z1Length;
-    pointZ.x=(z-pointUp.z)*kx+pointUp.x;
+    returnPoint.x=(z-pointUp.z)*kx+pointUp.x;
     float ky=(pointUp.y-pointDown.y)*z1Length;
-    pointZ.y=(z-pointUp.z)*ky+pointUp.y;
-    pointZ.z=z;
-    return pointZ;
+    returnPoint.y=(z-pointUp.z)*ky+pointUp.y;
+    returnPoint.z=z;
+    return returnPoint;
 }
 
 

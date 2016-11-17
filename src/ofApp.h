@@ -40,10 +40,16 @@ class ofApp : public ofBaseApp {
     int outsideBoxEnable=0;
     int sliceLayPlaneEnable=1;
     
-    // addons
-    vector<ofPolyline> linelist;
+    // addons ofxMLL
+    vector<ofVec3f> pointlist;
+    vector<ofIndexType> pointlinelist;// {p0 p1} the index point to point list
+    vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list
     ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
+    void fillpointlinelist(ofMesh);
+    //text out
+    stringstream screenText;
     
-    
+    //vec3ffalsedefine
+    float isnotvalid=-1;
     
 };
