@@ -19,6 +19,7 @@ void ofApp::setup(){
    
     cam.setDistance(2000);
     readyModel = ofMesh::box(200.0, 200.0, 200.0);
+    //layertestat(<#ofMesh mesh#>, <#float z#>) // to do
 }
 
 //--------------------------------------------------------------
@@ -164,5 +165,171 @@ ofVec3f ofApp::getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, floa
     returnPoint.z=z;
     return returnPoint;
 }
+ofPath ofApp::layertestat(ofMesh mesh,float z){
+    ofPath returnpath;
+    for(ofIndexType i=0;i<mesh.getNumIndices();i+=3){
+        // get the point first
+        ofIndexType ia=mesh.getIndex(i);
+        ofIndexType ib=mesh.getIndex(i+1);
+        ofIndexType ic=mesh.getIndex(i+2);
+        ofVec3f pa=mesh.getVertex(ia);
+        ofVec3f pb=mesh.getVertex(ib);
+        ofVec3f pc=mesh.getVertex(ic);
+        int sa=1;// s =1 means above the z -1 means below the z we assume above
+        int sb=1;
+        int sc=1;
+       // check if any point.z == z the layer
+        if(i==0){ //the first point
+            if(pa.z==z){
+                returnpath.moveTo(pa.x,pa.y);
+                continue;
+            }
+            if(pa.z==z){
+                returnpath.moveTo(pa.x,pa.y);
+                continue;
+            }
+            if(pa.z==z){
+                returnpath.moveTo(pa.x,pa.y);
+                continue;
+            }
+        }else{// not the first point
+            if(pa.z==z){
+                returnpath.lineTo(pa.x,pa.y);
+                continue;
+            }
+            if(pa.z==z){
+                returnpath.lineTo(pa.x,pa.y);
+                continue;
+            }
+            if(pa.z==z){
+                returnpath.lineTo(pa.x,pa.y);
+                continue;
+            }
+            
+            
+        }
+        // now we find how many point over the z and how many point below z
+        
+        // that can check which line will cross the layer z // maybe none
+        
+        int abovepoint=0;
+        int belowpoint=0;
+        if(pa.z>z){
+            abovepoint++;
+        }else{
+            sa=-1;
+            belowpoint++;
+        }
+        if(pb.z>z){
+            abovepoint++;
+        }else{
+            sb=-1;
+            belowpoint++;
+        }
+        if(pc.z>z){
+            abovepoint++;
+        }else{
+            sc=-1;
+            belowpoint++;
+        }
+        
+        if(abovepoint==3||belowpoint==3){
+            continue;// because the is now cross point
+        }
+        
+        // get the middle point
+        int middlepoint=0;// 0 = unknow 1= a 2 =b 3 =c
+        int lowpoint=0;
+        int highpoint=0;
+        if(sb==sc){lowpoint=1;}
+        if(sa==sc){lowpoint=2;}
+        if(sa==sc){lowpoint=3;}
+        
+        
+        //check cross line only two line will cross
+        if(abovepoint==2){
+            
+            
+        }else{// abovepoint=1
+        
+        }
+        
+        //
+        // check which type triangle
+        int triangletype=0;
+        if(pa.z==pb.z){
+            triangletype++;
+        }
+        if(pa.z==pc.z){
+            triangletype++;
+        }
+        if(pc.z==pb.z){
+            triangletype++;
+        }
+        
+        
+        
+        // re order by the .z
+        // and get how many line cross the layer z
+        
+        switch(triangletype){
+            case 0: // a normal triangle
+                
+                break;
+            case 1: //
+                break;
+            case 2://thie won't happen
+                break;
+            case 3: // the parelle triangle that need more reorder
+                break;
+            
+        
+        }
+        
+        
+        //get the cross point at layer z
+        ofVec3f pstart;
+        ofVec3f pend;
+        
+        switch (lowpoint) {
+            case 1:
+                pstart=getLinePlaneIntersection(pa, pb, z);
+                pend=getLinePlaneIntersection(pa, pc, z);
+                break;
+            case 2:
+                pstart=getLinePlaneIntersection(pb, pa, z);
+                pend=getLinePlaneIntersection(pb, pc, z);
+                break;
+            case 3:
+                pstart=getLinePlaneIntersection(pc, pa, z);
+                pend=getLinePlaneIntersection(pc, pb, z);
+                break;
+                
+            default:
+                break;
+        }
+        // add cross point to the returnpath
+        if(i==0){ //the first point
+            returnpath.moveTo(pstart.x,pstart.y);
+            returnpath.moveTo(pend.x,pend.y);
+            continue;
+        }else{// not the first point
+            returnpath.lineTo(pstart.x,pstart.y);
+            returnpath.lineTo(pend.x,pend.y);
+        
+        }
+        
+    }
+    returnpath.close();
+    returnpath.setStrokeColor(ofColor::blue);
+    returnpath.setFillColor(ofColor::red);
+    returnpath.setFilled(true);
+    returnpath.setStrokeWidth(2);
+    return returnpath;
+
+}
+
+
+
 
 

@@ -40,16 +40,25 @@ class ofApp : public ofBaseApp {
     int outsideBoxEnable=0;
     int sliceLayPlaneEnable=1;
     
+    // test theory
+    
+    
     // addons ofxMLL
     vector<ofVec3f> pointlist;
-    vector<ofIndexType> pointlinelist;// {p0 p1} the index point to point list
+    vector<ofIndexType> linelist;// {p0 p1} the index point to point list
     vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list
     ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
     void fillpointlinelist(ofMesh);
+    
+    //output layer
+    ofPath layertest;
+    ofPath layertestat(ofMesh mesh,float z);
+    
+    
     //text out
     stringstream screenText;
     
-    //vec3ffalsedefine
+    //vec3fFalseDefine
     float isnotvalid=-1;
     
 };
