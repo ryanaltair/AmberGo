@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxAssimpModelLoader.h"
 
 class ofApp : public ofBaseApp {
 	public:
@@ -38,6 +39,7 @@ class ofApp : public ofBaseApp {
     
     //
     ofMesh readyModel;
+    ofxAssimpModelLoader assimpModel;
     int h=100;
     ofMatrix4x4 mreadyModel;
     unsigned int sliceLayer=200;//
@@ -57,13 +59,18 @@ class ofApp : public ofBaseApp {
     vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list
     ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
     void fillpointlinelist(ofMesh);
-    
+    ofVec3f getScale(ofMesh mesh);
+    ofVec3f getMinPoint(ofMesh mesh);
+    ofVec3f getMaxPoint(ofMesh mesh);
+    ofVec3f meshScale;
+    ofVec3f meshMax;
+    ofVec3f meshMin;
     //output layer
     ofPath layertest;
     ofPath layertestat(ofMesh mesh,float z,int tri=1);
     ofMatrix4x4 layertestmove;
     ofMatrix4x4 mreset;
-    
+    float layertestZlast=0;
     float layertestZ=0;
     int testtri=1;
     //text out
@@ -71,5 +78,6 @@ class ofApp : public ofBaseApp {
     
     //vec3fFalseDefine
     float isnotvalid=-1;
+    
     
 };

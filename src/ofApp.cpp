@@ -8,8 +8,18 @@ void ofApp::setup(){
 	// rather than always drawing things on top of each other
 	ofEnableDepthTest();
     
+    //assimp model load
+    assimpModel.loadModel("testcube.stl");
+    assimpModel.calculateDimensions();
+    //readyModel = ofMesh::box(300, 200, h);//cone(200.0, 200.0);
+    readyModel=assimpModel.getMesh(0);
+    meshScale=getScale(readyModel);
+    meshMin=getMinPoint(readyModel);
+    
+    h=meshMin.z;
+    //playground
     playground.set(1280,800,10);
-    mplayground.setTranslation(0, 0, -h/2);
+    mplayground.setTranslation(0, 0, meshMin.z-5);
     
     outsideBox.set(1280,800,800);
     moutsideBox.setTranslation(0, 0, -400);
@@ -17,8 +27,6 @@ void ofApp::setup(){
     sliceLayPlane.set(1280,800,0.4);
     cam.setDistance(2000);
     
-    readyModel = ofMesh::box(300, 200, h);//cone(200.0, 200.0);
-   // mreadyModel.setTranslation(0, 100,-100);
     
     
     layertestmove.glTranslate(200, 200, 0);
@@ -30,10 +38,12 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
-    layertest=layertestat(readyModel, layertestZ,testtri);// to do
-    
-    msliceLayPlane.setTranslation(0, 0, layertestZ);
-    
+    if(layertestZ!=layertestZlast){
+        layertest=layertestat(readyModel, layertestZ,testtri);// to do
+        
+        msliceLayPlane.setTranslation(0, 0, layertestZ);
+        layertestZlast=layertestZ;
+    }
 
    }
 
@@ -41,7 +51,7 @@ void ofApp::update(){
 void ofApp::draw(){
 	ofBackground(0, 0, 0);
     
-    layertestat(readyModel, layertestZ).draw(300,300);
+    layertest.draw(300,300);
     
      cam.begin();
     
@@ -56,7 +66,7 @@ void ofApp::draw(){
     // the ground
     ofSetColor(150);
     ofMultMatrix(mplayground);
-    playground.draw();
+    playground.drawWireframe();
     ofMultMatrix(mreset);
     
     // the outsidebox
@@ -81,6 +91,7 @@ void ofApp::draw(){
         screenText << "Framerate: " << ofToString(ofGetFrameRate(),0) << "\n";
         screenText << "layertestat:"<<ofToString(layertestZ)<<"\n";
         screenText << "testtri"<<testtri<<"\n";
+        screenText << "assimpmodel:"<<meshScale.z<<"\n";
         //screenText << ofToString(layertest.);
         ofDrawBitmapString(screenText.str().c_str(), 20, 20);
     }
@@ -277,7 +288,7 @@ ofPath ofApp::layertestat(ofMesh mesh,float z,int tri){
         
         int abovepoint=0;
         int belowpoint=0;
-        cout<<"a.z:"<<pa.z<<" b.z:"<<pb.z<<" c.z:"<<pc.z<<"Z:"<<z<<"\n";
+        cout<<"a.z:"<<pa.z<<" b.z:"<<pb.z<<" c.z:"<<pc.z<<" Z:"<<z<<"\n";
         if(pa.z>z){
             abovepoint++;
         }else{
@@ -408,6 +419,108 @@ ofPath ofApp::layertestat(ofMesh mesh,float z,int tri){
     returnpath.setStrokeWidth(8);
     return returnpath;
 
+}
+ofVec3f ofApp::getScale(ofMesh mesh){
+    ofVec3f a;
+    a.x=a.y=a.z=0;
+    ofVec3f b;
+    b.x=b.y=b.z=0;
+    
+    ofVec3f scale;
+    for (ofIndexType i=0; i<mesh.getNumVertices(); i++) {
+        // a
+        if(mesh.getVertex(i).x>=a.x){
+            a.x=mesh.getVertex(i).x;
+        }
+        if(mesh.getVertex(i).y>=a.y){
+            a.y=mesh.getVertex(i).y;
+        }
+        if(mesh.getVertex(i).z>=a.z){
+            a.z=mesh.getVertex(i).z;
+        }
+        
+        //b
+        if(mesh.getVertex(i).x<=b.x){
+            b.x=mesh.getVertex(i).x;
+        }
+        if(mesh.getVertex(i).y<=b.y){
+            b.y=mesh.getVertex(i).y;
+        }
+        if(mesh.getVertex(i).z<=b.z){
+            b.z=mesh.getVertex(i).z;
+        }
+    }
+    scale=a-b;
+    return scale;
+    
+}
+ofVec3f ofApp::getMinPoint(ofMesh mesh){
+    ofVec3f a;
+    a.x=a.y=a.z=0;
+    ofVec3f b;
+    b.x=b.y=b.z=0;
+    
+    ofVec3f scale;
+    for (ofIndexType i=0; i<mesh.getNumVertices(); i++) {
+        // a
+        if(mesh.getVertex(i).x>=a.x){
+            a.x=mesh.getVertex(i).x;
+        }
+        if(mesh.getVertex(i).y>=a.y){
+            a.y=mesh.getVertex(i).y;
+        }
+        if(mesh.getVertex(i).z>=a.z){
+            a.z=mesh.getVertex(i).z;
+        }
+        
+        //b
+        if(mesh.getVertex(i).x<=b.x){
+            b.x=mesh.getVertex(i).x;
+        }
+        if(mesh.getVertex(i).y<=b.y){
+            b.y=mesh.getVertex(i).y;
+        }
+        if(mesh.getVertex(i).z<=b.z){
+            b.z=mesh.getVertex(i).z;
+        }
+    }
+    //scale=a-b;
+    return b;
+    
+}
+ofVec3f ofApp::getMaxPoint(ofMesh mesh){
+    ofVec3f a;
+    a.x=a.y=a.z=0;
+    ofVec3f b;
+    b.x=b.y=b.z=0;
+    
+    ofVec3f scale;
+    for (ofIndexType i=0; i<mesh.getNumVertices(); i++) {
+        // a
+        if(mesh.getVertex(i).x>=a.x){
+            a.x=mesh.getVertex(i).x;
+        }
+        if(mesh.getVertex(i).y>=a.y){
+            a.y=mesh.getVertex(i).y;
+        }
+        if(mesh.getVertex(i).z>=a.z){
+            a.z=mesh.getVertex(i).z;
+        }
+        
+        //b
+        if(mesh.getVertex(i).x<=b.x){
+            b.x=mesh.getVertex(i).x;
+        }
+        if(mesh.getVertex(i).y<=b.y){
+            b.y=mesh.getVertex(i).y;
+        }
+        if(mesh.getVertex(i).z<=b.z){
+            b.z=mesh.getVertex(i).z;
+        }
+    }
+    //scale=a-b;
+    return a;
+    
 }
 
 
