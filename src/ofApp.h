@@ -28,10 +28,18 @@ class ofApp : public ofBaseApp {
     private:
     // workplace:
     ofBoxPrimitive playground;
+    ofMatrix4x4 mplayground;
+    
     ofBoxPrimitive outsideBox;
+    ofMatrix4x4 moutsideBox;
+    
     ofBoxPrimitive sliceLayPlane;
+    ofMatrix4x4 msliceLayPlane;
+    
     //
     ofMesh readyModel;
+    int h=100;
+    ofMatrix4x4 mreadyModel;
     unsigned int sliceLayer=200;//
     float sliceLayerThickness=0.4;//
     float sliceHeight; //
@@ -52,9 +60,12 @@ class ofApp : public ofBaseApp {
     
     //output layer
     ofPath layertest;
-    ofPath layertestat(ofMesh mesh,float z);
+    ofPath layertestat(ofMesh mesh,float z,int tri=1);
+    ofMatrix4x4 layertestmove;
+    ofMatrix4x4 mreset;
     
-    
+    float layertestZ=0;
+    int testtri=1;
     //text out
     stringstream screenText;
     

@@ -7,57 +7,81 @@ void ofApp::setup(){
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
 	ofEnableDepthTest();
-	 
+    
     playground.set(1280,800,10);
-    playground.setPosition(0,0,-5);
+    mplayground.setTranslation(0, 0, -h/2);
     
     outsideBox.set(1280,800,800);
-    outsideBox.setPosition(0, 0, 400);
+    moutsideBox.setTranslation(0, 0, -400);
     
     sliceLayPlane.set(1280,800,0.4);
-  
-   
     cam.setDistance(2000);
-    readyModel = ofMesh::box(200.0, 200.0, 200.0);
-    //layertestat(<#ofMesh mesh#>, <#float z#>) // to do
+    
+    readyModel = ofMesh::box(300, 200, h);//cone(200.0, 200.0);
+   // mreadyModel.setTranslation(0, 100,-100);
+    
+    
+    layertestmove.glTranslate(200, 200, 0);
+    //layertest=layertestat(readyModel, layertestZ);// to do
+    
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    sliceHeight=sliceLayer*sliceLayerThickness;
+    //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
+    layertest=layertestat(readyModel, layertestZ,testtri);// to do
+    
+    msliceLayPlane.setTranslation(0, 0, layertestZ);
+    
 
    }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 	ofBackground(0, 0, 0);
-	
-	
-	cam.begin();
-	
+    
+    layertestat(readyModel, layertestZ).draw(300,300);
+    
+     cam.begin();
+    
+    
     
     // the model
-    ofTranslate(0,0,100);
     ofSetColor(ofColor::blueSteel);
+    ofMultMatrix(mreadyModel);
     readyModel.draw();
-    ofTranslate(0,0,-100);
+    ofMultMatrix(mreset);
+    
     // the ground
     ofSetColor(150);
+    ofMultMatrix(mplayground);
     playground.draw();
+    ofMultMatrix(mreset);
+    
     // the outsidebox
     if(outsideBoxEnable==1){
-    ofSetColor(20, 20, 20, 50);
-    outsideBox.draw();
+        ofSetColor(20, 20, 20, 50);
+        ofMultMatrix(moutsideBox);
+        outsideBox.draw();
+        ofMultMatrix(mreset);
+        
     }
     if(sliceLayPlaneEnable==1){
-        sliceLayPlane.setPosition(0,0,sliceHeight);
+        ofMultMatrix(msliceLayPlane);
         ofSetColor(255,0,0,127);
-        sliceLayPlane.draw();}
+        sliceLayPlane.draw();
+        ofMultMatrix(mreset);
+        
+    }
 	cam.end();
     
     if(1) {
         screenText.str("");
         screenText << "Framerate: " << ofToString(ofGetFrameRate(),0) << "\n";
+        screenText << "layertestat:"<<ofToString(layertestZ)<<"\n";
+        screenText << "testtri"<<testtri<<"\n";
+        //screenText << ofToString(layertest.);
         ofDrawBitmapString(screenText.str().c_str(), 20, 20);
     }
 }
@@ -65,7 +89,20 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    switch(key){
+        case OF_KEY_UP:
+            layertestZ++;
+            break;
+        case OF_KEY_DOWN:
+            layertestZ--;
+            break;
+        case OF_KEY_LEFT:
+            testtri--;
+            break;
+        case OF_KEY_RIGHT:
+            testtri++;
+            break;
+    }
 }
 
 //--------------------------------------------------------------
@@ -165,9 +202,18 @@ ofVec3f ofApp::getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, floa
     returnPoint.z=z;
     return returnPoint;
 }
-ofPath ofApp::layertestat(ofMesh mesh,float z){
+ofPath ofApp::layertestat(ofMesh mesh,float z,int tri){
+    // debug only
+    int outputPeak=1;
+    int uncrossface=0;
+    int crossface=0;//normal cross
     ofPath returnpath;
-    for(ofIndexType i=0;i<mesh.getNumIndices();i+=3){
+    int indexcount=mesh.getNumIndices();
+    cout<<"======================================================="<<"\n";
+    
+    cout<<"point:"<<indexcount<<"\n";
+    for(ofIndexType i=0;i<indexcount;i+=3){
+        cout<<"step:"<<i<<"\n"<<"\n";
         // get the point first
         ofIndexType ia=mesh.getIndex(i);
         ofIndexType ib=mesh.getIndex(i+1);
@@ -175,6 +221,8 @@ ofPath ofApp::layertestat(ofMesh mesh,float z){
         ofVec3f pa=mesh.getVertex(ia);
         ofVec3f pb=mesh.getVertex(ib);
         ofVec3f pc=mesh.getVertex(ic);
+       // cout<<"point:"<<i<<"\n";
+       // cout<<"pa.z:"<<pa.z<<"\n";
         int sa=1;// s =1 means above the z -1 means below the z we assume above
         int sb=1;
         int sc=1;
@@ -182,27 +230,42 @@ ofPath ofApp::layertestat(ofMesh mesh,float z){
         if(i==0){ //the first point
             if(pa.z==z){
                 returnpath.moveTo(pa.x,pa.y);
+                
+                   if(outputPeak==1) cout<<"drawnow"<<pa.x<<" "<<pa.y<<"\n";
+                
                 continue;
             }
-            if(pa.z==z){
-                returnpath.moveTo(pa.x,pa.y);
+            if(pb.z==z){
+                returnpath.moveTo(pb.x,pb.y);
+                
+                if(outputPeak==1)cout<<"drawnow"<<pb.x<<" "<<pb.y<<"\n";
                 continue;
             }
-            if(pa.z==z){
-                returnpath.moveTo(pa.x,pa.y);
+            if(pc.z==z){
+                returnpath.moveTo(pc.x,pc.y);
+                if(outputPeak==1)cout<<"drawnow"<<pc.x<<" "<<pc.y<<"\n";
+                
+                
                 continue;
             }
-        }else{// not the first point
+        }
+        else{// not the first point
             if(pa.z==z){
                 returnpath.lineTo(pa.x,pa.y);
+                if(outputPeak==1)cout<<"drawnow"<<pa.x<<" "<<pa.y<<"\n";
+                
                 continue;
             }
-            if(pa.z==z){
-                returnpath.lineTo(pa.x,pa.y);
+            if(pb.z==z){
+                returnpath.lineTo(pb.x,pb.y);
+                if(outputPeak==1)cout<<"drawnow"<<pb.x<<" "<<pb.y<<"\n";
+                
                 continue;
             }
-            if(pa.z==z){
-                returnpath.lineTo(pa.x,pa.y);
+            if(pc.z==z){
+                returnpath.lineTo(pc.x,pc.y);
+                if(outputPeak==1)cout<<"drawnow"<<pc.x<<" "<<pc.y<<"\n";
+                
                 continue;
             }
             
@@ -214,18 +277,25 @@ ofPath ofApp::layertestat(ofMesh mesh,float z){
         
         int abovepoint=0;
         int belowpoint=0;
+        cout<<"a.z:"<<pa.z<<" b.z:"<<pb.z<<" c.z:"<<pc.z<<"Z:"<<z<<"\n";
         if(pa.z>z){
             abovepoint++;
         }else{
             sa=-1;
             belowpoint++;
         }
+        //cout<<"abovepoint:"<<abovepoint<<"\n";
+        //cout<<"belowpoint:"<<belowpoint<<"\n";
+        
         if(pb.z>z){
             abovepoint++;
         }else{
             sb=-1;
             belowpoint++;
         }
+        //cout<<"abovepoint:"<<abovepoint<<"\n";
+        //cout<<"belowpoint:"<<belowpoint<<"\n";
+        
         if(pc.z>z){
             abovepoint++;
         }else{
@@ -233,9 +303,14 @@ ofPath ofApp::layertestat(ofMesh mesh,float z){
             belowpoint++;
         }
         
+        //cout<<"abovepoint:"<<abovepoint<<"\n";
+        //cout<<"belowpoint:"<<belowpoint<<"\n";
         if(abovepoint==3||belowpoint==3){
+            uncrossface++;
+            cout<<"no cross points"<<"\n";
             continue;// because the is now cross point
         }
+         cout<<"cross points"<<"\n";
         
         // get the middle point
         int middlepoint=0;// 0 = unknow 1= a 2 =b 3 =c
@@ -266,7 +341,9 @@ ofPath ofApp::layertestat(ofMesh mesh,float z){
         if(pc.z==pb.z){
             triangletype++;
         }
-        
+        ofVec3f p0;
+        ofVec3f p1;
+        ofVec3f p2;
         
         
         // re order by the .z
@@ -286,32 +363,35 @@ ofPath ofApp::layertestat(ofMesh mesh,float z){
         
         }
         
-        
+        cout<<"lowpoint is "<<lowpoint<<"\n";
         //get the cross point at layer z
         ofVec3f pstart;
         ofVec3f pend;
         
         switch (lowpoint) {
             case 1:
-                pstart=getLinePlaneIntersection(pa, pb, z);
-                pend=getLinePlaneIntersection(pa, pc, z);
+                pstart=getLinePlaneIntersection(pb, pa, z);
+                pend=getLinePlaneIntersection(pc, pa, z);
                 break;
             case 2:
-                pstart=getLinePlaneIntersection(pb, pa, z);
-                pend=getLinePlaneIntersection(pb, pc, z);
+                pstart=getLinePlaneIntersection(pc, pb, z);
+                pend=getLinePlaneIntersection(pc, pb, z);
                 break;
             case 3:
-                pstart=getLinePlaneIntersection(pc, pa, z);
-                pend=getLinePlaneIntersection(pc, pb, z);
+                pstart=getLinePlaneIntersection(pa, pc, z);
+                pend=getLinePlaneIntersection(pb, pc, z);
                 break;
                 
             default:
                 break;
         }
+        cout<<"pstart:"<<pstart.x<<","<<pstart.y<<"\n";
+        cout<<"pend:"<<pend.x<<","<<pend.y<<"\n";
         // add cross point to the returnpath
         if(i==0){ //the first point
             returnpath.moveTo(pstart.x,pstart.y);
             returnpath.moveTo(pend.x,pend.y);
+            
             continue;
         }else{// not the first point
             returnpath.lineTo(pstart.x,pstart.y);
@@ -320,11 +400,12 @@ ofPath ofApp::layertestat(ofMesh mesh,float z){
         }
         
     }
+    cout<<"uncrossface:"<<uncrossface<<"\n";
     returnpath.close();
     returnpath.setStrokeColor(ofColor::blue);
     returnpath.setFillColor(ofColor::red);
-    returnpath.setFilled(true);
-    returnpath.setStrokeWidth(2);
+    returnpath.setFilled(false);
+    returnpath.setStrokeWidth(8);
     return returnpath;
 
 }
