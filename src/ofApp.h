@@ -65,14 +65,18 @@ class ofApp : public ofBaseApp {
     ofVec3f meshScale;
     ofVec3f meshMax;
     ofVec3f meshMin;
+    
     //output layer
     ofPath layertest;
     ofPath layertestat(ofMesh mesh,float z,int tri=1);
+    ofPath addPointToPath(ofPath path,float x,float y,ofIndexType i);
     ofMatrix4x4 layertestmove;
     ofMatrix4x4 mreset;
     float layertestZlast=0;
     float layertestZ=0;
     int testtri=1;
+    int testtrilast=0;
+    
     //text out
     stringstream screenText;
     

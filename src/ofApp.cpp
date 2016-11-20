@@ -22,15 +22,15 @@ void ofApp::setup(){
     mplayground.setTranslation(0, 0, meshMin.z-5);
     
     outsideBox.set(1280,800,800);
-    moutsideBox.setTranslation(0, 0, -400);
+    moutsideBox.setTranslation(0, 0, meshMin.z-400);
     
     sliceLayPlane.set(1280,800,0.4);
     cam.setDistance(2000);
     
+    layertest=layertestat(readyModel, layertestZ,testtri);// to do
     
     
     layertestmove.glTranslate(200, 200, 0);
-    //layertest=layertestat(readyModel, layertestZ);// to do
     
     
 }
@@ -38,11 +38,12 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
-    if(layertestZ!=layertestZlast){
+    if(layertestZ!=layertestZlast||testtri!=testtrilast){
         layertest=layertestat(readyModel, layertestZ,testtri);// to do
         
         msliceLayPlane.setTranslation(0, 0, layertestZ);
         layertestZlast=layertestZ;
+        testtrilast=testtri;
     }
 
    }
@@ -108,10 +109,10 @@ void ofApp::keyPressed(int key){
             layertestZ--;
             break;
         case OF_KEY_LEFT:
-            testtri--;
+            testtri-=100;
             break;
         case OF_KEY_RIGHT:
-            testtri++;
+            testtri+=100;
             break;
     }
 }
@@ -181,6 +182,8 @@ void fillpointlinelist(ofMesh frommesh){
 
 ofVec3f ofApp::getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z){
     ofVec3f returnPoint;
+    ofVec3f zeroPoint;
+    zeroPoint.x=zeroPoint.y=zeroPoint.z=0;
     // compare the upper point and the down point
     if(pointDown.z>pointUp.z){
         float tempz=pointDown.z;
@@ -189,42 +192,42 @@ ofVec3f ofApp::getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, floa
     }
     //check if the line cross the z plane
     if(pointUp.z>z||pointDown.z<z){
-        returnPoint.x=returnPoint.y=0;
-        returnPoint.z=-1; //false
-        return returnPoint;
+        
+    }else{
+        
+        return zeroPoint;
     }
-    // check if the line parallel to z plane
-    if(pointDown.z==pointUp.z){
-        returnPoint.x=returnPoint.y=0;
-        returnPoint.z=-2; //
+    if(pointUp.x==pointDown.x&&pointUp.y==pointDown.y){
+        returnPoint.x=pointDown.x;
+        returnPoint.y=pointDown.y;
+    }else{
+        float zLength=(pointUp.z-pointDown.z);
+        float z1Length=1/zLength;
+        float kx=(pointUp.x-pointDown.x)*z1Length;
+        returnPoint.x=(z-pointUp.z)*kx+pointUp.x;
+        float ky=(pointUp.y-pointDown.y)*z1Length;
+        returnPoint.y=(z-pointUp.z)*ky+pointUp.y;
     }
-    if(pointUp.z==z||pointDown.z==z){
-        returnPoint.z=0;
-        returnPoint.x=0;
-        returnPoint.y=0;
-        return returnPoint;
-    }
-    float zLength=(pointUp.z-pointDown.z);
-    float z1Length=1/zLength;
-    float kx=(pointUp.x-pointDown.x)*z1Length;
-    returnPoint.x=(z-pointUp.z)*kx+pointUp.x;
-    float ky=(pointUp.y-pointDown.y)*z1Length;
-    returnPoint.y=(z-pointUp.z)*ky+pointUp.y;
     returnPoint.z=z;
     return returnPoint;
 }
 ofPath ofApp::layertestat(ofMesh mesh,float z,int tri){
     // debug only
     int outputPeak=1;
+    int outputUncross=0;
     int uncrossface=0;
     int crossface=0;//normal cross
+    int pointcount=0;
     ofPath returnpath;
     int indexcount=mesh.getNumIndices();
     cout<<"======================================================="<<"\n";
     
-    cout<<"point:"<<indexcount<<"\n";
-    for(ofIndexType i=0;i<indexcount;i+=3){
-        cout<<"step:"<<i<<"\n"<<"\n";
+    
+    for(ofIndexType i=0;i<indexcount&&i<tri*3;i+=3){
+    //for(ofIndexType i=0;i<indexcount;i+=3){
+        if(outputUncross==1)cout<<"------------------------------------------------------";
+        if(outputUncross==1)cout<<"\n"<<"step:"<<i/3+1<<"\n";
+        ofVec3f addpoint;
         // get the point first
         ofIndexType ia=mesh.getIndex(i);
         ofIndexType ib=mesh.getIndex(i+1);
@@ -238,57 +241,40 @@ ofPath ofApp::layertestat(ofMesh mesh,float z,int tri){
         int sb=1;
         int sc=1;
        // check if any point.z == z the layer
-        if(i==0){ //the first point
+        if(1){ //the first point
+            int atz=0;
             if(pa.z==z){
-                returnpath.moveTo(pa.x,pa.y);
-                
-                   if(outputPeak==1) cout<<"drawnow"<<pa.x<<" "<<pa.y<<"\n";
-                
-                continue;
+                addpoint=pa;
+                pointcount++;
+                returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
+                atz++;
             }
             if(pb.z==z){
-                returnpath.moveTo(pb.x,pb.y);
-                
-                if(outputPeak==1)cout<<"drawnow"<<pb.x<<" "<<pb.y<<"\n";
-                continue;
+                addpoint=pb;
+                pointcount++;
+                returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
+                atz++;
             }
             if(pc.z==z){
-                returnpath.moveTo(pc.x,pc.y);
-                if(outputPeak==1)cout<<"drawnow"<<pc.x<<" "<<pc.y<<"\n";
-                
-                
+                addpoint=pc;
+                pointcount++;
+                returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
+                atz++;
+            }
+            //returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
+            if(atz>0){
+                cout<<"atz:"<<atz<<"\n";
                 continue;
             }
         }
-        else{// not the first point
-            if(pa.z==z){
-                returnpath.lineTo(pa.x,pa.y);
-                if(outputPeak==1)cout<<"drawnow"<<pa.x<<" "<<pa.y<<"\n";
-                
-                continue;
-            }
-            if(pb.z==z){
-                returnpath.lineTo(pb.x,pb.y);
-                if(outputPeak==1)cout<<"drawnow"<<pb.x<<" "<<pb.y<<"\n";
-                
-                continue;
-            }
-            if(pc.z==z){
-                returnpath.lineTo(pc.x,pc.y);
-                if(outputPeak==1)cout<<"drawnow"<<pc.x<<" "<<pc.y<<"\n";
-                
-                continue;
-            }
-            
-            
-        }
+       
         // now we find how many point over the z and how many point below z
         
         // that can check which line will cross the layer z // maybe none
         
         int abovepoint=0;
         int belowpoint=0;
-        cout<<"a.z:"<<pa.z<<" b.z:"<<pb.z<<" c.z:"<<pc.z<<" Z:"<<z<<"\n";
+        
         if(pa.z>z){
             abovepoint++;
         }else{
@@ -318,108 +304,112 @@ ofPath ofApp::layertestat(ofMesh mesh,float z,int tri){
         //cout<<"belowpoint:"<<belowpoint<<"\n";
         if(abovepoint==3||belowpoint==3){
             uncrossface++;
-            cout<<"no cross points"<<"\n";
+            if(outputUncross==1)cout<<"a.z:"<<pa.z<<" b.z:"<<pb.z<<" c.z:"<<pc.z<<" Z:"<<z<<"\n"<<"no cross points"<<"\n";
             continue;// because the is now cross point
         }
+        cout<<"a.z:"<<pa.z<<" b.z:"<<pb.z<<" c.z:"<<pc.z<<" Z:"<<z<<"\n";
          cout<<"cross points"<<"\n";
         
-        // get the middle point
-        int middlepoint=0;// 0 = unknow 1= a 2 =b 3 =c
-        int lowpoint=0;
-        int highpoint=0;
-        if(sb==sc){lowpoint=1;}
-        if(sa==sc){lowpoint=2;}
-        if(sa==sc){lowpoint=3;}
-        
-        
-        //check cross line only two line will cross
-        if(abovepoint==2){
-            
-            
-        }else{// abovepoint=1
-        
+        // get the high middle and low point
+        ofVec3f ph;//point high
+        ofVec3f pm;//point middle
+        ofVec3f pl;//point low
+        if(pa.z>pb.z){
+            if(pb.z>pc.z){
+                ph=pa;
+                pm=pb;
+                pl=pc;
+            }else{
+                if(pa.z>pc.z){
+                    ph=pa;
+                    pm=pc;
+                    pl=pb;
+                }else{// pa.z<pc.z
+                    ph=pc;
+                    pm=pa;
+                    pl=pb;
+                }
+            }
+        }else{//pa.z<pb.z
+            if(pa.z>pc.z){
+                ph=pb;
+                pm=pa;
+                pl=pc;
+            }else{//pa.z<pc.z
+                if(pb.z>pc.z){
+                    ph=pb;
+                    pm=pc;
+                    pl=pa;
+                }else{//pb.z<pc.z
+                    ph=pc;
+                    pm=pb;
+                    pl=pa;
+                }
+            }
         }
         
-        //
-        // check which type triangle
-        int triangletype=0;
-        if(pa.z==pb.z){
-            triangletype++;
+        // check the middle point that can know which 2 line will cross the plane layer
+        int crosstype=0;// 0:unknown 1:above middle -1:below middle
+        if(pm.z<z){ // 2 point above z
+            crosstype=1;
+        }else{// pm.z>z // 2 point below z
+            crosstype=-1;
         }
-        if(pa.z==pc.z){
-            triangletype++;
-        }
-        if(pc.z==pb.z){
-            triangletype++;
-        }
-        ofVec3f p0;
-        ofVec3f p1;
-        ofVec3f p2;
-        
-        
-        // re order by the .z
-        // and get how many line cross the layer z
-        
-        switch(triangletype){
-            case 0: // a normal triangle
-                
-                break;
-            case 1: //
-                break;
-            case 2://thie won't happen
-                break;
-            case 3: // the parelle triangle that need more reorder
-                break;
-            
-        
-        }
-        
-        cout<<"lowpoint is "<<lowpoint<<"\n";
-        //get the cross point at layer z
+        // now we get the cross point
         ofVec3f pstart;
         ofVec3f pend;
         
-        switch (lowpoint) {
+        cout<<"crosstype:"<<crosstype<<"\n"<<"ph.z:"<<ph.z<<","<<" pm.z"<<pm.z<<" pl.z"<<pl.z<<"\n";
+        switch (crosstype) {
             case 1:
-                pstart=getLinePlaneIntersection(pb, pa, z);
-                pend=getLinePlaneIntersection(pc, pa, z);
+                pstart=getLinePlaneIntersection(ph, pm, z);
+                pend=getLinePlaneIntersection(ph, pl, z);
                 break;
-            case 2:
-                pstart=getLinePlaneIntersection(pc, pb, z);
-                pend=getLinePlaneIntersection(pc, pb, z);
+            case -1:
+                pstart=getLinePlaneIntersection(pm, pl, z);
+                pend=getLinePlaneIntersection(ph, pl, z);
                 break;
-            case 3:
-                pstart=getLinePlaneIntersection(pa, pc, z);
-                pend=getLinePlaneIntersection(pb, pc, z);
-                break;
-                
             default:
                 break;
         }
+        
         cout<<"pstart:"<<pstart.x<<","<<pstart.y<<"\n";
         cout<<"pend:"<<pend.x<<","<<pend.y<<"\n";
         // add cross point to the returnpath
-        if(i==0){ //the first point
-            returnpath.moveTo(pstart.x,pstart.y);
-            returnpath.moveTo(pend.x,pend.y);
-            
-            continue;
-        }else{// not the first point
-            returnpath.lineTo(pstart.x,pstart.y);
-            returnpath.lineTo(pend.x,pend.y);
+        addpoint=pstart;
+        pointcount++;
+        returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
+        addpoint=pend;
+        pointcount++;
+        returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
+        continue;
         
-        }
         
     }
-    cout<<"uncrossface:"<<uncrossface<<"\n";
+    
+    cout<<"point:"<<indexcount<<"\n";
+
+    cout<<"uncrossface:"<<uncrossface<<" pathpoint:"<<pointcount<<"\n";
     returnpath.close();
     returnpath.setStrokeColor(ofColor::blue);
-    returnpath.setFillColor(ofColor::red);
-    returnpath.setFilled(false);
-    returnpath.setStrokeWidth(8);
+    returnpath.setFillColor(ofColor::white);
+    returnpath.setFilled(true);
+    returnpath.setStrokeWidth(1);
     return returnpath;
 
 }
+
+ofPath ofApp::addPointToPath(ofPath path,float x,float y,ofIndexType i){
+    ofPath returnpath;
+    if(i==0){
+        returnpath.moveTo(x,y);
+    }else{
+        returnpath=path;
+        returnpath.lineTo(x,y);
+    }
+    return returnpath;
+}
+
 ofVec3f ofApp::getScale(ofMesh mesh){
     ofVec3f a;
     a.x=a.y=a.z=0;
