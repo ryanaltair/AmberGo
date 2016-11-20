@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
-
+#include "gkmll.h"
 class ofApp : public ofBaseApp {
 	public:
 		void setup();
@@ -49,28 +49,22 @@ class ofApp : public ofBaseApp {
     // enables
     int outsideBoxEnable=0;
     int sliceLayPlaneEnable=1;
-    
+    ofIndexType a=-1;
     // test theory
     
     
     // addons ofxMLL
-    vector<ofVec3f> pointlist;
-    vector<ofIndexType> linelist;// {p0 p1} the index point to point list
-    vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list
-    ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
-    void fillpointlinelist(ofMesh);
-    ofVec3f getScale(ofMesh mesh);
-    ofVec3f getMinPoint(ofMesh mesh);
-    ofVec3f getMaxPoint(ofMesh mesh);
+    gkmll mll;
     ofVec3f meshScale;
     ofVec3f meshMax;
     ofVec3f meshMin;
     
+    
+    
+    
     //output layer
     ofPath layertest;
-    ofPath layertestat(ofMesh mesh,float z,int tri=1);
-    ofPath addPointToPath(ofPath path,float x,float y,ofIndexType i);
-    ofMatrix4x4 layertestmove;
+     ofMatrix4x4 layertestmove;
     ofMatrix4x4 mreset;
     float layertestZlast=0;
     float layertestZ=0;
@@ -80,8 +74,6 @@ class ofApp : public ofBaseApp {
     //text out
     stringstream screenText;
     
-    //vec3fFalseDefine
-    float isnotvalid=-1;
-    
+   
     
 };
