@@ -45,8 +45,164 @@ void gkmll::update(ofMesh mesh){
         dxdylistloaded+=dxdyloadstep;
     
     }
+   
 }
 // public
+ofPath gkmll::layertestat0(float z){
+    ofPath returnpath;
+    ofIndexType ipstart=0;
+    cout<<"ipstart:"<<ipstart<<"\n";
+    ofIndexType ipnext=0;
+    ofIndexType ipused=0;
+    
+    if(isdXdYlistfilled!=100){
+        return ;
+    }
+    
+    ofIndexType ip0=0;//linelist[ip0]
+    ofIndexType ip1=0;//linelist[ip1]
+    ofIndexType iplp0=0;//pointlist[iplp0]
+    ofIndexType iplp1=0;//pointlist[iplp1]
+    
+    ofIndexType ipH=0;
+    ofIndexType ipL=0;
+    ofIndexType ipa=0;//ipa=nearpointlist[ip0]
+    ofIndexType ipb=0;//ipb=nearpointlist[ip1]
+    //dX=dXdYlist[ip0]
+    //dY=dXdYlist[ip1]
+    
+    //start
+    // find a cross point
+    for(int i=0;i<linelist.size();i+=2){
+        ip0=i;
+        ip1=i+1;
+        
+        if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
+            
+            if(pointlist[linelist[ip0]].z<z&&pointlist[linelist[ip1]].z>z){
+                
+                ipa=nearpointlist[ip0];
+                ipb=nearpointlist[ip1];
+                break;
+            }
+        }else{// pointlist[linelist[ip1]].z<pointlist[linelist[ip0]].z
+            if(pointlist[linelist[ip1]].z<z&&pointlist[linelist[ip0]].z>z){
+                
+                ipa=nearpointlist[ip0];
+                ipb=nearpointlist[ip1];
+                break;
+            }
+        }
+        
+    }
+    cout<<"we find the cross point done"<<"\n";
+    // get the first point XY
+    // get the ph pl
+    if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
+        ipL=linelist[ip0];
+        ipH=linelist[ip1];
+    }else{//pointlist[linelist[ip0]].z>pointlist[linelist[ip1]].z
+        ipL=linelist[ip1];
+        ipH=linelist[ip0];
+    }
+    
+    cout<<"we find the pl ph at start done"<<"\n";
+
+    //get the XY and move to
+    ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
+    returnpath=addPointToPath(returnpath, XYpoint.x, XYpoint.y, 0);
+    // set pstart and pnext
+    ipstart=ipa;
+    ipnext=ipb;
+    // check z with pnext
+    if(pointlist[ipnext].z<=z){
+        ipused=ipL;
+        iplp0=ipH;
+        iplp1=ipnext;
+    }else{
+        ipused=ipH;
+        iplp0=ipL;
+        iplp1=ipnext;
+    }
+    //loop
+    cout<<"we just going to loop"<<"\n";
+    
+    int loopcount=0;
+    bool isloopover=false;
+    int finalsteptogo=1;
+    for(int i=0;i<linelist.size();i+=2){
+        if(ipnext==ipstart){
+            isloopover=true;
+        }
+        loopcount++;
+        cout<<"we loop "<<loopcount<<"\n";
+        
+
+        //find the lnext that have linelist[i]=iplp0 linelist[i+1]=iplp1
+        if(iplp0<iplp1){
+            //do nothing
+        }else{// ip0>ip1 need swap
+            ofIndexType iplp2=iplp1;
+            iplp1=iplp0;
+            iplp0=iplp2;
+        }
+        cout<<"the iplp0 iplp1 is "<<iplp0<<","<<iplp1<<"\n";
+        //find the iplp0 iplp1
+        for(i=0;i<linelist.size();i+=2){
+            if(linelist[i]==iplp0&&linelist[i+1]==iplp1){
+                ip0=i;
+                ip1=i+1;
+                ipa=nearpointlist[ip0];
+                ipb=nearpointlist[ip1];
+                break;
+            }
+        }
+        cout<<"and we find ip0 ip1 ipa ipb is "<<ip0<<","<<ip1<<","<<ipa<<","<<ipb<<"\n";
+        //get pH pL
+        if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
+            ipL=linelist[ip0];
+            ipH=linelist[ip1];
+        }else{//pointlist[linelist[ip0]].z>pointlist[linelist[ip1]].z
+            ipL=linelist[ip1];
+            ipH=linelist[ip0];
+        }
+        cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
+        ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
+        returnpath=addPointToPath(returnpath, XYpoint.x, XYpoint.y, loopcount);
+        if(isloopover==true){
+            if(finalsteptogo>0){
+                finalsteptogo--;
+            }else{
+                break;
+            }
+        }
+        // set pnext
+        if(ipused==ipa){
+            ipnext=ipb;
+        }else{//ipused==ipb
+            ipnext=ipa;
+        }
+        // check z with pnext
+        if(pointlist[ipnext].z<z){
+            ipused=ipL;
+            iplp0=ipH;
+            iplp1=ipnext;
+        }else{//pointlist[ipnext].z>z
+            ipused=ipH;
+            iplp0=ipL;
+            iplp1=ipnext;
+        }
+    }
+    returnpath.close();
+    returnpath.setStrokeColor(ofColor::blue);
+    returnpath.setFillColor(ofColor::darkCyan);
+    returnpath.setFilled(true);
+    returnpath.setStrokeWidth(1);
+    return returnpath;
+    
+    
+
+}
 ofPath gkmll::layertestat(ofMesh mesh,float z,int tri){
     // debug only
     int outputPeak=1;
@@ -228,7 +384,7 @@ ofPath gkmll::layertestat(ofMesh mesh,float z,int tri){
     cout<<"uncrossface:"<<uncrossface<<" pathpoint:"<<pointcount<<"\n";
     returnpath.close();
     returnpath.setStrokeColor(ofColor::blue);
-    returnpath.setFillColor(ofColor::white);
+    returnpath.setFillColor(ofColor::darkorange);
     returnpath.setFilled(true);
     returnpath.setStrokeWidth(1);
     return returnpath;
@@ -285,11 +441,11 @@ void gkmll::addface(ofMesh mesh,ofIndexType i){
     cout<<"ia,ib,ic"<<ia<<ib<<ic<<"\n";
     if(i==0){// first face
         //ab
-        addnewline(ia,ib, ic, -1);
+        addnewline(ia,ib, ic);
         //ac
-        addnewline(ia,ic,ib,-1);
+        addnewline(ia,ic,ib);
         //bc
-        addnewline(ib,ic,ia,-1);
+        addnewline(ib,ic,ia);
         cout<<"first 3 line"<<"\n";
     }else{//i>0
         
@@ -302,7 +458,7 @@ void gkmll::addface(ofMesh mesh,ofIndexType i){
             
             cout<<"add old line"<<"\n";
         }else{
-            addnewline(ia, ib, ic, -1);
+            addnewline(ia, ib, ic);
         }
         int oldline1=searchline(ia,ic);
         
@@ -311,7 +467,7 @@ void gkmll::addface(ofMesh mesh,ofIndexType i){
             addoldline(oldline1, ib);
             cout<<"add old line"<<"\n";
         }else{
-            addnewline(ia, ic, ib, -1);
+            addnewline(ia, ic, ib);
         }
         int oldline2=searchline(ic,ib);
         //bc
@@ -319,7 +475,7 @@ void gkmll::addface(ofMesh mesh,ofIndexType i){
             addoldline(oldline2, ia);
             cout<<"add old line"<<"\n";
         }else{
-            addnewline(ic, ib, ia, -1);
+            addnewline(ic, ib, ia);
         }
         // new line
     }
@@ -380,7 +536,17 @@ void gkmll::addpointlist(ofMesh mesh){
 //do loop
 
 // tools
-void gkmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipa,ofIndexType ipb){
+ofVec3f gkmll::getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z){
+    ofVec3f returnpoint;
+    float divdH=1/dH;
+    float h=z-pL.z;
+    returnpoint.x=pL.x+dX*divdH*h;
+    returnpoint.y=pL.y+dY*divdH*h;
+    returnpoint.z=z;
+    return returnpoint;
+}
+
+void gkmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
     cout<<"ip0,ip1:"<<ip0<<","<<ip1<<"\n";
     //cout<<"before"<<linelist.size();
     if(ip0<ip1){
@@ -404,17 +570,14 @@ void gkmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipa,ofIndexTy
     dXdYlist.push_back(0);
     dXdYlist.push_back(0);
     
-    nearpointlist.push_back(ipa);
-    nearpointlist.push_back(ipb);
+    nearpointlist.push_back(ipn);
+    nearpointlist.push_back(ipn);
     
 }
 void gkmll::addoldline(ofIndexType ipl,ofIndexType ipn){
-    if(nearpointlist[ipl]!=-1){
-        nearpointlist[ipl]=ipn;
-        return;
-    }
-    if(nearpointlist[ipl+1]!=-1){
+    if(nearpointlist[ipl]==nearpointlist[ipl+1]){
         nearpointlist[ipl+1]=ipn;
+        return;
     }
 }
 ofIndexType gkmll::searchline(ofIndexType ip0,ofIndexType ip1){
@@ -477,6 +640,7 @@ ofPath gkmll::addPointToPath(ofPath path,float x,float y,ofIndexType i){
         returnpath=path;
         returnpath.lineTo(x,y);
     }
+    cout<<"we get the x y :"<<x<<","<<y<<"\n";
     return returnpath;
 }
 

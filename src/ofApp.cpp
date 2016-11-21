@@ -43,11 +43,17 @@ void ofApp::setup(){
 void ofApp::update(){
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
     if(layertestZ!=layertestZlast||testtri!=testtrilast){
-        layertest=mll.layertestat(readyModel, layertestZ,testtri);// to do
+        //layertest=mll.layertestat(readyModel, layertestZ,testtri);// to do
         
         msliceLayPlane.setTranslation(0, 0, layertestZ);
         layertestZlast=layertestZ;
         testtrilast=testtri;
+        
+        if(mll.isdXdYlistfilled==100){
+            cout<<"we just got to here to try layertest"<<"\n";
+            layertest=mll.layertestat0(layertestZ);
+            
+        }
     }
     mll.update(readyModel);
    }
@@ -56,15 +62,16 @@ void ofApp::update(){
 void ofApp::draw(){
 	ofBackground(0, 0, 0);
     
-    layertest.draw(300,300);
-    
+    layertest.draw(400,400);
      cam.begin();
+    
     
     
     
     // the model
     ofSetColor(ofColor::blueSteel);
     ofMultMatrix(mreadyModel);
+    
     readyModel.draw();
     ofMultMatrix(mreset);
     
@@ -86,6 +93,7 @@ void ofApp::draw(){
         ofMultMatrix(msliceLayPlane);
         ofSetColor(255,0,0,127);
         sliceLayPlane.draw();
+        
         ofMultMatrix(mreset);
         
     }

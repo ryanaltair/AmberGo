@@ -19,7 +19,8 @@ public:
     vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list
     vector<float> dXdYlist;// add with addnewline work with adddXdY
     ofPath layertestat(ofMesh mesh,float z,int tri=1);
-    
+    ofPath layertestat0(float z);
+    ofPath layertest;
     ofVec3f meshScale;
     ofVec3f meshMax;
     ofVec3f meshMin;
@@ -34,13 +35,14 @@ private:
     //do in setup
     void addpointlist(ofMesh mesh);
     ofVec3f getScale(ofMesh mesh);
-
     //do once
     
     //do loop
     
     // tools
-    void addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipa,ofIndexType ipb);
+    ofVec3f getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z);
+    
+    void addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn);
     void addoldline(ofIndexType ipl,ofIndexType ipn);
     ofIndexType searchline(ofIndexType ip0,ofIndexType ip1);
     ofPath addPointToPath(ofPath path,float x,float y,ofIndexType i);

@@ -49,7 +49,7 @@ class ofApp : public ofBaseApp {
     // enables
     int outsideBoxEnable=0;
     int sliceLayPlaneEnable=1;
-    ofIndexType a=-1;
+    
     // test theory
     
     
