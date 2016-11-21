@@ -11,10 +11,10 @@ void ofApp::setup(){
     //assimp model load
     assimpModel.loadModel("testcube.stl");
     
-    assimpModel.calculateDimensions();
+    //assimpModel.calculateDimensions();
     //readyModel = ofMesh::box(300, 200, h);//cone(200.0, 200.0);
     readyModel=assimpModel.getMesh(0);
-    readyModel.mergeDuplicateVertices();
+    //readyModel.mergeDuplicateVertices();
     cout<<readyModel.getNumVertices()<<"\n";
     mll.setup(readyModel);
     meshScale=mll.meshScale;
