@@ -32,7 +32,7 @@ public:
     void addface(ofMesh mesh,ofIndexType i);
     void adddXdY(ofIndexType i);
     //static
-    static ofVec3f getScale(ofMesh mesh);
+    ofVec3f getScale(ofMesh mesh);
 private:
     //do in setup
     void addpointlist(ofMesh mesh);

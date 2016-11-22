@@ -72,7 +72,7 @@ void ofApp::draw(){
     ofSetColor(ofColor::blueSteel);
     ofMultMatrix(mreadyModel);
     
-    readyModel.draw();
+    readyModel.drawWireframe();
     ofMultMatrix(mreset);
     
     // the ground
