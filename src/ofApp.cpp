@@ -7,20 +7,7 @@ void ofApp::setup(){
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
 	ofEnableDepthTest();
-    
-    //assimp model load
-    assimpModel.loadModel("testcube.stl");
-    
-    //assimpModel.calculateDimensions();
-    //readyModel = ofMesh::box(300, 200, h);//cone(200.0, 200.0);
-    readyModel=assimpModel.getMesh(0);
-    readyModel.mergeDuplicateVertices();
-    cout<<readyModel.getNumVertices()<<"\n";
-    mll.setup(readyModel);
-    meshScale=mll.meshScale;
-    meshMin=mll.meshMin;
-    
-    h=meshMin.z;
+    loadModel();
     //playground
     playground.set(1280,800,10);
     mplayground.setTranslation(0, 0, meshMin.z-5);
@@ -31,11 +18,9 @@ void ofApp::setup(){
     sliceLayPlane.set(1280,800,0.4);
     cam.setDistance(2000);
     
-    layertest=mll.layertestat(readyModel, layertestZ,testtri);// to do
     
     
     layertestmove.glTranslate(200, 200, 0);
-    
     
 }
 
@@ -43,7 +28,6 @@ void ofApp::setup(){
 void ofApp::update(){
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
     if(layertestZ!=layertestZlast||testtri!=testtrilast){
-        //layertest=mll.layertestat(readyModel, layertestZ,testtri);// to do
         
         msliceLayPlane.setTranslation(0, 0, layertestZ);
         layertestZlast=layertestZ;
@@ -105,9 +89,12 @@ void ofApp::draw(){
         screenText << "layertestat:"<<ofToString(layertestZ)<<"\n";
         screenText << "testtri"<<testtri<<"\n";
         screenText << "assimpmodel:"<<meshScale.z<<"\n";
+        screenText << "vertexCount:"<<ofToString(readyModel.getNumVertices())<<"/"<<ofToString(readyModel.getNumIndices())<<"\n";
+        screenText << "line:point:dxdy "<<ofToString(mll.linelist.size()/2)<<":"<<ofToString(mll.pointlist.size())<<":"<<ofToString(mll.dXdYlist.size())<<"\n";
+       //screenText << "pointlist"
         //screenText << ofToString(layertest.);
         ofDrawBitmapString(screenText.str().c_str(), 20, 20);
-    }
+    } 
 }
 
 
@@ -181,7 +168,25 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 //addons
 
+void ofApp::loadModel(){
 
+    
+    //assimp model load
+    assimpModel.loadModel("testcube.stl");
+    
+    //assimpModel.calculateDimensions();
+    //readyModel = ofMesh::box(300, 200, h);//cone(200.0, 200.0);
+    readyModel=assimpModel.getMesh(0);
+    readyModel.mergeDuplicateVertices();
+    cout<<readyModel.getNumVertices()<<"\n";
+    mll.setup(readyModel);
+    meshScale=mll.meshScale;
+    meshMin=mll.meshMin;
+    
+    h=meshMin.z;
+    
+
+}
 
 
 

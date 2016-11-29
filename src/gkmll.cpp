@@ -6,15 +6,24 @@ gkmll::gkmll(){
 }
 
 void gkmll::setup(ofMesh mesh){
-    addpointlist(mesh);
-    getScale(mesh);
+    mergedMesh=mesh;
     
-
 }
+
 void gkmll::update(ofMesh mesh){
+    //this update will put inside the app update
+    //calc work here
+    // step 1: merge mesh points
+    if(ismeshMerged<100){
     
-    
-    if(islinelistfilled!=100){
+        
+        addpointlist(mesh);
+        getScale(mesh);
+        ismeshMerged=100;
+        return;
+    }
+    // step 2: add line list
+    if(islinelistfilled<100){
         int loadstep=10;
         if(linelistloaded>=mesh.getNumIndices()){
             islinelistfilled=100;
@@ -31,7 +40,8 @@ void gkmll::update(ofMesh mesh){
         return;
     }
     
-    if(isdXdYlistfilled!=100&&islinelistfilled==100){
+    // step 3: add dXdY
+    if(isdXdYlistfilled<100){
         int dxdyloadstep=1;
         if(dxdylistloaded>=linelist.size()){
             isdXdYlistfilled=100;
@@ -43,6 +53,10 @@ void gkmll::update(ofMesh mesh){
         }
         cout<<"dxdylist:"<<dxdylistloaded<<"++++++++++++++++++"<<"\n";
         dxdylistloaded+=dxdyloadstep;
+        return;
+    }
+    // step 4: to do list
+    if(isAllReady<100){
     
     }
    
@@ -50,8 +64,10 @@ void gkmll::update(ofMesh mesh){
 // public
 ofPath gkmll::layertestat0(float z){
     ofPath returnpath;
-    ofIndexType ipstart=0;
-    cout<<"ipstart:"<<ipstart<<"\n";
+    ofIndexType ipstartL=0;
+    ofIndexType ipstartH=0; // ipstart0<ipstart1 always
+    ofIndexType ipstarta=0;// we never use ipa as next point until we find it
+    cout<<"ipstart:"<<ipstartL<<":"<<ipstartH<<"\n";
     ofIndexType ipnext=0;
     ofIndexType ipused=0;
     
@@ -70,6 +86,11 @@ ofPath gkmll::layertestat0(float z){
     ofIndexType ipb=0;//ipb=nearpointlist[ip1]
     //dX=dXdYlist[ip0]
     //dY=dXdYlist[ip1]
+    // how to refer a point
+    // point =pointlist[iplp0]
+    // point =pointlist[linelist[ip0]]
+    // point =pointlist[nearpointlist[ip0]]
+    // point =pointlist[ipa]
     
     //start
     // find a cross point
@@ -112,7 +133,13 @@ ofPath gkmll::layertestat0(float z){
     ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
     returnpath=addPointToPath(returnpath, XYpoint.x, XYpoint.y, 0);
     // set pstart and pnext
-    ipstart=ipa;
+    ipstarta=ipa;
+    
+    ipstartL=ipL;
+    ipstartH=ipH;
+    cout<<"=======================";
+    cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
+    
     ipnext=ipb;
     // check z with pnext
     if(pointlist[ipnext].z<=z){
@@ -124,6 +151,7 @@ ofPath gkmll::layertestat0(float z){
         iplp0=ipL;
         iplp1=ipnext;
     }
+    
     //loop
     cout<<"we just going to loop"<<"\n";
     
@@ -131,9 +159,11 @@ ofPath gkmll::layertestat0(float z){
     bool isloopover=false;
     int finalsteptogo=1;
     for(int i=0;i<linelist.size();i+=2){
-        if(ipnext==ipstart){
+        if(isloopover!=true&&ipnext==linelist[ipstarta]){
             isloopover=true;
+            cout<<"now loop will over soon"<<"\n";
         }
+        
         loopcount++;
         cout<<"we loop "<<loopcount<<"\n";
         
@@ -146,7 +176,7 @@ ofPath gkmll::layertestat0(float z){
             iplp1=iplp0;
             iplp0=iplp2;
         }
-        cout<<"the iplp0 iplp1 is "<<iplp0<<","<<iplp1<<"\n";
+        //cout<<"the iplp0 iplp1 is "<<iplp0<<","<<iplp1<<"\n";
         //find the iplp0 iplp1
         for(i=0;i<linelist.size();i+=2){
             if(linelist[i]==iplp0&&linelist[i+1]==iplp1){
@@ -157,7 +187,8 @@ ofPath gkmll::layertestat0(float z){
                 break;
             }
         }
-        cout<<"and we find ip0 ip1 ipa ipb is "<<ip0<<","<<ip1<<","<<ipa<<","<<ipb<<"\n";
+        //cout<<"and we find ip0 ip1 ipa ipb is "<<ip0<<","<<ip1<<","<<ipa<<","<<ipb<<"\n";
+        
         //get pH pL
         if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
             ipL=linelist[ip0];
@@ -166,13 +197,22 @@ ofPath gkmll::layertestat0(float z){
             ipL=linelist[ip1];
             ipH=linelist[ip0];
         }
-        cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
+        //check if it the last line?
+        if(isloopover==true){
+            if((ipL==ipstartL&&ipH==ipstartH)||(ipL==ipstartH&&ipH==ipstartL)){
+                finalsteptogo=0;
+                cout<<"we find the last line "<<"\n";
+            }else{
+                cout<<"we are near the last line surely"<<"\n";
+                cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
+            }
+        }
+        //cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
         ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
         returnpath=addPointToPath(returnpath, XYpoint.x, XYpoint.y, loopcount);
         if(isloopover==true){
-            if(finalsteptogo>0){
-                finalsteptogo--;
-            }else{
+            if(finalsteptogo==0){
+               cout<<"now we go out"<<"\n";
                 break;
             }
         }
@@ -195,7 +235,7 @@ ofPath gkmll::layertestat0(float z){
     }
     returnpath.close();
     returnpath.setStrokeColor(ofColor::blue);
-    returnpath.setFillColor(ofColor::darkCyan);
+    returnpath.setFillColor(ofColor::white);
     returnpath.setFilled(true);
     returnpath.setStrokeWidth(1);
     return returnpath;
@@ -203,194 +243,7 @@ ofPath gkmll::layertestat0(float z){
     
 
 }
-ofPath gkmll::layertestat(ofMesh mesh,float z,int tri){
-    // debug only
-    int outputPeak=1;
-    int outputUncross=0;
-    int uncrossface=0;
-    int crossface=0;//normal cross
-    int pointcount=0;
-    ofPath returnpath;
-    int indexcount=mesh.getNumIndices();
-    cout<<"======================================================="<<"\n";
-    
-    
-    for(ofIndexType i=0;i<indexcount&&i<tri*3;i+=3){
-        //for(ofIndexType i=0;i<indexcount;i+=3){
-        if(outputUncross==1)cout<<"------------------------------------------------------";
-        if(outputUncross==1)cout<<"\n"<<"step:"<<i/3+1<<"\n";
-        ofVec3f addpoint;
-        // get the point first
-        ofIndexType ia=mesh.getIndex(i);
-        ofIndexType ib=mesh.getIndex(i+1);
-        ofIndexType ic=mesh.getIndex(i+2);
-        ofVec3f pa=mesh.getVertex(ia);
-        ofVec3f pb=mesh.getVertex(ib);
-        ofVec3f pc=mesh.getVertex(ic);
-        // cout<<"point:"<<i<<"\n";
-        // cout<<"pa.z:"<<pa.z<<"\n";
-        int sa=1;// s =1 means above the z -1 means below the z we assume above
-        int sb=1;
-        int sc=1;
-        // check if any point.z == z the layer
-        if(1){ //the first point
-            int atz=0;
-            if(pa.z==z){
-                addpoint=pa;
-                pointcount++;
-                returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
-                atz++;
-            }
-            if(pb.z==z){
-                addpoint=pb;
-                pointcount++;
-                returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
-                atz++;
-            }
-            if(pc.z==z){
-                addpoint=pc;
-                pointcount++;
-                returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
-                atz++;
-            }
-            //returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
-            if(atz>0){
-                cout<<"atz:"<<atz<<"\n";
-                continue;
-            }
-        }
-        
-        // now we find how many point over the z and how many point below z
-        
-        // that can check which line will cross the layer z // maybe none
-        
-        int abovepoint=0;
-        int belowpoint=0;
-        
-        if(pa.z>z){
-            abovepoint++;
-        }else{
-            sa=-1;
-            belowpoint++;
-        }
-        //cout<<"abovepoint:"<<abovepoint<<"\n";
-        //cout<<"belowpoint:"<<belowpoint<<"\n";
-        
-        if(pb.z>z){
-            abovepoint++;
-        }else{
-            sb=-1;
-            belowpoint++;
-        }
-        //cout<<"abovepoint:"<<abovepoint<<"\n";
-        //cout<<"belowpoint:"<<belowpoint<<"\n";
-        
-        if(pc.z>z){
-            abovepoint++;
-        }else{
-            sc=-1;
-            belowpoint++;
-        }
-        
-        //cout<<"abovepoint:"<<abovepoint<<"\n";
-        //cout<<"belowpoint:"<<belowpoint<<"\n";
-        if(abovepoint==3||belowpoint==3){
-            uncrossface++;
-            if(outputUncross==1)cout<<"a.z:"<<pa.z<<" b.z:"<<pb.z<<" c.z:"<<pc.z<<" Z:"<<z<<"\n"<<"no cross points"<<"\n";
-            continue;// because the is now cross point
-        }
-        cout<<"a.z:"<<pa.z<<" b.z:"<<pb.z<<" c.z:"<<pc.z<<" Z:"<<z<<"\n";
-        cout<<"cross points"<<"\n";
-        
-        // get the high middle and low point
-        ofVec3f ph;//point high
-        ofVec3f pm;//point middle
-        ofVec3f pl;//point low
-        if(pa.z>pb.z){
-            if(pb.z>pc.z){
-                ph=pa;
-                pm=pb;
-                pl=pc;
-            }else{
-                if(pa.z>pc.z){
-                    ph=pa;
-                    pm=pc;
-                    pl=pb;
-                }else{// pa.z<pc.z
-                    ph=pc;
-                    pm=pa;
-                    pl=pb;
-                }
-            }
-        }else{//pa.z<pb.z
-            if(pa.z>pc.z){
-                ph=pb;
-                pm=pa;
-                pl=pc;
-            }else{//pa.z<pc.z
-                if(pb.z>pc.z){
-                    ph=pb;
-                    pm=pc;
-                    pl=pa;
-                }else{//pb.z<pc.z
-                    ph=pc;
-                    pm=pb;
-                    pl=pa;
-                }
-            }
-        }
-        
-        // check the middle point that can know which 2 line will cross the plane layer
-        int crosstype=0;// 0:unknown 1:above middle -1:below middle
-        if(pm.z<z){ // 2 point above z
-            crosstype=1;
-        }else{// pm.z>z // 2 point below z
-            crosstype=-1;
-        }
-        // now we get the cross point
-        ofVec3f pstart;
-        ofVec3f pend;
-        
-        cout<<"crosstype:"<<crosstype<<"\n"<<"ph.z:"<<ph.z<<","<<" pm.z"<<pm.z<<" pl.z"<<pl.z<<"\n";
-        switch (crosstype) {
-            case 1:
-                pstart=getLinePlaneIntersection(ph, pm, z);
-                pend=getLinePlaneIntersection(ph, pl, z);
-                break;
-            case -1:
-                pstart=getLinePlaneIntersection(pm, pl, z);
-                pend=getLinePlaneIntersection(ph, pl, z);
-                break;
-            default:
-                break;
-        }
-        
-        cout<<"pstart:"<<pstart.x<<","<<pstart.y<<"\n";
-        cout<<"pend:"<<pend.x<<","<<pend.y<<"\n";
-        // add cross point to the returnpath
-        addpoint=pstart;
-        pointcount++;
-        returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
-        addpoint=pend;
-        pointcount++;
-        returnpath=addPointToPath(returnpath, addpoint.x, addpoint.y, i);
-        continue;
-        
-        
-    }
-    
-    cout<<"point:"<<indexcount<<"\n";
-    
-    cout<<"uncrossface:"<<uncrossface<<" pathpoint:"<<pointcount<<"\n";
-    returnpath.close();
-    returnpath.setStrokeColor(ofColor::blue);
-    returnpath.setFillColor(ofColor::darkorange);
-    returnpath.setFilled(true);
-    returnpath.setStrokeWidth(1);
-    return returnpath;
-    
-}
-
+ 
 ofVec3f gkmll::getScale(ofMesh mesh){
     ofVec3f a;
     a.x=a.y=a.z=0;
@@ -640,7 +493,7 @@ ofPath gkmll::addPointToPath(ofPath path,float x,float y,ofIndexType i){
         returnpath=path;
         returnpath.lineTo(x,y);
     }
-    cout<<"we get the x y :"<<x<<","<<y<<"\n";
+    //cout<<"we get the x y :"<<x<<","<<y<<"\n";
     return returnpath;
 }
 

@@ -20,12 +20,12 @@ class ofApp : public ofBaseApp {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+    void loadModel();
 		
 		ofImage ofLogo; // the OF logo
 		ofLight light; // creates a light and enables lighting
 		ofEasyCam cam; // add mouse controls for camera movement
-    
-    
+     
     private:
     // workplace:
     ofBoxPrimitive playground;
@@ -39,6 +39,7 @@ class ofApp : public ofBaseApp {
     
     //
     ofMesh readyModel;
+    
     ofxAssimpModelLoader assimpModel;
     int h=100;
     ofMatrix4x4 mreadyModel;

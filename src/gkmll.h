@@ -18,16 +18,19 @@ public:
     vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline work with adddXdY
     vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list
     vector<float> dXdYlist;// add with addnewline work with adddXdY
-    ofPath layertestat(ofMesh mesh,float z,int tri=1);
     ofPath layertestat0(float z);
     ofPath layertest;
     ofVec3f meshScale;
     ofVec3f meshMax;
     ofVec3f meshMin;
     ofIndexType linecount=0;
+    //process flag
+    int ismeshMerged=0;//100 means done
     int islinelistfilled=0;//100 means filled
     int isdXdYlistfilled=0;//100 means filled
-    
+    int isAllReady=0;//100 means all done
+    //the mesh clone
+    ofMesh mergedMesh;
     // main job
     void addface(ofMesh mesh,ofIndexType i);
     void adddXdY(ofIndexType i);
