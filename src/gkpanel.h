@@ -7,9 +7,9 @@
  
  **/
 
-class gkkpanel{
+class gkpanel{
 public:
-    gkkpanel();
+    gkpanel();
     
 
 
