@@ -15,6 +15,6 @@ void gkpanel::setup(){
     //gui->addBreak();
     //gui->addButton("Click!");
     gui->addSlider("slide", 20, 0);
-    //gui->setTheme(new ofxDatGuiThemeSmoke());
+    gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
 }
