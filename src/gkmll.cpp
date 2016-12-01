@@ -72,7 +72,7 @@ ofPath gkmll::layertestat0(float z){
     ofIndexType ipused=0;
     
     if(isdXdYlistfilled!=100){
-        return ;
+        return returnpath;
     }
     
     ofIndexType ip0=0;//linelist[ip0]

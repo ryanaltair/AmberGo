@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "gkmll.h"
+#include "ofxDatGui.h"
+
 class ofApp : public ofBaseApp {
 	public:
 		void setup();
@@ -25,7 +27,14 @@ class ofApp : public ofBaseApp {
 		ofImage ofLogo; // the OF logo
 		ofLight light; // creates a light and enables lighting
 		ofEasyCam cam; // add mouse controls for camera movement
-     
+    
+    //GUI
+    ofxDatGui* gui;
+    void onButtonEvent(ofxDatGuiButtonEvent e);
+    void onToggleEvent(ofxDatGuiToggleEvent e);
+    void onSliderEvent(ofxDatGuiSliderEvent e);
+    
+    
     private:
     // workplace:
     ofBoxPrimitive playground;

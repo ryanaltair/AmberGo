@@ -2,6 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    
 	ofSetVerticalSync(true);
 
 	// this uses depth information for occlusion
@@ -21,6 +22,17 @@ void ofApp::setup(){
     
     
     layertestmove.glTranslate(200, 200, 0);
+    // GUI start
+    // instantiate and position the gui //
+    gui = new ofxDatGui( ofxDatGuiAnchor::BOTTOM_LEFT );
+    
+    // add some components //
+    gui->addFRM();
+    //gui->addBreak();
+    gui->addButton("Click!");
+    gui->addSlider("slide", 20, 0);
+    gui->setTheme(new ofxDatGuiThemeSmoke());
+    //GUI end
     
 }
 
@@ -44,7 +56,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofBackground(0, 0, 0);
+    ofBackground(ofColor::gray);
     
     layertest.draw(400,400);
      cam.begin();
@@ -83,7 +95,7 @@ void ofApp::draw(){
     }
 	cam.end();
     
-    if(1) {
+    if(0) {
         screenText.str("");
         screenText << "Framerate: " << ofToString(ofGetFrameRate(),0) << "\n";
         screenText << "layertestat:"<<ofToString(layertestZ)<<"\n";
@@ -94,7 +106,7 @@ void ofApp::draw(){
        //screenText << "pointlist"
         //screenText << ofToString(layertest.);
         ofDrawBitmapString(screenText.str().c_str(), 20, 20);
-    } 
+    }
 }
 
 
