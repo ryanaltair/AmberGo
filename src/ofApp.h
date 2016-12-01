@@ -5,6 +5,7 @@
 #include "gkmll.h"
 #include "ofxDatGui.h"
 #include "gkplate.h"
+#include "gkpanel.h"
 class ofApp : public ofBaseApp {
 	public:
 		void setup();
@@ -31,12 +32,8 @@ class ofApp : public ofBaseApp {
     gkplate plate;
     
     //GUI
-    ofxDatGui* gui;
-    void onButtonEvent(ofxDatGuiButtonEvent e);
-    void onToggleEvent(ofxDatGuiToggleEvent e);
-    void onSliderEvent(ofxDatGuiSliderEvent e);
-    
-    
+    gkpanel panel;
+        
     private:
 
     
