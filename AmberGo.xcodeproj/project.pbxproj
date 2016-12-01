@@ -11,6 +11,7 @@
 		483FA4F6D5FA6422C559B1F5 /* ofxAssimpMeshHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67FE68E327BEFBD4B777571 /* ofxAssimpMeshHelper.cpp */; };
 		603044E656EA8D499FCF7DEA /* ofxVectorGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 318ABED90EADFB757FFDCCAF /* ofxVectorGraphics.cpp */; };
 		6C7463321DEEC8600035C7CC /* gkplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C7463311DEEC8600035C7CC /* gkplate.cpp */; };
+		6C8700271DF0155D00EB9818 /* gkpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C8700261DF0155D00EB9818 /* gkpanel.cpp */; };
 		8DED5056525646FA71980866 /* ofxAssimpModelLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE55D82BD962DAC0E94B708 /* ofxAssimpModelLoader.cpp */; };
 		9CF4130A7E6DA19A3DC42B9A /* ofxSmartFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C954E0E8B7DB9D6983309883 /* ofxSmartFont.cpp */; };
 		A31EB54599A731667DE1F39D /* gkmll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1429CA69F23DB5472C590B74 /* gkmll.cpp */; };
@@ -84,6 +85,8 @@
 		6A0E743407465957DB764ED3 /* mesh.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = mesh.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/mesh.h; sourceTree = SOURCE_ROOT; };
 		6C7463301DEEC8540035C7CC /* gkplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gkplate.h; sourceTree = "<group>"; };
 		6C7463311DEEC8600035C7CC /* gkplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gkplate.cpp; sourceTree = "<group>"; };
+		6C8700251DF0154800EB9818 /* gkpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gkpanel.h; sourceTree = "<group>"; };
+		6C8700261DF0155D00EB9818 /* gkpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gkpanel.cpp; sourceTree = "<group>"; };
 		6E069CE4C58E970E3429DBE5 /* Importer.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Importer.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Importer.hpp; sourceTree = SOURCE_ROOT; };
 		744031A3E8F8DAF9FE6F3EA8 /* ofxDatGuiGroups.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiGroups.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiGroups.h; sourceTree = SOURCE_ROOT; };
 		787315438BF1DD00C81DF413 /* ofxDatGuiLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiLabel.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiLabel.h; sourceTree = SOURCE_ROOT; };
@@ -387,6 +390,8 @@
 				E4E1A213B5FDEB9823206AFC /* gkmll.h */,
 				6C7463301DEEC8540035C7CC /* gkplate.h */,
 				6C7463311DEEC8600035C7CC /* gkplate.cpp */,
+				6C8700251DF0154800EB9818 /* gkpanel.h */,
+				6C8700261DF0155D00EB9818 /* gkpanel.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -514,6 +519,7 @@
 				A31EB54599A731667DE1F39D /* gkmll.cpp in Sources */,
 				3B8120368B4FCCD80883BAF3 /* ofxAssimpAnimation.cpp in Sources */,
 				483FA4F6D5FA6422C559B1F5 /* ofxAssimpMeshHelper.cpp in Sources */,
+				6C8700271DF0155D00EB9818 /* gkpanel.cpp in Sources */,
 				8DED5056525646FA71980866 /* ofxAssimpModelLoader.cpp in Sources */,
 				B8846EF8E504895A4A9EFEC0 /* ofxAssimpTexture.cpp in Sources */,
 				D3C1C48E59CAA2D68C0DD477 /* ofxDatGuiComponent.cpp in Sources */,

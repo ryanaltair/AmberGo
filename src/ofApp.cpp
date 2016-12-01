@@ -2,37 +2,32 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    // GUI start
+    // instantiate and position the gui //
+    gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     
+    gui->addFRM();
+    //gui->addBreak();
+    //gui->addButton("Click!");
+    gui->addSlider("slide", 20, 0);
+    //gui->setTheme(new ofxDatGuiThemeSmoke());
+    //GUI end
+
 	ofSetVerticalSync(true);
 
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
-	ofEnableDepthTest();
+	//ofEnableDepthTest();
+    
     loadModel();
-    //playground
-    playground.set(1280,800,10);
-    mplayground.setTranslation(0, 0, meshMin.z-5);
-    
-    outsideBox.set(1280,800,800);
-    moutsideBox.setTranslation(0, 0, meshMin.z-400);
-    
-    sliceLayPlane.set(1280,800,0.4);
+   
     cam.setDistance(2000);
     
-    
-    
     layertestmove.glTranslate(200, 200, 0);
-    // GUI start
-    // instantiate and position the gui //
-    gui = new ofxDatGui( ofxDatGuiAnchor::BOTTOM_LEFT );
+    sliceLayPlane.set(1280,800,0.4);
     
-    // add some components //
-    gui->addFRM();
-    //gui->addBreak();
-    gui->addButton("Click!");
-    gui->addSlider("slide", 20, 0);
-    gui->setTheme(new ofxDatGuiThemeSmoke());
-    //GUI end
+    plate.setup();
+    
     
 }
 
@@ -52,15 +47,24 @@ void ofApp::update(){
         }
     }
     mll.update(readyModel);
+    if(sliceLayPlaneEnable==1){
+        ofMultMatrix(msliceLayPlane);
+        ofSetColor(255,0,0,127);
+        sliceLayPlane.draw();
+        
+        ofMultMatrix(mreset);
+        
+    }
    }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+  
     ofBackground(ofColor::gray);
     
     layertest.draw(400,400);
      cam.begin();
-    
+    plate.drawincamera();
     
     
     
@@ -71,29 +75,7 @@ void ofApp::draw(){
     readyModel.drawWireframe();
     ofMultMatrix(mreset);
     
-    // the ground
-    ofSetColor(150);
-    ofMultMatrix(mplayground);
-    playground.drawWireframe();
-    ofMultMatrix(mreset);
-    
-    // the outsidebox
-    if(outsideBoxEnable==1){
-        ofSetColor(20, 20, 20, 50);
-        ofMultMatrix(moutsideBox);
-        outsideBox.draw();
-        ofMultMatrix(mreset);
-        
-    }
-    if(sliceLayPlaneEnable==1){
-        ofMultMatrix(msliceLayPlane);
-        ofSetColor(255,0,0,127);
-        sliceLayPlane.draw();
-        
-        ofMultMatrix(mreset);
-        
-    }
-	cam.end();
+   	cam.end();
     
     if(0) {
         screenText.str("");

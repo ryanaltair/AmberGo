@@ -4,7 +4,7 @@
 #include "ofxAssimpModelLoader.h"
 #include "gkmll.h"
 #include "ofxDatGui.h"
-
+#include "gkplate.h"
 class ofApp : public ofBaseApp {
 	public:
 		void setup();
@@ -27,6 +27,8 @@ class ofApp : public ofBaseApp {
 		ofImage ofLogo; // the OF logo
 		ofLight light; // creates a light and enables lighting
 		ofEasyCam cam; // add mouse controls for camera movement
+    //palte
+    gkplate plate;
     
     //GUI
     ofxDatGui* gui;
@@ -36,15 +38,7 @@ class ofApp : public ofBaseApp {
     
     
     private:
-    // workplace:
-    ofBoxPrimitive playground;
-    ofMatrix4x4 mplayground;
-    
-    ofBoxPrimitive outsideBox;
-    ofMatrix4x4 moutsideBox;
-    
-    ofBoxPrimitive sliceLayPlane;
-    ofMatrix4x4 msliceLayPlane;
+
     
     //
     ofMesh readyModel;
@@ -55,14 +49,21 @@ class ofApp : public ofBaseApp {
     unsigned int sliceLayer=200;//
     float sliceLayerThickness=0.4;//
     float sliceHeight; //
-    
-    // enables
-    int outsideBoxEnable=0;
-    int sliceLayPlaneEnable=1;
-    
+    ofBoxPrimitive sliceLayPlane;
+    ofMatrix4x4 msliceLayPlane;
+
+
     // test theory
+    float layertestZlast=0;
+    float layertestZ=0;
+    int testtri=1;
+    int testtrilast=0;
     
-    
+    //output layer
+    ofPath layertest;
+    ofMatrix4x4 layertestmove;
+    ofMatrix4x4 mreset;
+        int sliceLayPlaneEnable=1;
     // addons ofxMLL
     gkmll mll;
     ofVec3f meshScale;
@@ -70,16 +71,6 @@ class ofApp : public ofBaseApp {
     ofVec3f meshMin;
     
     
-    
-    
-    //output layer
-    ofPath layertest;
-     ofMatrix4x4 layertestmove;
-    ofMatrix4x4 mreset;
-    float layertestZlast=0;
-    float layertestZ=0;
-    int testtri=1;
-    int testtrilast=0;
     
     //text out
     stringstream screenText;
