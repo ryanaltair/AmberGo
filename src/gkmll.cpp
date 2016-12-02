@@ -10,30 +10,29 @@ void gkmll::setup(ofMesh mesh){
     
 }
 
-void gkmll::update(ofMesh mesh){
+void gkmll::update(){
     //this update will put inside the app update
     //calc work here
     // step 1: merge mesh points
     if(ismeshMerged<100){
-    
-        
-        addpointlist(mesh);
-        getScale(mesh);
+        mergedMesh.mergeDuplicateVertices();
+        addpointlist(mergedMesh);
+        getScale(mergedMesh);
         ismeshMerged=100;
         return;
     }
     // step 2: add line list
     if(islinelistfilled<100){
         int loadstep=10;
-        if(linelistloaded>=mesh.getNumIndices()){
+        if(linelistloaded>=mergedMesh.getNumIndices()){
             islinelistfilled=100;
             for(int i=0;i<linelist.size();i++){
             cout<<i<<":"<<linelist[i]<<"\n";
             }
             return;
         }
-        for(size_t i=linelistloaded;i<mesh.getNumIndices()/3&&i<linelistloaded+loadstep;i+=1){
-            addface(mesh, i);
+        for(size_t i=linelistloaded;i<mergedMesh.getNumIndices()/3&&i<linelistloaded+loadstep;i+=1){
+            addface(mergedMesh, i);
         }
         cout<<"linelist:"<<linelist.size()<<"++++++++++++++++++"<<"\n";
         linelistloaded+=loadstep;

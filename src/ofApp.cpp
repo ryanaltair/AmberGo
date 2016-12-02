@@ -2,17 +2,17 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    panel.setup();
+    //panel.setup();
 
 	ofSetVerticalSync(true);
 
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
-	//ofEnableDepthTest();
+	ofEnableDepthTest();
     
     loadModel();
    
-    cam.setDistance(2000);
+    cam.setDistance(4000);
     
     layertestmove.glTranslate(200, 200, 0);
     sliceLayPlane.set(1280,800,0.4);
@@ -25,7 +25,6 @@ void ofApp::setup(){
 void ofApp::update(){
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
     if(layertestZ!=layertestZlast||testtri!=testtrilast){
-        
         msliceLayPlane.setTranslation(0, 0, layertestZ);
         layertestZlast=layertestZ;
         testtrilast=testtri;
@@ -36,7 +35,7 @@ void ofApp::update(){
             
         }
     }
-    mll.update(readyModel);
+    mll.update();
     if(sliceLayPlaneEnable==1){
         ofMultMatrix(msliceLayPlane);
         ofSetColor(255,0,0,127);
@@ -52,7 +51,7 @@ void ofApp::draw(){
   
     ofBackground(ofColor::gray);
     
-    layertest.draw(400,400);
+    layertest.draw(200,200);
      cam.begin();
     plate.drawincamera();
     
@@ -62,7 +61,7 @@ void ofApp::draw(){
     ofSetColor(ofColor::blueSteel);
     ofMultMatrix(mreadyModel);
     
-    readyModel.drawWireframe();
+    readyModel.draw();
     ofMultMatrix(mreset);
     
    	cam.end();

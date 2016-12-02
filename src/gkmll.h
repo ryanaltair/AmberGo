@@ -8,7 +8,7 @@ public:
     void setup(ofMesh mesh);
    
     void draw();
-    void update(ofMesh mesh);
+    void update();
     void brake();
     void accellerate();
     void steer(float dir);
