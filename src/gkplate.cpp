@@ -2,9 +2,9 @@
 
 gkplate::gkplate(){
     
-    size.x=1280;
-    size.y=800;
-    size.z=1000;
+    size.x=1280;//126.72mm
+    size.y=800;//74.88mm
+    size.z=1393;//138mm
     groundheight=10;
     
 }

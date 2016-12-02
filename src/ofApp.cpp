@@ -16,7 +16,6 @@ void ofApp::setup(){
     
     layertestmove.glTranslate(200, 200, 0);
     sliceLayPlane.set(1280,800,0.4);
-    
     plate.setup();
     
     

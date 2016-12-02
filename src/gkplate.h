@@ -21,6 +21,7 @@ public:
     
 
     ofVec3f size;
+    ofVec3f pixelSize;
     float groundheight;
   
     ofMatrix4x4 mreset;
