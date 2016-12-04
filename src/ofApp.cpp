@@ -2,13 +2,13 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    //panel.setup();
+    panel.setup();
 
 	ofSetVerticalSync(true);
 
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
-	ofEnableDepthTest();
+	
     
     loadModel();
    
@@ -48,7 +48,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-  
+  ofEnableDepthTest();
     ofBackground(ofColor::gray);
     
     layertest.draw(200,200);
@@ -78,6 +78,7 @@ void ofApp::draw(){
         //screenText << ofToString(layertest.);
         ofDrawBitmapString(screenText.str().c_str(), 20, 20);
     }
+    ofDisableDepthTest();
 }
 
 
