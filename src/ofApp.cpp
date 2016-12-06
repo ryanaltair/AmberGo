@@ -12,10 +12,10 @@ void ofApp::setup(){
     
     loadModel();
    
-    cam.setDistance(4000);
-    
+    cam.setDistance(2000);
     layertestmove.glTranslate(200, 200, 0);
-    sliceLayPlane.set(1280,800,0.4);
+
+  
     plate.setup();
     
     
@@ -26,7 +26,7 @@ void ofApp::update(){
     loadModel();
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
     if(layertestZ!=layertestZlast||testtri!=testtrilast){
-        msliceLayPlane.setTranslation(0, 0, layertestZ);
+        plate.layertestZ=layertestZ;
         layertestZlast=layertestZ;
         testtrilast=testtri;
         
@@ -37,14 +37,7 @@ void ofApp::update(){
         }
     }
     mll.update();
-    if(sliceLayPlaneEnable==1){
-        ofMultMatrix(msliceLayPlane);
-        ofSetColor(255,0,0,127);
-        sliceLayPlane.draw();
-        
-        ofMultMatrix(mreset);
-        
-    }
+    
    }
 
 //--------------------------------------------------------------
@@ -161,13 +154,14 @@ void ofApp::loadModel(){
     //assimp model load
     if(modelpath.size()>0){
     assimpModel.loadModel(modelpath);
-        cout<<modelpath<<endl;
+        cout<<"load model from"<<modelpath<<endl;
         
     }else{
     assimpModel.loadModel("testcube.stl");
         
     }
     plate.addModel(assimpModel.getMesh(0));
+    cout<<"add model"<<endl;
     readyModel=assimpModel.getMesh(0);
     readyModel.mergeDuplicateVertices();
     cout<<readyModel.getNumVertices()<<"\n";
@@ -175,7 +169,7 @@ void ofApp::loadModel(){
     meshScale=mll.meshScale;
     meshMin=mll.meshMin;
     
-    h=meshMin.z;
+    plate.modelSize=meshScale;
     
     isModelChanged=false;
 }

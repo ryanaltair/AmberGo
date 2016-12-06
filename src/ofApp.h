@@ -28,6 +28,8 @@ class ofApp : public ofBaseApp {
 		ofImage ofLogo; // the OF logo
 		ofLight light; // creates a light and enables lighting
 		ofEasyCam cam; // add mouse controls for camera movement
+    
+    
     //palte
     gkplate plate;
     
@@ -41,12 +43,7 @@ class ofApp : public ofBaseApp {
     ofMesh readyModel;
     
     ofxAssimpModelLoader assimpModel;
-    int h=100;
-    unsigned int sliceLayer=200;//
-    float sliceLayerThickness=0.4;//
-    float sliceHeight; //
-    ofBoxPrimitive sliceLayPlane;
-    ofMatrix4x4 msliceLayPlane;
+
 
 
     // test theory
@@ -59,7 +56,7 @@ class ofApp : public ofBaseApp {
     ofPath layertest;
     ofMatrix4x4 layertestmove;
     ofMatrix4x4 mreset;
-        int sliceLayPlaneEnable=1;
+      
     // addons ofxMLL
     gkmll mll;
     ofVec3f meshScale;

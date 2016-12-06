@@ -27,14 +27,14 @@ void gkmll::update(){
         if(linelistloaded>=mergedMesh.getNumIndices()){
             islinelistfilled=100;
             for(int i=0;i<linelist.size();i++){
-            cout<<i<<":"<<linelist[i]<<"\n";
+            ////cout<<i<<":"<<linelist[i]<<"\n";
             }
             return;
         }
         for(size_t i=linelistloaded;i<mergedMesh.getNumIndices()/3&&i<linelistloaded+loadstep;i+=1){
             addface(mergedMesh, i);
         }
-        cout<<"linelist:"<<linelist.size()<<"++++++++++++++++++"<<"\n";
+        ////cout<<"linelist:"<<linelist.size()<<"++++++++++++++++++"<<"\n";
         linelistloaded+=loadstep;
         return;
     }
@@ -50,7 +50,7 @@ void gkmll::update(){
             adddXdY(i);
             
         }
-        cout<<"dxdylist:"<<dxdylistloaded<<"++++++++++++++++++"<<"\n";
+        ////cout<<"dxdylist:"<<dxdylistloaded<<"++++++++++++++++++"<<"\n";
         dxdylistloaded+=dxdyloadstep;
         return;
     }
@@ -66,7 +66,7 @@ ofPath gkmll::layertestat0(float z){
     ofIndexType ipstartL=0;
     ofIndexType ipstartH=0; // ipstart0<ipstart1 always
     ofIndexType ipstarta=0;// we never use ipa as next point until we find it
-    cout<<"ipstart:"<<ipstartL<<":"<<ipstartH<<"\n";
+    ////cout<<"ipstart:"<<ipstartL<<":"<<ipstartH<<"\n";
     ofIndexType ipnext=0;
     ofIndexType ipused=0;
     
@@ -115,7 +115,7 @@ ofPath gkmll::layertestat0(float z){
         }
         
     }
-    cout<<"we find the cross point done"<<"\n";
+    ////cout<<"we find the cross point done"<<"\n";
     // get the first point XY
     // get the ph pl
     if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
@@ -126,7 +126,7 @@ ofPath gkmll::layertestat0(float z){
         ipH=linelist[ip0];
     }
     
-    cout<<"we find the pl ph at start done"<<"\n";
+   // //cout<<"we find the pl ph at start done"<<"\n";
 
     //get the XY and move to
     ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
@@ -136,8 +136,8 @@ ofPath gkmll::layertestat0(float z){
     
     ipstartL=ipL;
     ipstartH=ipH;
-    cout<<"=======================";
-    cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
+   // //cout<<"=======================";
+   // //cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
     
     ipnext=ipb;
     // check z with pnext
@@ -152,7 +152,7 @@ ofPath gkmll::layertestat0(float z){
     }
     
     //loop
-    cout<<"we just going to loop"<<"\n";
+  //  //cout<<"we just going to loop"<<"\n";
     
     int loopcount=0;
     bool isloopover=false;
@@ -160,11 +160,11 @@ ofPath gkmll::layertestat0(float z){
     for(int i=0;i<linelist.size();i+=2){
         if(isloopover!=true&&ipnext==linelist[ipstarta]){
             isloopover=true;
-            cout<<"now loop will over soon"<<"\n";
+           // ////cout<<"now loop will over soon"<<"\n";
         }
         
         loopcount++;
-        cout<<"we loop "<<loopcount<<"\n";
+      //  //cout<<"we loop "<<loopcount<<"\n";
         
 
         //find the lnext that have linelist[i]=iplp0 linelist[i+1]=iplp1
@@ -175,7 +175,7 @@ ofPath gkmll::layertestat0(float z){
             iplp1=iplp0;
             iplp0=iplp2;
         }
-        //cout<<"the iplp0 iplp1 is "<<iplp0<<","<<iplp1<<"\n";
+        ////cout<<"the iplp0 iplp1 is "<<iplp0<<","<<iplp1<<"\n";
         //find the iplp0 iplp1
         for(i=0;i<linelist.size();i+=2){
             if(linelist[i]==iplp0&&linelist[i+1]==iplp1){
@@ -186,7 +186,7 @@ ofPath gkmll::layertestat0(float z){
                 break;
             }
         }
-        //cout<<"and we find ip0 ip1 ipa ipb is "<<ip0<<","<<ip1<<","<<ipa<<","<<ipb<<"\n";
+        ////cout<<"and we find ip0 ip1 ipa ipb is "<<ip0<<","<<ip1<<","<<ipa<<","<<ipb<<"\n";
         
         //get pH pL
         if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
@@ -200,18 +200,18 @@ ofPath gkmll::layertestat0(float z){
         if(isloopover==true){
             if((ipL==ipstartL&&ipH==ipstartH)||(ipL==ipstartH&&ipH==ipstartL)){
                 finalsteptogo=0;
-                cout<<"we find the last line "<<"\n";
+                //cout<<"we find the last line "<<"\n";
             }else{
-                cout<<"we are near the last line surely"<<"\n";
-                cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
+                //cout<<"we are near the last line surely"<<"\n";
+                //cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
             }
         }
-        //cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
+        ////cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
         ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
         returnpath=addPointToPath(returnpath, XYpoint.x, XYpoint.y, loopcount);
         if(isloopover==true){
             if(finalsteptogo==0){
-               cout<<"now we go out"<<"\n";
+               //cout<<"now we go out"<<"\n";
                 break;
             }
         }
@@ -290,7 +290,7 @@ void gkmll::addface(ofMesh mesh,ofIndexType i){
     ofVec3f pa=mesh.getVertex(ia);
     ofVec3f pb=mesh.getVertex(ib);
     ofVec3f pc=mesh.getVertex(ic);
-    cout<<"ia,ib,ic"<<ia<<ib<<ic<<"\n";
+    //cout<<"ia,ib,ic"<<ia<<ib<<ic<<"\n";
     if(i==0){// first face
         //ab
         addnewline(ia,ib, ic);
@@ -298,7 +298,7 @@ void gkmll::addface(ofMesh mesh,ofIndexType i){
         addnewline(ia,ic,ib);
         //bc
         addnewline(ib,ic,ia);
-        cout<<"first 3 line"<<"\n";
+        //cout<<"first 3 line"<<"\n";
     }else{//i>0
         
         int oldline0=searchline(ia,ib);
@@ -308,7 +308,7 @@ void gkmll::addface(ofMesh mesh,ofIndexType i){
         if(oldline0>=0){
             addoldline(oldline0, ic);
             
-            cout<<"add old line"<<"\n";
+            ////cout<<"add old line"<<"\n";
         }else{
             addnewline(ia, ib, ic);
         }
@@ -317,7 +317,7 @@ void gkmll::addface(ofMesh mesh,ofIndexType i){
         //ac
         if(oldline1>=0){
             addoldline(oldline1, ib);
-            cout<<"add old line"<<"\n";
+            ////cout<<"add old line"<<"\n";
         }else{
             addnewline(ia, ic, ib);
         }
@@ -325,7 +325,7 @@ void gkmll::addface(ofMesh mesh,ofIndexType i){
         //bc
         if(oldline2>=0){
             addoldline(oldline2, ia);
-            cout<<"add old line"<<"\n";
+            ////cout<<"add old line"<<"\n";
         }else{
             addnewline(ic, ib, ia);
         }
@@ -399,23 +399,23 @@ ofVec3f gkmll::getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z){
 }
 
 void gkmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
-    cout<<"ip0,ip1:"<<ip0<<","<<ip1<<"\n";
-    //cout<<"before"<<linelist.size();
+    ////cout<<"ip0,ip1:"<<ip0<<","<<ip1<<"\n";
+    ////cout<<"before"<<linelist.size();
     if(ip0<ip1){
         linelist.push_back(ip0);
         linelist.push_back(ip1);
-        cout<<"0<1"<<"\n";
+        //cout<<"0<1"<<"\n";
     }else{// ip1<ip0
         linelist.push_back(ip1);
         linelist.push_back(ip0);
-        cout<<"1<0"<<"\n";
+        //cout<<"1<0"<<"\n";
     }
-    cout<<linelist[linelist.size()-2];
+    ////cout<<linelist[linelist.size()-2];
     
-    cout<<linelist[linelist.size()-1];
+    ////cout<<linelist[linelist.size()-1];
     
-    cout<<"\n";
-    cout<<":"<<linelist.size()<<"\n";
+    ////cout<<"\n";
+    ////cout<<":"<<linelist.size()<<"\n";
     linehorizonlist.push_back(false);
     linehorizonlist.push_back(false);
     
@@ -437,7 +437,7 @@ ofIndexType gkmll::searchline(ofIndexType ip0,ofIndexType ip1){
         for(size_t j=0;j<linelist.size();j+=2){
             if(ip0==linelist[j]&&ip1==linelist[j+1]){
                 
-                //cout<<"find the same1"<<"\n";
+                ////cout<<"find the same1"<<"\n";
                 return j;
                 
             }
@@ -446,7 +446,7 @@ ofIndexType gkmll::searchline(ofIndexType ip0,ofIndexType ip1){
         for(size_t j=0;j<linelist.size();j+=2){
             if(ip1==linelist[j]&&ip0==linelist[j+1]){
                 
-                //cout<<"find the same2"<<"\n";
+                ////cout<<"find the same2"<<"\n";
                 return j;
             }
         }
@@ -492,7 +492,7 @@ ofPath gkmll::addPointToPath(ofPath path,float x,float y,ofIndexType i){
         returnpath=path;
         returnpath.lineTo(x,y);
     }
-    //cout<<"we get the x y :"<<x<<","<<y<<"\n";
+    ////cout<<"we get the x y :"<<x<<","<<y<<"\n";
     return returnpath;
 }
 
