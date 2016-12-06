@@ -3,6 +3,11 @@
 /**
 use for AmberGo
  as plate
+ include:
+ model(s)
+ ground
+ outsidebox
+ 
 
 
 **/
@@ -12,6 +17,10 @@ public:
     ~gkplate();
     void setup();
     void drawincamera();
+    void drawModel();
+    void addModel(ofMesh model);// add a model
+    void deleteModel();
+    void cleanModel();
     // workplace:
     ofBoxPrimitive playground;
     ofMatrix4x4 mplayground;
@@ -29,6 +38,11 @@ public:
   
     // enables
     int outsideBoxEnable=0;
+    
+    //models
+    vector<ofMesh> models;
+    ofMatrix4x4 mreadyModel;
 
+    
     
 };

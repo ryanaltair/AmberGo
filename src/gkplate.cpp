@@ -22,8 +22,16 @@ void gkplate::setup(){
     
    
 }
+void gkplate::addModel(ofMesh model){
+   models.push_back(model);
+    cout<<"add a model in plate"<<endl;
 
+
+}
 void gkplate::drawincamera(){
+    
+    
+    drawModel();
     // the ground
     ofSetColor(150);
     ofMultMatrix(mplayground);
@@ -41,3 +49,17 @@ void gkplate::drawincamera(){
    
 
 }
+void gkplate::drawModel(){
+    if(models.size()>0){
+        
+        // the model
+        ofSetColor(ofColor::blueSteel);
+        ofMultMatrix(mreadyModel);
+        models[0].draw();
+        ofMultMatrix(mreset);
+        
+    }
+
+}
+
+

@@ -53,17 +53,10 @@ void ofApp::draw(){
     ofBackground(ofColor::gray);
     
     layertest.draw(200,200);
-     cam.begin();
     plate.drawincamera();
     
     
     
-    // the model
-    ofSetColor(ofColor::blueSteel);
-    ofMultMatrix(mreadyModel);
-    
-    readyModel.draw();
-    ofMultMatrix(mreset);
     
    	cam.end();
     
@@ -172,6 +165,7 @@ void ofApp::loadModel(){
         cout<<modelpath<<endl;
     }else{
     assimpModel.loadModel("testcube.stl");
+        
     }
     //assimpModel.calculateDimensions();
     //readyModel = ofMesh::box(300, 200, h);//cone(200.0, 200.0);

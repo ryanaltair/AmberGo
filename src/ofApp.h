@@ -42,7 +42,6 @@ class ofApp : public ofBaseApp {
     
     ofxAssimpModelLoader assimpModel;
     int h=100;
-    ofMatrix4x4 mreadyModel;
     unsigned int sliceLayer=200;//
     float sliceLayerThickness=0.4;//
     float sliceHeight; //
