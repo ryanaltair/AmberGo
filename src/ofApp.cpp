@@ -53,12 +53,11 @@ void ofApp::draw(){
     ofBackground(ofColor::gray);
     
     layertest.draw(200,200);
+    
+    
+    cam.begin();
     plate.drawincamera();
-    
-    
-    
-    
-   	cam.end();
+    cam.end();
     
     if(0) {
         screenText.str("");
@@ -163,12 +162,12 @@ void ofApp::loadModel(){
     if(modelpath.size()>0){
     assimpModel.loadModel(modelpath);
         cout<<modelpath<<endl;
+        
     }else{
     assimpModel.loadModel("testcube.stl");
         
     }
-    //assimpModel.calculateDimensions();
-    //readyModel = ofMesh::box(300, 200, h);//cone(200.0, 200.0);
+    plate.addModel(assimpModel.getMesh(0));
     readyModel=assimpModel.getMesh(0);
     readyModel.mergeDuplicateVertices();
     cout<<readyModel.getNumVertices()<<"\n";
