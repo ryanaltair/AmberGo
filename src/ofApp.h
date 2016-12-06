@@ -72,6 +72,8 @@ class ofApp : public ofBaseApp {
     //text out
     stringstream screenText;
     
-   
+    //drag and drop info
+    string modelpath;
+    bool isModelChanged=true;
     
 };

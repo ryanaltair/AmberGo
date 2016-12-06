@@ -23,6 +23,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    loadModel();
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
     if(layertestZ!=layertestZlast||testtri!=testtrilast){
         msliceLayPlane.setTranslation(0, 0, layertestZ);
@@ -147,17 +148,31 @@ void ofApp::gotMessage(ofMessage msg){
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+    if( dragInfo.files.size() > 0 ){
+        //dragPt = dragInfo.position;
+        isModelChanged=true;
+        //draggedImages.assign( dragInfo.files.size(), ofImage() );
+        for(unsigned int k = 0; k < dragInfo.files.size(); k++){
+            modelpath=dragInfo.files[k];
+            cout<<modelpath<<endl;
+        }
+    }
 }
 
 //addons
 
 void ofApp::loadModel(){
-
+    if(isModelChanged==false){
+        return;
+    }
     
     //assimp model load
+    if(modelpath.size()>0){
+    assimpModel.loadModel(modelpath);
+        cout<<modelpath<<endl;
+    }else{
     assimpModel.loadModel("testcube.stl");
-    
+    }
     //assimpModel.calculateDimensions();
     //readyModel = ofMesh::box(300, 200, h);//cone(200.0, 200.0);
     readyModel=assimpModel.getMesh(0);
@@ -169,7 +184,7 @@ void ofApp::loadModel(){
     
     h=meshMin.z;
     
-
+    isModelChanged=false;
 }
 
 
