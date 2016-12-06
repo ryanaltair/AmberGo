@@ -32,6 +32,7 @@ public:
     // slicelayer
     ofBoxPrimitive sliceLayPlane;
     ofMatrix4x4 msliceLayPlane;
+    
     float layertestZ=0;
     ofVec3f modelSize;
     ofVec3f boxSize;// the box size
@@ -48,7 +49,5 @@ public:
     //models
     vector<ofMesh> models;
     ofMatrix4x4 mreadyModel;
-
-    
-    
+    ofEasyCam cam;
 };

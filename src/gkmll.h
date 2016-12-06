@@ -18,7 +18,7 @@ public:
     vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline work with adddXdY
     vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list
     vector<float> dXdYlist;// add with addnewline work with adddXdY
-    ofPath layertestat0(float z);
+    ofPath layertestat(float z);
     ofPath layertest;
     ofVec3f meshScale;
     ofVec3f meshMax;

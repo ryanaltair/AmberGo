@@ -8,10 +8,11 @@
 #include "gkpanel.h"
 class ofApp : public ofBaseApp {
 	public:
+    //gl loop
 		void setup();
 		void update();
 		void draw();
-		
+    // events
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y);
@@ -23,12 +24,10 @@ class ofApp : public ofBaseApp {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+    //add on
     void loadModel();
 		
-		ofImage ofLogo; // the OF logo
-		ofLight light; // creates a light and enables lighting
-		ofEasyCam cam; // add mouse controls for camera movement
-    
+	
     
     //palte
     gkplate plate;
@@ -37,37 +36,25 @@ class ofApp : public ofBaseApp {
     gkpanel panel;
         
     private:
-
-    
     //
     ofMesh readyModel;
-    
     ofxAssimpModelLoader assimpModel;
-
-
 
     // test theory
     float layertestZlast=0;
     float layertestZ=0;
-    int testtri=1;
-    int testtrilast=0;
-    
+
     //output layer
     ofPath layertest;
     ofMatrix4x4 layertestmove;
-    ofMatrix4x4 mreset;
+
       
     // addons ofxMLL
     gkmll mll;
     ofVec3f meshScale;
-    ofVec3f meshMax;
-    ofVec3f meshMin;
     
     
-    
-    //text out
-    stringstream screenText;
-    
+
     //drag and drop info
     string modelpath;
     bool isModelChanged=true;

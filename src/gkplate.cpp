@@ -16,11 +16,11 @@ gkplate::~gkplate(){
 void gkplate::setup(){
     playground.set(boxSize.x,boxSize.y,groundheight);
     mplayground.setTranslation(0, 0,-groundheight*0.5);
-    
     outsideBox.set(boxSize.x,boxSize.y,boxSize.z);
     moutsideBox.setTranslation(0, 0, 0);
+    sliceLayPlane.set(1280,800,0.4);
     
-       sliceLayPlane.set(1280,800,0.4);
+    cam.setDistance(2000);
 }
 
 void gkplate::update(){
@@ -37,14 +37,18 @@ void gkplate::update(){
 }
 
 void gkplate::addModel(ofMesh model){
+    if(models.size()>0){
+        models[0]=model;
+    }else{
    models.push_back(model);
+    }
     cout<<"add a model in plate"<<endl;
 
 
 }
 void gkplate::drawincamera(){
-    
-    //drawModel();
+    cam.begin();
+    drawModel();
    
     // the ground
     ofSetColor(150);
@@ -63,7 +67,7 @@ void gkplate::drawincamera(){
         
     }
    
-
+    cam.end();
 }
 void gkplate::drawModel(){
     if(models.size()>0){

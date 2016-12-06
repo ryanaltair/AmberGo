@@ -12,10 +12,8 @@ void ofApp::setup(){
     
     loadModel();
    
-    cam.setDistance(2000);
     layertestmove.glTranslate(200, 200, 0);
 
-  
     plate.setup();
     
     
@@ -25,14 +23,14 @@ void ofApp::setup(){
 void ofApp::update(){
     loadModel();
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
-    if(layertestZ!=layertestZlast||testtri!=testtrilast){
+    if(layertestZ!=layertestZlast){
         plate.layertestZ=layertestZ;
         layertestZlast=layertestZ;
-        testtrilast=testtri;
-        
+      
         if(mll.isdXdYlistfilled==100){
+            
             cout<<"we just got to here to try layertest"<<"\n";
-            layertest=mll.layertestat0(layertestZ);
+            layertest=mll.layertestat(layertestZ);
             
         }
     }
@@ -42,28 +40,10 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-  ofEnableDepthTest();
+    ofEnableDepthTest();
     ofBackground(ofColor::gray);
-    
     layertest.draw(200,200);
-    
-    
-    cam.begin();
     plate.drawincamera();
-    cam.end();
-    
-    if(0) {
-        screenText.str("");
-        screenText << "Framerate: " << ofToString(ofGetFrameRate(),0) << "\n";
-        screenText << "layertestat:"<<ofToString(layertestZ)<<"\n";
-        screenText << "testtri"<<testtri<<"\n";
-        screenText << "assimpmodel:"<<meshScale.z<<"\n";
-        screenText << "vertexCount:"<<ofToString(readyModel.getNumVertices())<<"/"<<ofToString(readyModel.getNumIndices())<<"\n";
-        screenText << "line:point:dxdy "<<ofToString(mll.linelist.size()/2)<<":"<<ofToString(mll.pointlist.size())<<":"<<ofToString(mll.dXdYlist.size())<<"\n";
-       //screenText << "pointlist"
-        //screenText << ofToString(layertest.);
-        ofDrawBitmapString(screenText.str().c_str(), 20, 20);
-    }
     ofDisableDepthTest();
 }
 
@@ -77,13 +57,7 @@ void ofApp::keyPressed(int key){
         case OF_KEY_DOWN:
             layertestZ--;
             break;
-        case OF_KEY_LEFT:
-            testtri-=100;
-            break;
-        case OF_KEY_RIGHT:
-            testtri+=100;
-            break;
-    }
+        }
 }
 
 //--------------------------------------------------------------
@@ -136,7 +110,6 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
     if( dragInfo.files.size() > 0 ){
         //dragPt = dragInfo.position;
         isModelChanged=true;
-        //draggedImages.assign( dragInfo.files.size(), ofImage() );
         for(unsigned int k = 0; k < dragInfo.files.size(); k++){
             modelpath=dragInfo.files[k];
             cout<<modelpath<<endl;
@@ -153,24 +126,17 @@ void ofApp::loadModel(){
     
     //assimp model load
     if(modelpath.size()>0){
-    assimpModel.loadModel(modelpath);
-        cout<<"load model from"<<modelpath<<endl;
-        
+        assimpModel.loadModel(modelpath);
     }else{
-    assimpModel.loadModel("testcube.stl");
+        assimpModel.loadModel("testcube.stl");
         
     }
     plate.addModel(assimpModel.getMesh(0));
-    cout<<"add model"<<endl;
     readyModel=assimpModel.getMesh(0);
     readyModel.mergeDuplicateVertices();
-    cout<<readyModel.getNumVertices()<<"\n";
     mll.setup(readyModel);
-    meshScale=mll.meshScale;
-    meshMin=mll.meshMin;
-    
-    plate.modelSize=meshScale;
-    
+    plate.modelSize=mll.meshScale;
+
     isModelChanged=false;
 }
 

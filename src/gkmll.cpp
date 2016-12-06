@@ -8,6 +8,22 @@ gkmll::gkmll(){
 void gkmll::setup(ofMesh mesh){
     mergedMesh=mesh;
     
+    //clean up
+    pointlist.clear();
+    linelist.clear();// {p0 p1} the index point to point list
+    linehorizonlist.clear();// is this line horizon true horizon // add with addnewline work with adddXdY
+    nearpointlist.clear();//{pa pb} the index point to point list
+    dXdYlist.clear();// add with addnewline work with adddXdY
+    
+    //process -> 0
+    ismeshMerged=0;//100 means done
+    islinelistfilled=0;//100 means filled
+    isdXdYlistfilled=0;//100 means filled
+    isAllReady=0;//100 means all done
+
+    // progress flag
+     linelistloaded=0;
+     dxdylistloaded=0;
 }
 
 void gkmll::update(){
@@ -61,7 +77,7 @@ void gkmll::update(){
    
 }
 // public
-ofPath gkmll::layertestat0(float z){
+ofPath gkmll::layertestat(float z){
     ofPath returnpath;
     ofIndexType ipstartL=0;
     ofIndexType ipstartH=0; // ipstart0<ipstart1 always
@@ -157,7 +173,7 @@ ofPath gkmll::layertestat0(float z){
     int loopcount=0;
     bool isloopover=false;
     int finalsteptogo=1;
-    for(int i=0;i<linelist.size();i+=2){
+    for(int i=0;i<linelist.size()+1;i+=2){
         if(isloopover!=true&&ipnext==linelist[ipstarta]){
             isloopover=true;
            // ////cout<<"now loop will over soon"<<"\n";
