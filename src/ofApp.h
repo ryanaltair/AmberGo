@@ -2,10 +2,14 @@
 
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
-#include "gkmll.h"
+#include "agmll.h"
 #include "ofxDatGui.h"
-#include "gkplate.h"
-#include "gkpanel.h"
+#include "agplate.h"
+#include "agpanel.h"
+#include "threadedObject.h"
+
+
+
 class ofApp : public ofBaseApp {
 	public:
     //gl loop
@@ -27,18 +31,20 @@ class ofApp : public ofBaseApp {
     //add on
     void loadModel();
 		
-	
+    // threaded object. Merger
+    agMerger merger;
+    bool bLoaded=false;
+
     
     //palte
-    gkplate plate;
+    agplate plate;
     
     //GUI
-    gkpanel panel;
+    agpanel panel;
         
     private:
     //
     ofMesh readyModel;
-    ofxAssimpModelLoader assimpModel;
 
     // test theory
     float layertestZlast=0;
@@ -50,13 +56,13 @@ class ofApp : public ofBaseApp {
 
       
     // addons ofxMLL
-    gkmll mll;
+    agmll mll;
     ofVec3f meshScale;
     
     
 
     //drag and drop info
     string modelpath;
-    bool isModelChanged=true;
+    bool isModelChanged=false;
     
 };

@@ -21,6 +21,9 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    
+    
     loadModel();
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
     if(layertestZ!=layertestZlast){
@@ -122,21 +125,32 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 void ofApp::loadModel(){
     if(isModelChanged==false){
         return;
+      
     }
     
     //assimp model load
     if(modelpath.size()>0){
-        assimpModel.loadModel(modelpath);
-    }else{
-        assimpModel.loadModel("testcube.stl");
-        
+        merger.start(modelpath);
+        bLoaded=false;
+        modelpath.clear();
     }
-    plate.addModel(assimpModel.getMesh(0));
-    readyModel=assimpModel.getMesh(0);
-    readyModel.mergeDuplicateVertices();
-    mll.setup(readyModel);
-    plate.modelSize=mll.meshScale;
+    
+    // when loading
+    if(merger.isThreadRunning()==true){
+        return;
+    }
+    //when loaded
+    if(bLoaded==false){
+        readyModel=merger.meshmodel;
+        bLoaded=true;
+        return;
+    }
+    
 
+    mll.setup(readyModel);
+    plate.modelSize=mll.getScale();
+    cout<<"modelsize"<<plate.modelSize<<endl;
+    plate.addModel(readyModel);
     isModelChanged=false;
 }
 
