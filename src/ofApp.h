@@ -6,7 +6,7 @@
 #include "ofxDatGui.h"
 #include "agplate.h"
 #include "agpanel.h"
-#include "threadedObject.h"
+#include "agMerger.h"
 
 
 

@@ -30,6 +30,7 @@ public:
         startThread();
     }
 
+    
     /// Signal the thread to stop.  After calling this method,
     /// isThreadRunning() will return false and the while loop will stop
     /// next time it has the chance to.
