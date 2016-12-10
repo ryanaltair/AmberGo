@@ -49,6 +49,7 @@ public:
     
     //models
     vector<ofMesh> models;
+    of3dPrimitive nodemodel;
     ofMatrix4x4 mreadyModel;
     ofEasyCam cam;
 };

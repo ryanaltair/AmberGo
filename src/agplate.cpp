@@ -42,6 +42,7 @@ void agplate::sliceAt(float Z){
 }
 
 void agplate::addModel(ofMesh model){
+    nodemodel.getMesh()=model;
     if(models.size()>0){
         models[0]=model;
     }else{
@@ -77,8 +78,10 @@ void agplate::drawModel(){
     if(models.size()>0){
         // the model
         ofSetColor(ofColor::darkCyan);
-        models[0].draw();
+        //    models[0].draw();
     }
+    nodemodel.setTransformMatrix(mreadyModel);
+    nodemodel.draw();
 
 }
 
