@@ -14,7 +14,17 @@ void agpanel::setup(){
     gui->addFRM();
     //gui->addBreak();
     //gui->addButton("Click!");
-    gui->addSlider("slide", 20, 0);
+    ofxDatGuiSlider* sliceHeightSlider=gui->addSlider("slide", 0, 100,0);
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
+    sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    
+}
+
+
+void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
+{
+    sliceHeight=e.value;
+    cout << "the new value of the slider = " << e.value << endl;
+    cout << "the new scale of the slider = " << e.scale << endl;
 }

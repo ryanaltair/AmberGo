@@ -16,8 +16,8 @@ public:
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
-    
-
+    ofxDatGuiSlider* sliceHeightSlider;
+    float sliceHeight=0;
 
 
 };

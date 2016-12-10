@@ -3,17 +3,12 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     panel.setup();
-
 	ofSetVerticalSync(true);
-
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
-	
-    
-    loadModel();
-   
+    modelpath="testcube.stl";
+    isModelChanged=true;
     layertestmove.glTranslate(200, 200, 0);
-
     plate.setup();
     
     
@@ -21,21 +16,32 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
-    
-    
+    layertestZ=panel.sliceHeight;
     loadModel();
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
     if(layertestZ!=layertestZlast){
         plate.layertestZ=layertestZ;
         layertestZlast=layertestZ;
-      
-        if(mll.isdXdYlistfilled==100){
+        plate.sliceAt(layertestZ);
+        plate.update();
+        if(false&&merger.sliceat(layertestZ)==true){
+            cout<<"slice ok"<<endl;
+            
+        }else{
+            cout<<"slice failed"<<endl;
+
+        }
+        if(true&&mll.isdXdYlistfilled==100){
             
             cout<<"we just got to here to try layertest"<<"\n";
             layertest=mll.layertestat(layertestZ);
             
         }
+    }
+    
+    if(merger.isSliceChanged==true){
+    layertest=merger.layertest;
+        merger.isSliceChanged=false;
     }
     mll.update();
     

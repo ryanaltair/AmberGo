@@ -17,6 +17,7 @@ public:
     ~agplate();
     void setup();
     void update();
+    void sliceAt(float Z);
     void drawincamera();
     void drawModel();
     void addModel(ofMesh model);// add a model

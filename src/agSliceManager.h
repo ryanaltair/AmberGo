@@ -3,17 +3,17 @@
 
 #include "ofThread.h"
 #include "ofxAssimpModelLoader.h"
-
-/// This is a simple example of a agMerger created by extending ofThread.
+#include "agmll.h"
+/// This is a simple example of a agSliceManager created by extending ofThread.
 /// It contains data (count) that will be accessed from within and outside the
 /// thread and demonstrates several of the data protection mechanisms (aka
 /// mutexes).
-class agMerger: public ofThread
+class agSliceManager: public ofThread
 {
 public:
-    /// Create a agMerger and initialize the member
+    /// Create a agSliceManager and initialize the member
     /// variable in an initialization list.
-    agMerger(): count(0), shouldThrowTestException(false)
+    agSliceManager(): count(0), shouldThrowTestException(false)
     {
     }
 
@@ -26,10 +26,32 @@ public:
         meshmodel.disableTextures();
         // Mutex blocking is set to true by default
         // It is rare that one would want to use startThread(false).
-        isMerged=false;
+        isThreadEnd=false;
+        isModelReadySlice=false;
+        needMerge=true;
         startThread();
     }
-
+    bool sliceat(float zheight)
+    {
+        if(isModelReadySlice==false){
+            //if mesh have model and get merged?
+            if(meshmodel.getNumIndices()>0&&meshmodel.getNumIndices()>meshmodel.getNumVertices()){
+                
+                if(isThreadRunning()==false){
+                    needLoad=true;
+                    cout<<"now we loading"<<endl;
+                    startThread();
+                }
+            }
+            return false;
+        }else{//if(isModelReadySlice==true){
+        isThreadEnd=false;
+            isSliceChanged=false;
+        needSliceAt=zheight;
+        startThread();
+            return true;
+        }
+    }
     
     /// Signal the thread to stop.  After calling this method,
     /// isThreadRunning() will return false and the while loop will stop
@@ -44,27 +66,27 @@ public:
     {
         while(isThreadRunning())
         {
-            if(isMerged==true){
+            if(isThreadEnd==true){
             stopThread();
             }
             // Attempt to lock the mutex.  If blocking is turned on,
             if(lock())
             {
-                // The mutex is now locked and the "count"
-                // variable is protected.  Time to modify it.
-                //count++;
-                meshmodel.mergeDuplicateVertices();
-                count=100;
-                isMerged=true;
-                // Here, we simply cause it to reset to zero if it gets big.
-                //if(count > 50000) count = 0;
+                // step merge: the mesh
+                stepMerge();
+                
+                
+                //step load:
+                stepLoad();
+                //
+                stepUpdate();
+                
+                stepSliceAt();
+                isThreadEnd=true;
 
-                // Unlock the mutex.  This is only
-                // called if lock() returned true above.
                 unlock();
 
-                // Sleep for 1 second.
-                //sleep(1000);
+               
 
                 if(shouldThrowTestException > 0)
                 {
@@ -133,11 +155,66 @@ public:
 
     ofxAssimpModelLoader assimpmodel;
     ofMesh meshmodel;
-    bool isMerged =false;
+    agmll mll;
+    ofPath layertest;
+    //needing flag
+    bool isThreadEnd=false;// true when everything is done
+    bool needLoad=false;
+    bool needMerge =false;//
+    bool needSlice=false;
+    
+    float needSliceAt=-1;// -1 means no need
+    bool isSliceChanged=false;
+    float isModelReadySlice=false;
+    // work in thread
+    
+    
+    //merge
+    void stepMerge(){
+    
+        if(needMerge==true){
+            meshmodel.mergeDuplicateVertices();
+            needMerge=false;
+            
+        }
+       
+    }
+    //mll load
+    void stepLoad(){
+        if(needLoad==true){
+            mll.setup(meshmodel);
+            needLoad=false;
+            needSlice=true;
+        }
+        
+    }
+    //mll update loop
+    
+    void stepUpdate(){
+        if(needSlice==true){
+            while(mll.isdXdYlistfilled<100){
+                mll.update();
+            
+            }
+            isModelReadySlice=true;
+            
+            cout<<"ready for slice"<<endl;
+            needSlice=false;
+        }
+    }
+    void stepSliceAt(){
+        
+        if(needSliceAt>=0){
+             cout<<"we are slicing  at"<<needSliceAt<<endl;
+            layertest=mll.layertestat(needSliceAt);
+            isSliceChanged=true;
+        cout<<"we just slice  at"<<needSliceAt<<endl;
+        }
+        needSliceAt=-1;
+    }
 protected:
     // A flag to check and see if we should throw a test exception.
     Poco::AtomicCounter shouldThrowTestException;
-
     // This is a simple variable that we aim to always access from both the
     // main thread AND this threaded object.  Therefore, we need to protect it
     // with the mutex.  In the case of simple numerical variables, some
@@ -148,5 +225,9 @@ protected:
     // Note, if we simply want to count in a thread-safe manner without worrying
     // about mutexes, we might use Poco::AtomicCounter instead.
     int count;
+    
+    //
+    
+    
 
 };

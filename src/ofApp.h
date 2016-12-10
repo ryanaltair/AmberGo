@@ -6,7 +6,7 @@
 #include "ofxDatGui.h"
 #include "agplate.h"
 #include "agpanel.h"
-#include "agMerger.h"
+#include "agSliceManager.h"
 
 
 
@@ -32,7 +32,7 @@ class ofApp : public ofBaseApp {
     void loadModel();
 		
     // threaded object. Merger
-    agMerger merger;
+    agSliceManager merger;
     bool bLoaded=false;
 
     
