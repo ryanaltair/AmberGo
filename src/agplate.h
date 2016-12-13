@@ -1,5 +1,6 @@
 #pragma once
 #include "ofMain.h"
+#include "ofxAssimpModelLoader.h"
 /**
 use for AmberGo
  as plate
@@ -21,6 +22,7 @@ public:
     void drawincamera();
     void drawModel();
     void addModel(ofMesh model);// add a model
+    void addModel(string modelpath);//add a model with assimp
     void deleteModel();
     void cleanModel();
     // workplace:
@@ -49,7 +51,9 @@ public:
     
     //models
     vector<ofMesh> models;
+    ofxAssimpModelLoader assimploader;
     of3dPrimitive nodemodel;
+    
     ofMatrix4x4 mreadyModel;
     ofEasyCam cam;
 };

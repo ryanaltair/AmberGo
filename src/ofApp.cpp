@@ -3,6 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     panel.setup();
+    panel.sliceHeightBind(layertestZ);
 	ofSetVerticalSync(true);
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
@@ -16,6 +17,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    panel.update();
     layertestZ=panel.sliceHeight;
     loadModel();
     //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
@@ -40,7 +42,7 @@ void ofApp::update(){
     }
     
     if(merger.isSliceChanged==true){
-    layertest=merger.layertest;
+        layertest=merger.layertest;
         merger.isSliceChanged=false;
     }
     mll.update();
@@ -62,9 +64,11 @@ void ofApp::keyPressed(int key){
     switch(key){
         case OF_KEY_UP:
             layertestZ++;
+           panel.sliceHeight=layertestZ;
             break;
         case OF_KEY_DOWN:
             layertestZ--;
+             panel.sliceHeight=layertestZ;
             break;
         }
 }
@@ -136,6 +140,7 @@ void ofApp::loadModel(){
     
     //assimp model load
     if(modelpath.size()>0){
+        plate.addModel(modelpath);
         merger.start(modelpath);
         bLoaded=false;
         modelpath.clear();
@@ -156,7 +161,6 @@ void ofApp::loadModel(){
     mll.setup(readyModel);
     plate.modelSize=mll.getScale();
     cout<<"modelsize"<<plate.modelSize<<endl;
-    plate.addModel(readyModel);
     isModelChanged=false;
 }
 

@@ -29,11 +29,8 @@ void agplate::setup(){
 }
 
 void agplate::update(){
- mreadyModel.setTranslation(0, 0, 0);
+    mreadyModel.setTranslation(0, 0, 0);
     msliceLayPlane.setTranslation(0, 0, layertestZ);
-   
-    
-
 }
 
 void agplate::sliceAt(float Z){
@@ -46,11 +43,18 @@ void agplate::addModel(ofMesh model){
     if(models.size()>0){
         models[0]=model;
     }else{
-   models.push_back(model);
+        models.push_back(model);
     }
     cout<<"add a model in plate"<<endl;
 
 
+}
+void agplate::addModel(string modelpath){
+    assimploader.loadModel(modelpath);
+    nodemodel.getMesh()=assimploader.getMesh(0);
+    cout<<"add a model in plate"<<endl;
+    
+    
 }
 void agplate::drawincamera(){
     cam.begin();
@@ -75,14 +79,15 @@ void agplate::drawincamera(){
     cam.end();
 }
 void agplate::drawModel(){
+    ofSetColor(ofColor::darkCyan);
     if(models.size()>0){
         // the model
-        ofSetColor(ofColor::darkCyan);
-        //    models[0].draw();
+        //  models[0].draw();
     }
     nodemodel.setTransformMatrix(mreadyModel);
     nodemodel.draw();
-
+      ofSetColor(ofColor::black);
+nodemodel.drawWireframe();
 }
 
 

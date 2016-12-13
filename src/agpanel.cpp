@@ -14,13 +14,18 @@ void agpanel::setup(){
     gui->addFRM();
     //gui->addBreak();
     //gui->addButton("Click!");
-    ofxDatGuiSlider* sliceHeightSlider=gui->addSlider("slide", 0, 100,0);
+    sliceHeightSlider=gui->addSlider("slide", 0, 100,0);
+    sliceProgressPercentSlider=gui->addSlider("progress", 0, 100, 0);
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     
 }
+void agpanel::update(){
 
+   // sliceHeightSlider->setValue((double)sliceHeight);
+
+}
 
 void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 {
@@ -28,3 +33,9 @@ void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
     cout << "the new value of the slider = " << e.value << endl;
     cout << "the new scale of the slider = " << e.scale << endl;
 }
+
+void agpanel::sliceHeightBind(float sliceheight){
+    sliceHeightSlider->bind(sliceHeight);
+
+}
+ 
