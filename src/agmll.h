@@ -14,8 +14,9 @@ public:
     vector<ofIndexType> linelist;// {p0 p1} the index point to point list add with addnewline()
     vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
     vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list add with addnewline() and addoldline
-    vector<float> dXdYlist;// init with addnewline() work with adddXdY
-    vector<int> linetypelist;// 
+    vector<float> dXdYlist;// init with addnewline() work with adddXdY()
+    vector<int> linetypelist;//init with addnewline() work with adddXdY()
+    vector<float> touchedlist;//init with addnewline() work with adddXdY()
     ofPath layertestat(float z);
     ofPath layertest;
     ofVec3f meshScale;
@@ -33,6 +34,7 @@ public:
     void addface(ofMesh mesh,ofIndexType i);
     void adddXdY(ofIndexType i);
     void addlinetype(ofIndexType i,int linetype,int riseorfall);
+    void addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax);
      ofVec3f getScale();
     //static
     ofVec3f getScale(ofMesh mesh);
@@ -67,6 +69,10 @@ private:
     int evenline=3;//just even z1=z2
     int unknown=0;
     
+    float isTouched=1;
+    float isUntouched=0;
+    
+    
     //layertest only
     void stepreset();
     void stepstart(ofIndexType i);
@@ -75,6 +81,9 @@ private:
     void checkpnextZ();
     void getipHipLfrom(ofIndexType indexpoint0,ofIndexType indexpoint1);
     void addPointToPath(float x,float y,ofIndexType i);
+    void alluntouched();
+    void justtouch(ofIndexType ip);
+    ofIndexType continueflag=0;
     ofIndexType findnextline(ofIndexType nexxlineip0,ofIndexType nexelineip1);
     ofPath layertestpath;
     ofIndexType ipstartL=0;

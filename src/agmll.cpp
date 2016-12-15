@@ -103,8 +103,8 @@ void agmll::stepreset(){
     // point =pointlist[linelist[ip0]]
     // point =pointlist[nearpointlist[ip0]]
     // point =pointlist[ipa]
-    layertestpath.clear();
-
+    
+    
 
 }
 void agmll::stepstart(ofIndexType i){
@@ -153,6 +153,7 @@ ofIndexType agmll::findnextline(ofIndexType nextlineip0, ofIndexType nextlineip1
             ip1=i+1;
             ipa=nearpointlist[ip0];
             ipb=nearpointlist[ip1];
+            justtouch(ip0);
             break;
         }
     }
@@ -176,15 +177,21 @@ void agmll::checkpnextZ(){
 }
 // public
 ofPath agmll::layertestat(float z){
+    cout<<"------------"<<endl;
+    alluntouched();
+    layertestpath.clear();
     testatZ=z;
     ofPath returnpath;
     if(isdXdYlistfilled!=100){
         return returnpath;
     }
+    for(ofIndexType continuepoint=0;continuepoint<linelist.size();continuepoint+=2){
     stepreset();
     //start
     // find a cross point
     ip0=findcrosspointat(z);
+        cout<<"find a start"<<ip0<<"at"<<continuepoint<<endl;
+        
     stepstart(ip0);
     
   
@@ -239,11 +246,13 @@ ofPath agmll::layertestat(float z){
         
     }
     layertestpath.close();
+        
+    }
     returnpath=layertestpath;
     returnpath.close();
     returnpath.setStrokeColor(ofColor::blue);
     returnpath.setFillColor(ofColor::white);
-    returnpath.setFilled(true);
+    returnpath.setFilled(false);
     returnpath.setStrokeWidth(1);
     return returnpath;
 }
@@ -388,6 +397,7 @@ void agmll::adddXdY(ofIndexType i){
     // if horizonline
     if(p0.z==p1.z){
         addlinetype(i,horizonline,evenline);
+        addtouchedlist(i, isUntouched, p0.z);
         linehorizonlist[i]=true;
         linehorizonlist[i+1]=true;
         return;
@@ -396,8 +406,12 @@ void agmll::adddXdY(ofIndexType i){
     if(p0.x==p1.x&&p0.y==p1.y){
         if(p0.z>p1.z){
             addlinetype(i,verticalline,fallline);
+            addtouchedlist(i, isUntouched, p0.z);
+
         }else{//p0.z<p1.z
             addlinetype(i, verticalline, riseline);
+            addtouchedlist(i, isUntouched, p1.z);
+
         }
         
         dXdYlist[i]=0;
@@ -409,10 +423,14 @@ void agmll::adddXdY(ofIndexType i){
         pL=p1;
         pH=p0;
         addlinetype(i,bevelline,fallline);
+        addtouchedlist(i, isUntouched, p0.z);
+
     }else{// p0.z<p1.z
         pL=p0;
         pH=p1;
         addlinetype(i,bevelline,riseline);
+        addtouchedlist(i, isUntouched, p1.z);
+
     }
     float H,divH;
     H=pH.z-pL.z;
@@ -433,7 +451,20 @@ void agmll::addlinetype(ofIndexType i,int linetype,int riseorfall){
     linetypelist[i+1]=riseorfall;
     
 }
+void agmll::addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax){
+    touchedlist[i]=isTouchedOrNot;
+    touchedlist[i+1]=ZMax;
 
+}
+void agmll::alluntouched(){
+    for(ofIndexType i=0;i<touchedlist.size();i=i+2){
+        touchedlist[i]=isUntouched;
+    }
+
+}
+void agmll::justtouch(ofIndexType ip){
+    touchedlist[ip]=isTouched;
+}
 // private:
 //do in setup
 void agmll::addpointlist(ofMesh mesh){
@@ -449,13 +480,14 @@ void agmll::addpointlist(ofMesh mesh){
 // tools
 ofVec3f agmll::getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z){
     ofVec3f returnpoint;
-    z=z-testatZoffset;
-    testatZoffset=0;
+    //z=z;
+    
     float divdH=1/dH;
-    float h=z-pL.z;
+    float h=z-pL.z-testatZoffset;
     returnpoint.x=pL.x+dX*divdH*h;
     returnpoint.y=pL.y+dY*divdH*h;
     returnpoint.z=z;
+    testatZoffset=0;
     return returnpoint;
 }
 
@@ -488,6 +520,8 @@ void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
     
     linetypelist.push_back(0);
     linetypelist.push_back(0);
+    touchedlist.push_back(0);
+    touchedlist.push_back(0);
 }
 void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
     if(nearpointlist[ipl]==nearpointlist[ipl+1]){
@@ -563,10 +597,19 @@ ofIndexType agmll::findcrosspointat(float z){
     ofIndexType ip0=0;//linelist[ip0]
     ofIndexType ip1=0;//linelist[ip1]
     // find a cross point
-    for(int i=0;i<linelist.size();i+=2){
+    for(int i=continueflag;i<linelist.size();i+=2){
         ip0=i;
         ip1=i+1;
-        
+        justtouch(ip0);
+        // we don't touch anything that already touched
+        if(touchedlist[ip0]==isTouched){
+            continue;
+        }
+        // we don't touch when z>zmax 
+        if(z>touchedlist[ip1]){
+            cout<<"ip0:"<<ip0<<"zmax"<<touchedlist[ip1]<<endl;
+            continue;
+        }
         if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
             
             if(pointlist[linelist[ip0]].z<z&&pointlist[linelist[ip1]].z>z){
@@ -579,6 +622,7 @@ ofIndexType agmll::findcrosspointat(float z){
         }
         
     }
+    justtouch(ip0);
     return ip0;
 
 }
