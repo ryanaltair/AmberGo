@@ -120,6 +120,7 @@ void agmll::stepstart(ofIndexType i){
     //get the XY and move to
     ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, testatZ);
     layertestpath.moveTo(XYpoint.x,XYpoint.y);
+      cout<<"we addx y :"<<XYpoint.x<<","<<XYpoint.y<<"to path"<<"\n";
     // set pstart and pnext
     ipstarta=ipa;
     
@@ -177,8 +178,9 @@ void agmll::checkpnextZ(){
 }
 // public
 ofPath agmll::layertestat(float z){
-    cout<<"------------"<<endl;
+    cout<<"------layertest start------"<<endl;
     alluntouched();
+    continueflag=0;
     layertestpath.clear();
     testatZ=z;
     ofPath returnpath;
@@ -189,8 +191,9 @@ ofPath agmll::layertestat(float z){
     stepreset();
     //start
     // find a cross point
+        if(continueflag==linelist.size()){break;}
     ip0=findcrosspointat(z);
-        cout<<"find a start"<<ip0<<"at"<<continuepoint<<endl;
+    cout<<"find a start"<<ip0<<"at"<<continuepoint<<" flag is:"<<continueflag<<endl;
         
     stepstart(ip0);
     
@@ -208,7 +211,7 @@ ofPath agmll::layertestat(float z){
         }
         
         loopcount++;
-        cout<<"loop:"<<loopcount<<endl;
+       // cout<<"loop:"<<loopcount<<endl;
         // check z with pnext
         checkpnextZ();
         //find the lnext that have linelist[i]=iplp0 linelist[i+1]=iplp1
@@ -231,6 +234,7 @@ ofPath agmll::layertestat(float z){
         ////cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
         ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
         layertestpath.lineTo(XYpoint.x,XYpoint.y);
+        //cout<<"we add x y"<<XYpoint.x<<","<<XYpoint.y<<"to path"<<endl;
         if(isloopover==true){
             if(finalsteptogo==0){
                //cout<<"now we go out"<<"\n";
@@ -249,7 +253,8 @@ ofPath agmll::layertestat(float z){
         
     }
     returnpath=layertestpath;
-    returnpath.close();
+     cout<<"------layertest start------"<<endl;
+    //returnpath.close();
     returnpath.setStrokeColor(ofColor::blue);
     returnpath.setFillColor(ofColor::white);
     returnpath.setFilled(false);
@@ -589,7 +594,7 @@ ofPath agmll::addPointToPath(ofPath path,float x,float y,ofIndexType i){
         returnpath=path;
         returnpath.lineTo(x,y);
     }
-    ////cout<<"we get the x y :"<<x<<","<<y<<"\n";
+    cout<<"we addx y :"<<x<<","<<y<<"to path"<<"\n";
     return returnpath;
 }
  
@@ -600,14 +605,18 @@ ofIndexType agmll::findcrosspointat(float z){
     for(int i=continueflag;i<linelist.size();i+=2){
         ip0=i;
         ip1=i+1;
-        justtouch(ip0);
         // we don't touch anything that already touched
         if(touchedlist[ip0]==isTouched){
+            cout<<"it was touched"<<endl;
             continue;
+        }else{
+        // cout<<"it untouched "<<ip0<<endl;
         }
+        
+        justtouch(ip0);
         // we don't touch when z>zmax 
         if(z>touchedlist[ip1]){
-            cout<<"ip0:"<<ip0<<"zmax"<<touchedlist[ip1]<<endl;
+            cout<<"it is ip0:"<<ip0<<">zmax"<<touchedlist[ip1]<<endl;
             continue;
         }
         if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
@@ -621,8 +630,9 @@ ofIndexType agmll::findcrosspointat(float z){
             }
         }
         
+        cout<<"we roll"<<endl;
     }
-    justtouch(ip0);
+    continueflag=ip0+2;
     return ip0;
 
 }
