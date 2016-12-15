@@ -14,7 +14,7 @@ void agpanel::setup(){
     gui->addFRM();
     //gui->addBreak();
     //gui->addButton("Click!");
-    sliceHeightSlider=gui->addSlider("slide", 0, 100,0);
+    sliceHeightSlider=gui->addSlider("sliceHeight", 0, 1393,0);
     sliceProgressPercentSlider=gui->addSlider("progress", 0, 100, 0);
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end

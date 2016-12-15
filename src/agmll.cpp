@@ -76,29 +76,26 @@ void agmll::update(){
     }
    
 }
-// public
-ofPath agmll::layertestat(float z){
-    ofPath returnpath;
-    ofIndexType ipstartL=0;
-    ofIndexType ipstartH=0; // ipstart0<ipstart1 always
-    ofIndexType ipstarta=0;// we never use ipa as next point until we find it
+//step reset
+void agmll::stepreset(){
+
+    //stepreset
+    ipstartL=0;
+    ipstartH=0; // ipstart0<ipstart1 always
+    ipstarta=0;// we never use ipa as next point until we find it
     ////cout<<"ipstart:"<<ipstartL<<":"<<ipstartH<<"\n";
-    ofIndexType ipnext=0;
-    ofIndexType ipused=0;
+    ipnext=0;
+    ipused=0;
     
-    if(isdXdYlistfilled!=100){
-        return returnpath;
-    }
+    ip0=0;//linelist[ip0]
+    ip1=0;//linelist[ip1]
+    iplp0=0;//pointlist[iplp0]
+    iplp1=0;//pointlist[iplp1]
     
-    ofIndexType ip0=0;//linelist[ip0]
-    ofIndexType ip1=0;//linelist[ip1]
-    ofIndexType iplp0=0;//pointlist[iplp0]
-    ofIndexType iplp1=0;//pointlist[iplp1]
-    
-    ofIndexType ipH=0;
-    ofIndexType ipL=0;
-    ofIndexType ipa=0;//ipa=nearpointlist[ip0]
-    ofIndexType ipb=0;//ipb=nearpointlist[ip1]
+    ipH=0;
+    ipL=0;
+    ipa=0;//ipa=nearpointlist[ip0]
+    ipb=0;//ipb=nearpointlist[ip1]
     //dX=dXdYlist[ip0]
     //dY=dXdYlist[ip1]
     // how to refer a point
@@ -106,61 +103,91 @@ ofPath agmll::layertestat(float z){
     // point =pointlist[linelist[ip0]]
     // point =pointlist[nearpointlist[ip0]]
     // point =pointlist[ipa]
-    
-    //start
-    // find a cross point
-    ip0=findcrosspointat(z);
+    layertestpath.clear();
+
+
+}
+void agmll::stepstart(ofIndexType i){
+    ip0=i;
     ip1=ip0+1;
     ipa=nearpointlist[ip0];
     ipb=nearpointlist[ip1];
     ////cout<<"we find the cross point done"<<"\n";
     // get the first point XY
     // get the ph pl
-    
-    // new
-    if (linetypelist[ip0+1]==riseline) {
-        ipL=linelist[ip0];
-        ipH=linelist[ip1];
-    }else{
-        ipL=linelist[ip1];
-        ipH=linelist[ip0];
-    }
-    //old theory
-    /**
-    if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
-        ipL=linelist[ip0];
-        ipH=linelist[ip1];
-    }else{//pointlist[linelist[ip0]].z>pointlist[linelist[ip1]].z
-        ipL=linelist[ip1];
-        ipH=linelist[ip0];
-    }
-     **/
-    
-   // //cout<<"we find the pl ph at start done"<<"\n";
+    getipHipLfrom(ip0, ip1);
 
     //get the XY and move to
-    ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
-    returnpath=addPointToPath(returnpath, XYpoint.x, XYpoint.y, 0);
+    ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, testatZ);
+    layertestpath.moveTo(XYpoint.x,XYpoint.y);
     // set pstart and pnext
     ipstarta=ipa;
     
     ipstartL=ipL;
     ipstartH=ipH;
-   // //cout<<"=======================";
-   // //cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
-    
     ipnext=ipb;
-    // check z with pnext
-    if(pointlist[ipnext].z<=z){
+}
+void agmll::getipHipLfrom(ofIndexType indexpoint0, ofIndexType indexpoint1){
+    if (linetypelist[indexpoint0+1]==riseline) {
+        ipL=linelist[indexpoint0];
+        ipH=linelist[indexpoint1];
+    }else{
+        ipL=linelist[indexpoint1];
+        ipH=linelist[indexpoint0];
+    }
+}
+ofIndexType agmll::findnextline(ofIndexType nextlineip0, ofIndexType nextlineip1){
+    iplp0=nextlineip0;
+    iplp1=nextlineip1;
+    if(iplp0<iplp1){
+        //do nothing
+    }else{// ip0>ip1 need swap
+        ofIndexType iplp2=iplp1;
+        iplp1=iplp0;
+        iplp0=iplp2;
+    }
+    //find the iplp0 iplp1
+    for(int i=0;i<linelist.size();i+=2){
+        if(linelist[i]==iplp0&&linelist[i+1]==iplp1){
+            ip0=i;
+            ip1=i+1;
+            ipa=nearpointlist[ip0];
+            ipb=nearpointlist[ip1];
+            break;
+        }
+    }
+
+
+}
+void agmll::checkpnextZ(){
+    if(pointlist[ipnext].z<=testatZ){
         ipused=ipL;
         iplp0=ipH;
         iplp1=ipnext;
+        if(pointlist[ipnext].z==testatZ){
+            testatZoffset=0.000001;
+        }
     }else{
         ipused=ipH;
         iplp0=ipL;
         iplp1=ipnext;
     }
+
+}
+// public
+ofPath agmll::layertestat(float z){
+    testatZ=z;
+    ofPath returnpath;
+    if(isdXdYlistfilled!=100){
+        return returnpath;
+    }
+    stepreset();
+    //start
+    // find a cross point
+    ip0=findcrosspointat(z);
+    stepstart(ip0);
     
+  
     //loop
   //  //cout<<"we just going to loop"<<"\n";
     
@@ -174,37 +201,16 @@ ofPath agmll::layertestat(float z){
         }
         
         loopcount++;
-      //  //cout<<"we loop "<<loopcount<<"\n";
-        
+        cout<<"loop:"<<loopcount<<endl;
+        // check z with pnext
+        checkpnextZ();
         //find the lnext that have linelist[i]=iplp0 linelist[i+1]=iplp1
-        if(iplp0<iplp1){
-            //do nothing
-        }else{// ip0>ip1 need swap
-            ofIndexType iplp2=iplp1;
-            iplp1=iplp0;
-            iplp0=iplp2;
-        }
-        ////cout<<"the iplp0 iplp1 is "<<iplp0<<","<<iplp1<<"\n";
-        //find the iplp0 iplp1
-        for(i=0;i<linelist.size();i+=2){
-            if(linelist[i]==iplp0&&linelist[i+1]==iplp1){
-                ip0=i;
-                ip1=i+1;
-                ipa=nearpointlist[ip0];
-                ipb=nearpointlist[ip1];
-                break;
-            }
-        }
-        ////cout<<"and we find ip0 ip1 ipa ipb is "<<ip0<<","<<ip1<<","<<ipa<<","<<ipb<<"\n";
+       // so we find next line
+        findnextline(iplp0,iplp1);
+
+        //then we get the new ipH ipL from new ip0 ip1
+        getipHipLfrom(ip0, ip1);
         
-        //get pH pL
-        if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
-            ipL=linelist[ip0];
-            ipH=linelist[ip1];
-        }else{//pointlist[linelist[ip0]].z>pointlist[linelist[ip1]].z
-            ipL=linelist[ip1];
-            ipH=linelist[ip0];
-        }
         //check if it the last line?
         if(isloopover==true){
             if((ipL==ipstartL&&ipH==ipstartH)||(ipL==ipstartH&&ipH==ipstartL)){
@@ -217,7 +223,7 @@ ofPath agmll::layertestat(float z){
         }
         ////cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
         ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
-        returnpath=addPointToPath(returnpath, XYpoint.x, XYpoint.y, loopcount);
+        layertestpath.lineTo(XYpoint.x,XYpoint.y);
         if(isloopover==true){
             if(finalsteptogo==0){
                //cout<<"now we go out"<<"\n";
@@ -230,17 +236,10 @@ ofPath agmll::layertestat(float z){
         }else{//ipused==ipb
             ipnext=ipa;
         }
-        // check z with pnext
-        if(pointlist[ipnext].z<z){
-            ipused=ipL;
-            iplp0=ipH;
-            iplp1=ipnext;
-        }else{//pointlist[ipnext].z>z
-            ipused=ipH;
-            iplp0=ipL;
-            iplp1=ipnext;
-        }
+        
     }
+    layertestpath.close();
+    returnpath=layertestpath;
     returnpath.close();
     returnpath.setStrokeColor(ofColor::blue);
     returnpath.setFillColor(ofColor::white);
@@ -450,6 +449,8 @@ void agmll::addpointlist(ofMesh mesh){
 // tools
 ofVec3f agmll::getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z){
     ofVec3f returnpoint;
+    z=z-testatZoffset;
+    testatZoffset=0;
     float divdH=1/dH;
     float h=z-pL.z;
     returnpoint.x=pL.x+dX*divdH*h;
@@ -557,7 +558,7 @@ ofPath agmll::addPointToPath(ofPath path,float x,float y,ofIndexType i){
     ////cout<<"we get the x y :"<<x<<","<<y<<"\n";
     return returnpath;
 }
-
+ 
 ofIndexType agmll::findcrosspointat(float z){
     ofIndexType ip0=0;//linelist[ip0]
     ofIndexType ip1=0;//linelist[ip1]

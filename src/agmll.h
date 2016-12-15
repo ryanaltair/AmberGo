@@ -67,4 +67,48 @@ private:
     int evenline=3;//just even z1=z2
     int unknown=0;
     
+    //layertest only
+    void stepreset();
+    void stepstart(ofIndexType i);
+    void steploop();
+    void stepHorizon();
+    void checkpnextZ();
+    void getipHipLfrom(ofIndexType indexpoint0,ofIndexType indexpoint1);
+    void addPointToPath(float x,float y,ofIndexType i);
+    ofIndexType findnextline(ofIndexType nexxlineip0,ofIndexType nexelineip1);
+    ofPath layertestpath;
+    ofIndexType ipstartL=0;
+    ofIndexType ipstartH=0; // ipstart0<ipstart1 always
+    ofIndexType ipstarta=0;// we never use ipa as next point until we find it
+    ////cout<<"ipstart:"<<ipstartL<<":"<<ipstartH<<"\n";
+    ofIndexType ipnext=0;
+    ofIndexType ipused=0;
+    
+    ofIndexType ip0=0;//linelist[ip0]
+    ofIndexType ip1=0;//linelist[ip1]
+    ofIndexType iplp0=0;//pointlist[iplp0] nextline's ip0
+    ofIndexType iplp1=0;//pointlist[iplp1] nexeline's ip1
+    
+    ofIndexType ipH=0;
+    ofIndexType ipL=0;
+    ofIndexType ipa=0;//ipa=nearpointlist[ip0]
+    ofIndexType ipb=0;//ipb=nearpointlist[ip1]
+    float testatZ;
+    float testatZoffset=0;
+    //dX=dXdYlist[ip0]
+    //dY=dXdYlist[ip1]
+    // how to refer a point
+    // point =pointlist[iplp0]
+    // point =pointlist[linelist[ip0]]
+    // point =pointlist[nearpointlist[ip0]]
+    // point =pointlist[ipa]
+    
+
+    
+    
+    
+    
+    
+    //layertest end 
+    
 };
