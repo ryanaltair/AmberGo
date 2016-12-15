@@ -41,7 +41,9 @@ class ofApp : public ofBaseApp {
     
     //GUI
     agpanel panel;
-        
+    
+    //model load from assimp
+    ofxAssimpModelLoader assimpLoader;
     private:
     //
     ofMesh readyModel;

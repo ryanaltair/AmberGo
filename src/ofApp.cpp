@@ -140,7 +140,9 @@ void ofApp::loadModel(){
     
     //assimp model load
     if(modelpath.size()>0){
-        plate.addModel(modelpath);
+        //plate.addModel(modelpath);
+        assimpLoader.loadModel(modelpath);
+        plate.addModel(assimpLoader.getMesh(0));
         merger.start(modelpath);
         bLoaded=false;
         modelpath.clear();

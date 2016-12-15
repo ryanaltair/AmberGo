@@ -109,31 +109,24 @@ ofPath agmll::layertestat(float z){
     
     //start
     // find a cross point
-    for(int i=0;i<linelist.size();i+=2){
-        ip0=i;
-        ip1=i+1;
-        
-        if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
-            
-            if(pointlist[linelist[ip0]].z<z&&pointlist[linelist[ip1]].z>z){
-                
-                ipa=nearpointlist[ip0];
-                ipb=nearpointlist[ip1];
-                break;
-            }
-        }else{// pointlist[linelist[ip1]].z<pointlist[linelist[ip0]].z
-            if(pointlist[linelist[ip1]].z<z&&pointlist[linelist[ip0]].z>z){
-                
-                ipa=nearpointlist[ip0];
-                ipb=nearpointlist[ip1];
-                break;
-            }
-        }
-        
-    }
+    ip0=findcrosspointat(z);
+    ip1=ip0+1;
+    ipa=nearpointlist[ip0];
+    ipb=nearpointlist[ip1];
     ////cout<<"we find the cross point done"<<"\n";
     // get the first point XY
     // get the ph pl
+    
+    // new
+    if (linetypelist[ip0+1]==riseline) {
+        ipL=linelist[ip0];
+        ipH=linelist[ip1];
+    }else{
+        ipL=linelist[ip1];
+        ipH=linelist[ip0];
+    }
+    //old theory
+    /**
     if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
         ipL=linelist[ip0];
         ipH=linelist[ip1];
@@ -141,6 +134,7 @@ ofPath agmll::layertestat(float z){
         ipL=linelist[ip1];
         ipH=linelist[ip0];
     }
+     **/
     
    // //cout<<"we find the pl ph at start done"<<"\n";
 
@@ -182,7 +176,6 @@ ofPath agmll::layertestat(float z){
         loopcount++;
       //  //cout<<"we loop "<<loopcount<<"\n";
         
-
         //find the lnext that have linelist[i]=iplp0 linelist[i+1]=iplp1
         if(iplp0<iplp1){
             //do nothing
@@ -254,9 +247,6 @@ ofPath agmll::layertestat(float z){
     returnpath.setFilled(true);
     returnpath.setStrokeWidth(1);
     return returnpath;
-    
-    
-
 }
 
 ofVec3f agmll::getScale(){
@@ -396,23 +386,34 @@ void agmll::adddXdY(ofIndexType i){
     i=i*2;
     p0=pointlist[linelist[i]];
     p1=pointlist[linelist[i+1]];
+    // if horizonline
     if(p0.z==p1.z){
+        addlinetype(i,horizonline,evenline);
         linehorizonlist[i]=true;
         linehorizonlist[i+1]=true;
         return;
     }
     //if line vertical
     if(p0.x==p1.x&&p0.y==p1.y){
+        if(p0.z>p1.z){
+            addlinetype(i,verticalline,fallline);
+        }else{//p0.z<p1.z
+            addlinetype(i, verticalline, riseline);
+        }
+        
         dXdYlist[i]=0;
         dXdYlist[i+1]=0;
     }
+    
     //get the high point and low point
     if(p0.z>p1.z){
         pL=p1;
         pH=p0;
+        addlinetype(i,bevelline,fallline);
     }else{// p0.z<p1.z
         pL=p0;
         pH=p1;
+        addlinetype(i,bevelline,riseline);
     }
     float H,divH;
     H=pH.z-pL.z;
@@ -427,9 +428,13 @@ void agmll::adddXdY(ofIndexType i){
     }else{
         dXdYlist[i+1]=(pH.y-pL.y)*divH*dH;
     }
-    
-
 }
+void agmll::addlinetype(ofIndexType i,int linetype,int riseorfall){
+    linetypelist[i]=linetype;
+    linetypelist[i+1]=riseorfall;
+    
+}
+
 // private:
 //do in setup
 void agmll::addpointlist(ofMesh mesh){
@@ -480,6 +485,8 @@ void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
     nearpointlist.push_back(ipn);
     nearpointlist.push_back(ipn);
     
+    linetypelist.push_back(0);
+    linetypelist.push_back(0);
 }
 void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
     if(nearpointlist[ipl]==nearpointlist[ipl+1]){
@@ -551,3 +558,26 @@ ofPath agmll::addPointToPath(ofPath path,float x,float y,ofIndexType i){
     return returnpath;
 }
 
+ofIndexType agmll::findcrosspointat(float z){
+    ofIndexType ip0=0;//linelist[ip0]
+    ofIndexType ip1=0;//linelist[ip1]
+    // find a cross point
+    for(int i=0;i<linelist.size();i+=2){
+        ip0=i;
+        ip1=i+1;
+        
+        if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
+            
+            if(pointlist[linelist[ip0]].z<z&&pointlist[linelist[ip1]].z>z){
+                break;
+            }
+        }else{// pointlist[linelist[ip1]].z<pointlist[linelist[ip0]].z
+            if(pointlist[linelist[ip1]].z<z&&pointlist[linelist[ip0]].z>z){
+                break;
+            }
+        }
+        
+    }
+    return ip0;
+
+}

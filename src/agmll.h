@@ -9,15 +9,13 @@ public:
    
     void draw();
     void update();
-    void brake();
-    void accellerate();
-    void steer(float dir);
     float dH=0.01;
     vector<ofVec3f> pointlist;
-    vector<ofIndexType> linelist;// {p0 p1} the index point to point list
-    vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline work with adddXdY
-    vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list
-    vector<float> dXdYlist;// add with addnewline work with adddXdY
+    vector<ofIndexType> linelist;// {p0 p1} the index point to point list add with addnewline()
+    vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
+    vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list add with addnewline() and addoldline
+    vector<float> dXdYlist;// init with addnewline() work with adddXdY
+    vector<int> linetypelist;// 
     ofPath layertestat(float z);
     ofPath layertest;
     ofVec3f meshScale;
@@ -34,6 +32,7 @@ public:
     // main job
     void addface(ofMesh mesh,ofIndexType i);
     void adddXdY(ofIndexType i);
+    void addlinetype(ofIndexType i,int linetype,int riseorfall);
      ofVec3f getScale();
     //static
     ofVec3f getScale(ofMesh mesh);
@@ -54,8 +53,18 @@ private:
     ofPath addPointToPath(ofPath path,float x,float y,ofIndexType i);
     ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
     
+    ofIndexType findcrosspointat(float z);// return ip0
+    
     // progress flag
     size_t linelistloaded=0;
     size_t dxdylistloaded=0;
+    
+    int horizonline=1;
+    int verticalline=2;
+    int bevelline=3;
+    int riseline=1;
+    int fallline=2;
+    int evenline=3;//just even z1=z2
+    int unknown=0;
     
 };
