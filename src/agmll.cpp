@@ -187,6 +187,7 @@ ofPath agmll::layertestat(float z){
     if(isdXdYlistfilled!=100){
         return returnpath;
     }
+    
     for(ofIndexType continuepoint=0;continuepoint<linelist.size();continuepoint+=2){
     stepreset();
     //start
@@ -250,14 +251,16 @@ ofPath agmll::layertestat(float z){
         
     }
     layertestpath.close();
-        
+        cout<<"now we close the sub path"<<endl;
     }
     returnpath=layertestpath;
-     cout<<"------layertest start------"<<endl;
+     cout<<"------layertest end------"<<endl;
     //returnpath.close();
+    returnpath.setPolyWindingMode(OF_POLY_WINDING_NONZERO);
     returnpath.setStrokeColor(ofColor::blue);
     returnpath.setFillColor(ofColor::white);
     returnpath.setFilled(false);
+    cout<<"windingmode"<<returnpath.getWindingMode()<<endl;
     returnpath.setStrokeWidth(1);
     return returnpath;
 }
@@ -622,15 +625,17 @@ ofIndexType agmll::findcrosspointat(float z){
         if(pointlist[linelist[ip0]].z<pointlist[linelist[ip1]].z){
             
             if(pointlist[linelist[ip0]].z<z&&pointlist[linelist[ip1]].z>z){
+                //cout<<"we roll"<<endl;
                 break;
             }
         }else{// pointlist[linelist[ip1]].z<pointlist[linelist[ip0]].z
             if(pointlist[linelist[ip1]].z<z&&pointlist[linelist[ip0]].z>z){
+                //cout<<"we roll"<<endl;
                 break;
             }
         }
         
-        cout<<"we roll"<<endl;
+        
     }
     continueflag=ip0+2;
     return ip0;
