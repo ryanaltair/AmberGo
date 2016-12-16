@@ -1,5 +1,5 @@
-for(x=[0:25:50]){
-    for(y=[0:25:50]){
+for(x=[0:50:200]){
+    for(y=[0:50:200]){
 
 translate([x,y,0])
 difference(){
