@@ -53,10 +53,13 @@ private:
     void addoldline(ofIndexType ipl,ofIndexType ipn);
     ofIndexType searchline(ofIndexType ip0,ofIndexType ip1);
     ofPath addPointToPath(ofPath path,float x,float y,ofIndexType i);
+    void addPointLineToPath(ofVec3f addpoint);
+    void addPointMoveToPath(ofVec3f addpoint);
+    
     ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
     
     ofIndexType findcrosspointat(float z);// return ip0
-    
+    bool isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,int riseorfall,float planeatz);
     // progress flag
     size_t linelistloaded=0;
     size_t dxdylistloaded=0;
@@ -119,5 +122,9 @@ private:
     
     
     //layertest end 
+    
+    
+    //debug only
+    void debuglinelist(ofIndexType ip);
     
 };
