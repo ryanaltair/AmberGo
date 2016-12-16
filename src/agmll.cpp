@@ -194,8 +194,7 @@ ofPath agmll::layertestat(float z){
     }
     
     for(ofIndexType continuepoint=0;continuepoint<linelist.size();continuepoint+=2){
-        layertestpath.clear();
-        
+
         //continuepoint=linelist.size();
     stepreset();
     //step start
@@ -205,6 +204,8 @@ ofPath agmll::layertestat(float z){
         if(iCross==1){// iCross== 1 means we failed to find the cross point
             break;
         }
+        layertestpath.clear();
+        
         ip0=iCross;
     //cout<<"find a start"<<ip0<<"at"<<continuepoint<<" flag is:"<<continueflag<<endl;
         //debuglinelist(ip0);
@@ -269,16 +270,17 @@ ofPath agmll::layertestat(float z){
         
     }
     layertestpath.close();
+        returnpath.append(layertestpath);
         cout<<"now we close the sub path"<<endl;
     }
 
-    returnpath=layertestpath;
+   // returnpath=layertestpath;
      cout<<"------layertest end------"<<endl;
-    //returnpath.close();
-    returnpath.setPolyWindingMode(OF_POLY_WINDING_NONZERO);
+    returnpath.close();
+    returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
     returnpath.setStrokeColor(ofColor::blue);
     returnpath.setFillColor(ofColor::white);
-    returnpath.setFilled(false);
+    returnpath.setFilled(true);
     cout<<"windingmode"<<returnpath.getWindingMode()<<endl;
     returnpath.setStrokeWidth(1);
     return returnpath;
