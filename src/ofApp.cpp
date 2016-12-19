@@ -30,7 +30,7 @@ void ofApp::update(){
             cout<<"slice ok"<<endl;
             
         }else{
-            cout<<"slice failed"<<endl;
+          //  cout<<"slice failed"<<endl;
 
         }
         if(true&&mll.isdXdYlistfilled==100){
@@ -142,7 +142,15 @@ void ofApp::loadModel(){
     if(modelpath.size()>0){
         //plate.addModel(modelpath);
         assimpLoader.loadModel(modelpath);
-        plate.addModel(assimpLoader.getMesh(0));
+        if(assimpLoader.getMeshCount()>1){
+            //plate.addModel(assimpLoader.getMesh(1));
+            
+            assimpLoader.drawFaces();
+        }else{
+            plate.addModel(assimpLoader.getMesh(0));
+            
+        }
+        
         merger.start(modelpath);
         bLoaded=false;
         modelpath.clear();

@@ -44,7 +44,9 @@ public:
   
     ofMatrix4x4 mreset;
    
-  
+  //drawmode set
+    int drawmode=0;//0 for meshes 1 for assimps
+    
     // enables
     int outsideBoxEnable=0;
     int sliceLayPlaneEnable=1;

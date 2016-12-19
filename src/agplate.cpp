@@ -39,6 +39,7 @@ void agplate::sliceAt(float Z){
 }
 
 void agplate::addModel(ofMesh model){
+    drawmode=0;
     nodemodel.getMesh()=model;
     if(models.size()>0){
         models[0]=model;
@@ -50,9 +51,10 @@ void agplate::addModel(ofMesh model){
 
 }
 void agplate::addModel(string modelpath){
+    drawmode=1;
     assimploader.loadModel(modelpath);
     nodemodel.getMesh()=assimploader.getMesh(0);
-    cout<<"add a model in plate"<<endl;
+    cout<<"add a assimp model in plate"<<endl;
     
     
 }
@@ -80,9 +82,16 @@ void agplate::drawincamera(){
 }
 void agplate::drawModel(){
     ofSetColor(ofColor::darkCyan);
+    if(drawmode==1){
+        assimploader.drawFaces();
+        return;
+    }
     if(models.size()>0){
         // the model
         //  models[0].draw();
+    }
+    if(drawmode==0){
+    
     }
     nodemodel.setTransformMatrix(mreadyModel);
     //nodemodel.draw();
