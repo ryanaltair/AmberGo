@@ -9,7 +9,7 @@ void ofApp::setup(){
 	// rather than always drawing things on top of each other
     modelpath="testcube.stl";
     isModelChanged=true;
-    layertestmove.glTranslate(200, 200, 0);
+   
     plate.setup();
     
     
@@ -53,7 +53,7 @@ void ofApp::update(){
 void ofApp::draw(){
     ofEnableDepthTest();
     ofBackground(ofColor::gray);
-    layertest.draw(200,200);
+
     plate.drawincamera();
     ofDisableDepthTest();
 }
@@ -129,6 +129,13 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
         }
     }
 }
+//side window
+
+void ofApp::drawGui(ofEventArgs & args){
+    
+     layertest.draw(1280/2,768/2);
+}
+
 
 //addons
 
