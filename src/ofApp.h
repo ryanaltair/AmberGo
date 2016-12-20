@@ -28,6 +28,7 @@ class ofApp : public ofBaseApp {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+    void savePic();
     //side window
     void drawSideWindow(ofEventArgs & args);
     //add on
@@ -69,4 +70,8 @@ class ofApp : public ofBaseApp {
     string modelpath;
     bool isModelChanged=false;
     
+    
+    ///snap
+    bool bSnapshot=false;
+    ofImage snapImg;
 };

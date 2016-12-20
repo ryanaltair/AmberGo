@@ -64,6 +64,9 @@ void ofApp::keyPressed(int key){
             layertestZ--;
              panel.sliceHeight=layertestZ;
             break;
+        case OF_KEY_LEFT:
+            bSnapshot=true;
+            break;
         }
 }
 
@@ -128,6 +131,8 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 void ofApp::drawSideWindow(ofEventArgs & args){
     ofBackground(0,0,0);
      layertest.draw(1280/2,768/2);
+    
+    savePic();
 }
 
 
@@ -175,6 +180,16 @@ void ofApp::loadModel(){
     isModelChanged=false;
 }
 
+void ofApp::savePic(){
+    if (bSnapshot == true){
+        // grab a rectangle at 200,200, width and height of 300,180
+        snapImg.grabScreen(0,0,1280,768);
+        
+        string fileName = "a" + ofToString(ofToInt(ofToString(layertestZ*100))) + ".png";
+        snapImg.save(fileName);
+        bSnapshot = false;
+    }
+}
 
 
 
