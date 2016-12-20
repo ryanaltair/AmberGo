@@ -16,10 +16,13 @@ public:
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
+    
     ofxDatGuiSlider* sliceHeightSlider;
     ofxDatGuiSlider* sliceProgressPercentSlider;
     ofxDatGuiButton* printStartButton;
     float sliceHeight=0;
+    void timeUpdate();
+    void outputDone(bool done);
     void sliceHeightBind(float sliceheight);
     
     bool isTimeToNextLayer=false;
@@ -33,4 +36,11 @@ public:
     const int statePrintFinish=6;
     const int statePrepare=7;
     const int stateSleep=0;
+    float timerReset=0;
+    float timerToNextLayer=0;
+    
+    bool outputdone=false;
+    bool timerResetTriger =false ;
+    bool timerToNextLayerTrigger= false ;
+    float exposeTime=0.4;
 };

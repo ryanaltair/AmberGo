@@ -25,18 +25,47 @@ void agpanel::setup(){
     
 }
 void agpanel::update(){
-
+    timeUpdate();
     if(workState==statePrintPreparing){
-        sliceHeight=0.02;
+        cout<<"now we are print preparing"<<endl;
+        sliceHeight=0.2;
+        timerToNextLayer=ofGetElapsedTimef()+5;
+        workState=statePrinting;
     }
-    if(workState==statePrinting){
+    if(workState==statePrinting&&outputdone==true){
+        
+       
         if(isTimeToNextLayer==true){
-            sliceHeight+=0.16;
+             cout<<"now we are printing"<<endl;
+            if(sliceHeight>1000){
+                sliceHeight=-1;
+                workState=statePrintFinish;
+                }else{
+            sliceHeight+=1.35;
+                    cout<<"we change slice height at "<< ofGetElapsedTimef()<<" seconds"<<endl;
+                }
+            cout<<"tiemr before "<<timerToNextLayer;
+            timerToNextLayer=ofGetElapsedTimef()+exposeTime;
+            
+            cout<<" tiemr after "<<timerToNextLayer<<endl;
             isTimeToNextLayer=false;
+            outputdone=false;
+            
         }
     }
 }
-
+void agpanel::timeUpdate(){
+    if(timerReset<ofGetElapsedTimef()){
+        timerResetTriger=true;
+    }
+    if(timerToNextLayer<ofGetElapsedTimef()){
+        timerToNextLayerTrigger=true;
+        isTimeToNextLayer=true;
+    }
+}
+void agpanel::outputDone(bool done){
+    outputdone=done;
+}
 void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 {
     sliceHeight=e.value;
@@ -46,6 +75,7 @@ void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
 {
     if(e.target==printStartButton){
+        workState=statePrintPreparing;
         if(workState==statePrintReady){
             workState=statePrintPreparing;
         }

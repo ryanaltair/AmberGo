@@ -16,6 +16,8 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    
     panel.update();
     layertestZ=panel.sliceHeight;
     loadModel();
@@ -28,18 +30,12 @@ void ofApp::update(){
         merger.sliceAt(layertestZ);
         //cout<<"we slice at end"<<endl;
         plate.update();
-        
-        
     }
-    if(true&&mll.isdXdYlistfilled==100){
-        
-        cout<<"we just fill dxdy"<<"\n";
-        //layertest=mll.layertestat(layertestZ);
-        
-    }
+
     if(merger.isSliceChanged==true){
         cout<<"B:we just got to here to try layertest"<<"\n";
         layertest=merger.layertest;
+        panel.outputDone(true);
         merger.isSliceChanged=false;
     }
     //mll.update();
