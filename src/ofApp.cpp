@@ -9,7 +9,6 @@ void ofApp::setup(){
 	// rather than always drawing things on top of each other
     modelpath="testcube.stl";
     isModelChanged=true;
-   
     plate.setup();
     
     
@@ -24,35 +23,34 @@ void ofApp::update(){
     if(layertestZ!=layertestZlast){
         plate.layertestZ=layertestZ;
         layertestZlast=layertestZ;
+        //cout<<"we slice at now "<<endl;
         plate.sliceAt(layertestZ);
+        merger.sliceAt(layertestZ);
+        //cout<<"we slice at end"<<endl;
         plate.update();
-        if(false&&merger.sliceat(layertestZ)==true){
-            cout<<"slice ok"<<endl;
-            
-        }else{
-          //  cout<<"slice failed"<<endl;
-
-        }
-        if(true&&mll.isdXdYlistfilled==100){
-            
-            cout<<"we just got to here to try layertest"<<"\n";
-            layertest=mll.layertestat(layertestZ);
-            
-        }
+        
+        
     }
-    
+    if(true&&mll.isdXdYlistfilled==100){
+        
+        cout<<"we just fill dxdy"<<"\n";
+        //layertest=mll.layertestat(layertestZ);
+        
+    }
     if(merger.isSliceChanged==true){
+        cout<<"B:we just got to here to try layertest"<<"\n";
         layertest=merger.layertest;
         merger.isSliceChanged=false;
     }
-    mll.update();
+    //mll.update();
+    //cout<<"dxdyfilled"<<mll.isdXdYlistfilled<<endl;
     
    }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofEnableDepthTest();
-    ofBackground(ofColor::gray);
+    ofBackground(ofColor::black);
 
     plate.drawincamera();
     ofDisableDepthTest();
@@ -131,8 +129,8 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 }
 //side window
 
-void ofApp::drawGui(ofEventArgs & args){
-    
+void ofApp::drawSideWindow(ofEventArgs & args){
+    ofBackground(0,0,0);
      layertest.draw(1280/2,768/2);
 }
 

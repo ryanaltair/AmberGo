@@ -31,7 +31,7 @@ void agmll::update(){
     //calc work here
     // step 1: merge mesh points
     if(ismeshMerged<100){
-        mergedMesh.mergeDuplicateVertices();
+        //mergedMesh.mergeDuplicateVertices();
         addpointlist(mergedMesh);
         getScale(mergedMesh);
         ismeshMerged=100;
@@ -39,7 +39,7 @@ void agmll::update(){
     }
     // step 2: add line list
     if(islinelistfilled<100){
-        int loadstep=10;
+        int loadstep=mergedMesh.getNumIndices()*0.01+1;
         if(linelistloaded>=mergedMesh.getNumIndices()){
             islinelistfilled=100;
             for(int i=0;i<linelist.size();i++){
@@ -47,27 +47,29 @@ void agmll::update(){
             }
             return;
         }
-        for(size_t i=linelistloaded;i<mergedMesh.getNumIndices()/3&&i<linelistloaded+loadstep;i+=1){
+        for(ofIndexType i=linelistloaded;i<mergedMesh.getNumIndices()/3&&i<linelistloaded+loadstep;i+=1){
             addface(mergedMesh, i);
         }
         ////cout<<"linelist:"<<linelist.size()<<"++++++++++++++++++"<<"\n";
         linelistloaded+=loadstep;
+        islinelistfilled++;
         return;
     }
     
     // step 3: add dXdY
     if(isdXdYlistfilled<100){
-        int dxdyloadstep=1;
+        int dxdyloadstep=linelist.size()*0.01+1;
         if(dxdylistloaded>=linelist.size()){
             isdXdYlistfilled=100;
             return;
         }
-        for(size_t i=dxdylistloaded;i<linelist.size()/2&&i<dxdylistloaded+dxdyloadstep;i+=1){
+        for(ofIndexType i=dxdylistloaded;i<linelist.size()*0.5&&i<dxdylistloaded+dxdyloadstep;i+=1){
             adddXdY(i);
             
         }
         ////cout<<"dxdylist:"<<dxdylistloaded<<"++++++++++++++++++"<<"\n";
         dxdylistloaded+=dxdyloadstep;
+        isdXdYlistfilled++;
         return;
     }
     // step 4: to do list
@@ -163,7 +165,7 @@ ofIndexType agmll::findnextline(ofIndexType nextlineip0, ofIndexType nextlineip1
             break;
         }
     }
-
+    return ip0;
 
 }
 void agmll::checkpnextZ(){
@@ -183,7 +185,7 @@ void agmll::checkpnextZ(){
 }
 // public
 ofPath agmll::layertestat(float z){
-    cout<<"------layertest start------"<<endl;
+   // cout<<"------layertest start------"<<endl;
     alluntouched();
     continueflag=0;
     layertestpath.clear();
@@ -243,7 +245,7 @@ ofPath agmll::layertestat(float z){
         if(isloopover==true){
             if((ipL==ipstartL&&ipH==ipstartH)||(ipL==ipstartH&&ipH==ipstartL)){
                 finalsteptogo=0;
-                cout<<"we find the last line "<<"\n";
+               // cout<<"we find the last line "<<"\n";
             }else{
                 //cout<<"we are near the last line surely"<<"\n";
                 //cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
@@ -257,7 +259,7 @@ ofPath agmll::layertestat(float z){
         
         if(isloopover==true){
             if(finalsteptogo==0){
-               cout<<"now we go out"<<"\n";
+              // cout<<"now we go out"<<"\n";
                 break;
             }
         }
@@ -271,17 +273,17 @@ ofPath agmll::layertestat(float z){
     }
     layertestpath.close();
         returnpath.append(layertestpath);
-        cout<<"now we close the sub path"<<endl;
+      //  cout<<"now we close the sub path"<<endl;
     }
 
    // returnpath=layertestpath;
-     cout<<"------layertest end------"<<endl;
+    // cout<<"------layertest end------"<<endl;
     returnpath.close();
     returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
     returnpath.setStrokeColor(ofColor::blue);
     returnpath.setFillColor(ofColor::white);
     returnpath.setFilled(true);
-    cout<<"windingmode"<<returnpath.getWindingMode()<<endl;
+   // cout<<"windingmode"<<returnpath.getWindingMode()<<endl;
     returnpath.setStrokeWidth(1);
     return returnpath;
 }
@@ -561,7 +563,7 @@ void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
 }
 ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
     if(ip0<ip1){
-        for(size_t j=0;j<linelist.size();j+=2){
+        for(ofIndexType j=0;j<linelist.size();j+=2){
             if(ip0==linelist[j]&&ip1==linelist[j+1]){
                 
                 ////cout<<"find the same1"<<"\n";
@@ -570,7 +572,7 @@ ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
             }
         }
     }else{// ip1<ip0
-        for(size_t j=0;j<linelist.size();j+=2){
+        for(ofIndexType j=0;j<linelist.size();j+=2){
             if(ip1==linelist[j]&&ip0==linelist[j+1]){
                 
                 ////cout<<"find the same2"<<"\n";
@@ -626,13 +628,13 @@ ofPath agmll::addPointToPath(ofPath path,float x,float y,ofIndexType i){
 }
 void agmll::addPointMoveToPath(ofVec3f addpoint){
     layertestpath.moveTo(addpoint.x,addpoint.y);
-    cout<<"||:"<<ofToString(addpoint)<<endl;
+ //   cout<<"||:"<<ofToString(addpoint)<<endl;
 }
 
 void agmll::addPointLineToPath(ofVec3f addpoint){
 
     layertestpath.lineTo(addpoint.x,addpoint.y);
- cout<<"|||"<<ofToString(addpoint)<<endl;
+ //cout<<"|||"<<ofToString(addpoint)<<endl;
 }
 
 ofIndexType agmll::findcrosspointat(float z){
@@ -657,7 +659,7 @@ ofIndexType agmll::findcrosspointat(float z){
             continue;
         }
         if( isPointPlaneCross(ip0, ip1, linetypelist[ip1], testatZ)==true){
-            cout<<"we roll"<<endl;
+           // cout<<"we roll"<<endl;
             continueflag=ip0+2;
             return ip0;
             break;
@@ -666,7 +668,7 @@ ofIndexType agmll::findcrosspointat(float z){
         
     }
     continueflag=ip0+2;
-    cout<<"we find nothing any more so we quit"<<endl;
+  //  cout<<"we find nothing any more so we quit"<<endl;
     return 1;
 
 }
@@ -683,8 +685,8 @@ bool agmll::isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,in
     }
     
     if(pointLower.z<planeatz&&pointHigher.z>planeatz){
-        cout<<"get the cross line: "<<ofToString(pointHigher)<<","<<ofToString(pointLower)<<endl;
-        cout<<"testatZ:"<<planeatz<<endl;
+       // cout<<"get the cross line: "<<ofToString(pointHigher)<<","<<ofToString(pointLower)<<endl;
+        //cout<<"testatZ:"<<planeatz<<endl;
             return true;
         }
     

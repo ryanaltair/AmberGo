@@ -20,6 +20,7 @@ public:
     /// Start the thread.
     void start(string path)
     {
+        cout<<"-----modelpath:"<<path<<endl;
         assimpmodel.loadModel(path);
         assimpmodel.disableTextures();
         meshmodel=assimpmodel.getMesh(0);
@@ -30,8 +31,9 @@ public:
         isModelReadySlice=false;
         needMerge=true;
         startThread();
+        ofResetElapsedTimeCounter();
     }
-    bool sliceat(float zheight)
+    bool sliceAt(float zheight)
     {
         if(isModelReadySlice==false){
             //if mesh have model and get merged?
@@ -69,6 +71,7 @@ public:
             if(isThreadEnd==true){
             stopThread();
             }
+            
             // Attempt to lock the mutex.  If blocking is turned on,
             if(lock())
             {
@@ -77,11 +80,16 @@ public:
                 
                 
                 //step load:
+                //easyLogTime("need we load?");
                 stepLoad();
                 //
+                //easyLogTime("need we update?");
                 stepUpdate();
                 
+                //easyLogTime("need we Slice?");
                 stepSliceAt();
+                
+                //easyLogTime("all we done ?");
                 isThreadEnd=true;
 
                 unlock();
@@ -173,8 +181,11 @@ public:
     void stepMerge(){
     
         if(needMerge==true){
+            easyLogTime("merge start");
             meshmodel.mergeDuplicateVertices();
             needMerge=false;
+            needLoad=true;
+            easyLogTime("merge end");
             
         }
        
@@ -182,9 +193,12 @@ public:
     //mll load
     void stepLoad(){
         if(needLoad==true){
+            easyLogTime("load model start");
             mll.setup(meshmodel);
             needLoad=false;
             needSlice=true;
+            
+            easyLogTime("load model end");
         }
         
     }
@@ -192,12 +206,14 @@ public:
     
     void stepUpdate(){
         if(needSlice==true){
+            
+            easyLogTime("load model start");
             while(mll.isdXdYlistfilled<100){
                 mll.update();
-            
+                easyPercent(mll.isdXdYlistfilled);
             }
             isModelReadySlice=true;
-            
+            easyLogTime("load model end");
             cout<<"ready for slice"<<endl;
             needSlice=false;
         }
@@ -227,7 +243,17 @@ protected:
     int count;
     
     //
-    
+    void easyLogTime(string title){
+        cout<<"------";
+
+    cout<<title<<":"<<ofToString(ofGetElapsedTimef()) <<" senconds "<<endl;
+    }
+    void easyPercent(int percent){
+        cout<<"------";
+        
+        cout<<"progress:"<<ofToString(percent) <<"% |" <<ofToString(ofGetElapsedTimef())<<" second"<<endl;
+        
+    }
     
 
 };

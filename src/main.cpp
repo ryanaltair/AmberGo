@@ -14,12 +14,15 @@ int main( ){
     mainWindowSetting.monitor=0;
     auto mainWindow = ofCreateWindow(mainWindowSetting);
     
-    sideWindowSetting.width = 1920;
-    sideWindowSetting.height = 1080;
+    sideWindowSetting.width = 1280;
+    sideWindowSetting.height = 768;
+    
+//    sideWindowSetting.windowMode=OF_WINDOW;
+
     sideWindowSetting.windowMode=OF_FULLSCREEN;
 
     //settings.setPosition(ofVec2f(0,0));
-    sideWindowSetting.resizable = false;
+    sideWindowSetting.resizable = true;
     // uncomment next line to share main's OpenGL resources with gui
     sideWindowSetting.shareContextWith = mainWindow;
 
@@ -31,7 +34,7 @@ int main( ){
    
     shared_ptr<ofApp> mainApp(new ofApp);
     //mainApp->setupGui();
-    ofAddListener(sideWindow->events().draw,mainApp.get(),&ofApp::drawGui);
+    ofAddListener(sideWindow->events().draw,mainApp.get(),&ofApp::drawSideWindow);
     
     ofRunApp(mainWindow, mainApp);
     ofRunMainLoop();

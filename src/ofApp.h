@@ -29,7 +29,7 @@ class ofApp : public ofBaseApp {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     //side window
-    void drawGui(ofEventArgs & args);
+    void drawSideWindow(ofEventArgs & args);
     //add on
     void loadModel();
 		

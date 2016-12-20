@@ -95,8 +95,8 @@ void agplate::drawModel(){
     }
     nodemodel.setTransformMatrix(mreadyModel);
     //nodemodel.draw();
-      ofSetColor(ofColor::black);
-nodemodel.drawWireframe();
+      //ofSetColor(ofColor::black);
+nodemodel.draw();
 }
 
 
