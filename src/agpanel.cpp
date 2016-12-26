@@ -6,7 +6,9 @@ agpanel::agpanel(){
 
 
 void agpanel::setup(){
-
+//initial
+    isConnect=false;
+    
     // GUI start
     // instantiate and position the gui //
     gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
@@ -17,15 +19,21 @@ void agpanel::setup(){
     sliceHeightSlider=gui->addSlider("sliceHeight", 0, 1393,0);
     sliceProgressPercentSlider=gui->addSlider("progress", 0, 100, 0);
     printStartButton=gui->addButton("start print");
-    
-    gui->setTheme(new ofxDatGuiThemeSmoke());
+    connectButton=gui->addButton("amber is offline");
+   
+    sendMessageTextInput=gui->addTextInput("sendMsg:");
+     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     printStartButton->onButtonEvent(this, &agpanel::onButtonEvent);
-    
+    connectButton->onButtonEvent(this,&agpanel::onButtonEvent);
+    sendMessageTextInput->onTextInputEvent(this,&agpanel::onTextInputEvent);
 }
 void agpanel::update(){
+    serialUpdate();
+    
     timeUpdate();
+    
     if(workState==statePrintPreparing){
         cout<<"now we are print preparing"<<endl;
         sliceHeight=0.2;
@@ -81,10 +89,59 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
         }
     
     }
+    if(e.target==connectButton){
+        tryConnect();
+    
+    }
     cout << e.target->getLabel() << " was clicked!"  << endl;
+}
+void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
+{
+    if(serial.isInitialized()==false){return;}
+    for(int i=0;i<e.text.size();i++){
+        serial.writeByte(e.text[i]);
+    }
+
 }
 void agpanel::sliceHeightBind(float sliceheight){
     sliceHeightSlider->bind(sliceHeight);
 
 }
- 
+
+void agpanel::tryConnect(){
+    if(serial.isInitialized()==false){
+        serial.setup(0,115200);
+    }else{
+        serial.close();
+        serial.setup(0,115200);
+    }
+
+}
+
+void agpanel::serialUpdate(){
+    if(serial.isInitialized()==false){
+        return;
+    }
+    if(isConnect==true){
+        connectButton->setLabel("amber is ON");
+    }
+    
+    teststring="Serial_\n";
+    int myByte = 0;
+    while(serial.available()>0){
+        isConnect=true;
+        myByte = serial.readByte();
+        if ( myByte == OF_SERIAL_NO_DATA ){
+           cout<<"no data was read"<<endl;
+        }
+        else if ( myByte == OF_SERIAL_ERROR ){
+            cout<<"an error occurred"<<endl;
+        }
+        else{
+        teststring+=myByte;
+            cout<<teststring<<endl;
+        }
+    }
+    
+}
+

@@ -16,15 +16,18 @@ public:
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
-    
+    void onTextInputEvent(ofxDatGuiTextInputEvent e);
     ofxDatGuiSlider* sliceHeightSlider;
     ofxDatGuiSlider* sliceProgressPercentSlider;
     ofxDatGuiButton* printStartButton;
+    ofxDatGuiButton* connectButton;
+    ofxDatGuiTextInput* sendMessageTextInput;
     float sliceHeight=0;
     void timeUpdate();
     void outputDone(bool done);
     void sliceHeightBind(float sliceheight);
-    
+    void tryConnect();
+    void serialUpdate();
     bool isTimeToNextLayer=false;
     int workState=0;
     
@@ -43,4 +46,7 @@ public:
     bool timerResetTriger =false ;
     bool timerToNextLayerTrigger= false ;
     float exposeTime=0.4;
+    ofSerial serial;
+    string teststring;// used for serial test
+    bool isConnect;
 };
