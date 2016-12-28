@@ -17,6 +17,7 @@ public:
     vector<float> dXdYlist;// init with addnewline() work with adddXdY()
     vector<int> linetypelist;//init with addnewline() work with adddXdY()
     vector<float> touchedlist;//init with addnewline() work with adddXdY()
+   // vector<ofIndexType> linehashlist;//init with addnewline() work with searchline() but it is slow
     ofPath layertestat(float z);
     ofPath layertest;
     ofVec3f meshScale;
@@ -31,7 +32,7 @@ public:
     //the mesh clone
     ofMesh mergedMesh;
     // main job
-    void addface(ofIndexType i);
+    void addface();
     void adddXdY(ofIndexType i);
     void addlinetype(ofIndexType i,int linetype,int riseorfall);
     void addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax);
@@ -126,5 +127,6 @@ private:
     
     //debug only
     void debuglinelist(ofIndexType ip);
-    
+    ofIndexType counter0=0;
+    ofIndexType counter1=0;
 };

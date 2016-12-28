@@ -40,20 +40,7 @@ void agmll::update(){
     }
     // step 2: add line list
     if(islinelistfilled<100){
-        int loadstep=mergedMesh.getNumIndices()*1+1;
-        if(linelistloaded>=mergedMesh.getNumIndices()){
-            islinelistfilled=100;
-            for(int i=0;i<linelist.size();i++){
-            ////cout<<i<<":"<<linelist[i]<<"\n";
-            }
-            return;
-        }
-        int imax=mergedMesh.getNumIndices();
-        for(ofIndexType i=0;i<imax;i+=3){
-            addface( i);
-        }
-        ////cout<<"linelist:"<<linelist.size()<<"++++++++++++++++++"<<"\n";
-       
+        addface( );
         islinelistfilled+=100;
         return;
     }
@@ -368,17 +355,25 @@ ofVec3f agmll::getScale(ofMesh mesh){
     
 }
 
-void agmll::addface(ofIndexType i){
-    
+void agmll::addface(){
     // get the point first
-    ofIndexType ia=mergedMesh.getIndex(i);
-    ofIndexType ib=mergedMesh.getIndex(i+1);
-    ofIndexType ic=mergedMesh.getIndex(i+2);
-    ofVec3f pa=mergedMesh.getVertex(ia);
-    ofVec3f pb=mergedMesh.getVertex(ib);
-    ofVec3f pc=mergedMesh.getVertex(ic);
+    ofIndexType ia;
+    ofIndexType ib;
+    ofIndexType ic;
+    ofVec3f pa;
+    ofVec3f pb;
+    ofVec3f pc;
+    ofIndexType i=0;
+   ofIndexType imax=mergedMesh.getNumIndices();
     //cout<<"ia,ib,ic"<<ia<<ib<<ic<<"\n";
     if(i==0){// first face
+        // get the point first
+         ia=mergedMesh.getIndex(i);
+         ib=mergedMesh.getIndex(i+1);
+         ic=mergedMesh.getIndex(i+2);
+         pa=mergedMesh.getVertex(ia);
+         pb=mergedMesh.getVertex(ib);
+         pc=mergedMesh.getVertex(ic);
         //ab
         addnewline(ia,ib, ic);
         //ac
@@ -386,8 +381,17 @@ void agmll::addface(ofIndexType i){
         //bc
         addnewline(ib,ic,ia);
         //cout<<"first 3 line"<<"\n";
-    }else{//i>0
-        
+    }
+    counter0=0;
+    counter1=0;
+    for(i=3;i<imax;i+=3){//i>0
+        // get the point first
+         ia=mergedMesh.getIndex(i);
+         ib=mergedMesh.getIndex(i+1);
+         ic=mergedMesh.getIndex(i+2);
+         pa=mergedMesh.getVertex(ia);
+         pb=mergedMesh.getVertex(ib);
+         pc=mergedMesh.getVertex(ic);
         int oldline0=searchline(ia,ib);
         
         // line exist and not
@@ -418,7 +422,7 @@ void agmll::addface(ofIndexType i){
         }
         // new line
     }
-
+    cout<<"count compare:"<<counter0<<":"<<counter1<<endl;
 }
 void agmll::adddXdY(ofIndexType i){
     if(islinelistfilled<100){// can't work when linelist is not filled
@@ -546,7 +550,8 @@ void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
     ////cout<<":"<<linelist.size()<<"\n";
     linehorizonlist.push_back(false);
     linehorizonlist.push_back(false);
-    
+   // linehashlist.push_back(ip0+ip1);
+//    linehashlist.push_back(0);
     dXdYlist.push_back(0);
     dXdYlist.push_back(0);
     
@@ -561,28 +566,81 @@ void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
 void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
     if(nearpointlist[ipl]==nearpointlist[ipl+1]){
         nearpointlist[ipl+1]=ipn;
+    //    linehashlist[ipl+1]=1;
         return;
     }
 }
 ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
+    ofIndexType linemax=linelist.size();
+    /**
     if(ip0<ip1){
-        for(ofIndexType j=0;j<linelist.size();j+=2){
+        for(ofIndexType i=0;i<linemax;i+=2){
+            if(linehashlist[i+1]!=0){
+                continue;
+            }
+            ofIndexType ihashline=ip0+ip1;
+            if(ihashline!=linehashlist[i]){
+                counter1++;
+                continue;
+            }
+        
+            if(ip0==linelist[i]&&ip1==linelist[i+1]){
+                
+                ////cout<<"find the same1"<<"\n";
+                counter0++;
+                return i;
+                
+            }
+          
+        }
+        
+    }else{//ip0>ip1
+        
+            for(ofIndexType i=0;i<linemax;i+=2){
+                if(linehashlist[i+1]!=0){
+                    continue;
+                }
+                ofIndexType ihashline=ip0+ip1;
+                if(ihashline!=linehashlist[i]){
+                    counter1++;
+                    continue;
+                }
+                
+                if(ip1==linelist[i]&&ip0==linelist[i+1]){
+                    counter0++;
+                    ////cout<<"find the same2"<<"\n";
+                    return i;
+                }
+                
+            }
+            
+        
+        }
+    
+    
+    return -1;
+     **/
+    
+    if(ip0<ip1){
+        for(ofIndexType j=0;j<linemax;j+=2){
             if(ip0==linelist[j]&&ip1==linelist[j+1]){
                 
                 ////cout<<"find the same1"<<"\n";
+                 counter0++;
                 return j;
                 
             }
         }
     }else{// ip1<ip0
-        for(ofIndexType j=0;j<linelist.size();j+=2){
+        for(ofIndexType j=0;j<linemax;j+=2){
             if(ip1==linelist[j]&&ip0==linelist[j+1]){
-                
+                counter0++;
                 ////cout<<"find the same2"<<"\n";
                 return j;
             }
         }
     }
+    counter1++;
     return -1;// false
 }
 ofVec3f agmll::getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z){

@@ -208,13 +208,18 @@ public:
         if(needSlice==true){
             
             easyLogTime("load model start");
+            float timeLast=ofGetElapsedTimef();
+           
             while(mll.islinelistfilled<100){
                 mll.update();
-                easyPercent(mll.islinelistfilled);
-            }
+                            }
+            
+            float timeWaste=ofGetElapsedTimef()-timeLast;
+            cout<<"------ add line take:"<<timeWaste<<endl;
+            easyPercent(mll.islinelistfilled);
             while(mll.isdXdYlistfilled<100){
                 mll.update();
-                easyPercent(mll.isdXdYlistfilled);
+               // easyPercent(mll.isdXdYlistfilled);
             }
             isModelReadySlice=true;
             easyLogTime("load model end");
