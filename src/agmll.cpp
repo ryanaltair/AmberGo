@@ -27,7 +27,8 @@ void agmll::setup(ofMesh mesh){
 }
 
 void agmll::update(){
-    //this update will put inside the app update
+    //this update will put inside the app update in old day
+    // new this will be excute in thread
     //calc work here
     // step 1: merge mesh points
     if(ismeshMerged<100){
@@ -279,6 +280,7 @@ ofPath agmll::layertestat(float z){
    // returnpath=layertestpath;
     // cout<<"------layertest end------"<<endl;
     returnpath.close();
+    
     returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
     returnpath.setStrokeColor(ofColor::blue);
     returnpath.setFillColor(ofColor::white);

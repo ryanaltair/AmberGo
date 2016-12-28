@@ -44,18 +44,18 @@ void agpanel::update(){
         
        
         if(isTimeToNextLayer==true){
-             cout<<"now we are printing"<<endl;
+         //    cout<<"now we are printing"<<endl;
             if(sliceHeight>1000){
                 sliceHeight=-1;
                 workState=statePrintFinish;
                 }else{
-            sliceHeight+=1.35;
-                    cout<<"we change slice height at "<< ofGetElapsedTimef()<<" seconds"<<endl;
+            sliceHeight+=0.35;
+                   // cout<<"we change slice height at "<< ofGetElapsedTimef()<<" seconds"<<endl;
                 }
-            cout<<"tiemr before "<<timerToNextLayer;
+           // cout<<"tiemr before "<<timerToNextLayer;
             timerToNextLayer=ofGetElapsedTimef()+exposeTime;
             
-            cout<<" tiemr after "<<timerToNextLayer<<endl;
+          //  cout<<" tiemr after "<<timerToNextLayer<<endl;
             isTimeToNextLayer=false;
             outputdone=false;
             

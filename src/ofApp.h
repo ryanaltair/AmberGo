@@ -72,6 +72,15 @@ class ofApp : public ofBaseApp {
     
     
     ///snap
+    void drawFBO();
     bool bSnapshot=false;
+    ofFbo fbo;
+    ofPixels pixelsbuffer;
+    
     ofImage snapImg;
+    int snapcount=1000;
+    bool bPrint=false;
+    
+    // timer
+    float timer;
 };

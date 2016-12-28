@@ -4,8 +4,8 @@
 #include "ofThread.h"
 #include "ofxAssimpModelLoader.h"
 #include "agmll.h"
-/// This is a simple example of a agSliceManager created by extending ofThread.
-/// It contains data (count) that will be accessed from within and outside the
+/// This is the agSliceManager created by extending ofThread.
+/// It contains slice that will be accessed from within and outside the
 /// thread and demonstrates several of the data protection mechanisms (aka
 /// mutexes).
 class agSliceManager: public ofThread
@@ -208,6 +208,10 @@ public:
         if(needSlice==true){
             
             easyLogTime("load model start");
+            while(mll.islinelistfilled<100){
+                mll.update();
+                easyPercent(mll.islinelistfilled);
+            }
             while(mll.isdXdYlistfilled<100){
                 mll.update();
                 easyPercent(mll.isdXdYlistfilled);
@@ -221,10 +225,12 @@ public:
     void stepSliceAt(){
         
         if(needSliceAt>=0){
-             cout<<"we are slicing  at"<<needSliceAt<<endl;
+            // cout<<"we are slicing from"<<ofToString(ofGetElapsedTimef()) ;
             layertest=mll.layertestat(needSliceAt);
+          //  cout<<" to "<<ofToString(ofGetElapsedTimef()) <<endl;
+            
             isSliceChanged=true;
-        cout<<"we just slice  at"<<needSliceAt<<endl;
+        //cout<<"we just slice  at"<<needSliceAt<<endl;
         }
         needSliceAt=-1;
     }

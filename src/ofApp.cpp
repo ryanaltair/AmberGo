@@ -11,7 +11,13 @@ void ofApp::setup(){
     isModelChanged=true;
     plate.setup();
     
-    
+    //setup fbo
+    ofFbo::Settings fbosettings;
+    fbosettings.width = 1280;
+    fbosettings.height =768;
+    fbosettings.textureTarget = GL_TEXTURE_2D;
+    fbo.allocate(fbosettings);
+    // fbo end
 }
 
 //--------------------------------------------------------------
@@ -28,15 +34,21 @@ void ofApp::update(){
         //cout<<"we slice at now "<<endl;
         plate.sliceAt(layertestZ);
         merger.sliceAt(layertestZ);
+        
         //cout<<"we slice at end"<<endl;
         plate.update();
     }
 
     if(merger.isSliceChanged==true){
-        cout<<"B:we just got to here to try layertest"<<"\n";
+       // cout<<"B:we just got to here to try layertest"<<"\n";
         layertest=merger.layertest;
+        drawFBO();
         panel.outputDone(true);
         merger.isSliceChanged=false;
+        if(bPrint==true){
+            bSnapshot=true;
+            snapcount++;
+        }
     }
     //mll.update();
     //cout<<"dxdyfilled"<<mll.isdXdYlistfilled<<endl;
@@ -66,6 +78,9 @@ void ofApp::keyPressed(int key){
             break;
         case OF_KEY_LEFT:
             bSnapshot=true;
+            break;
+        case OF_KEY_RIGHT:
+            bPrint=true;
             break;
         }
 }
@@ -129,10 +144,9 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 //side window
 
 void ofApp::drawSideWindow(ofEventArgs & args){
-    ofBackground(0,0,0);
-     layertest.draw(1280/2,768/2);
+    fbo.draw(0,0);
     
-    savePic();
+    //savePic();
 }
 
 
@@ -179,16 +193,43 @@ void ofApp::loadModel(){
     cout<<"modelsize"<<plate.modelSize<<endl;
     isModelChanged=false;
 }
+void ofApp::drawFBO(){
+    // now we try fbo
+    timer=ofGetElapsedTimef();
+    
+    fbo.begin();
+    //ofBackground(0, 0, 0, 0);
+    ofClear(0,0,0);
+    //ofBackground(0,0,0);
+    layertest.draw(1280/2,768/2);
+    fbo.end();
+    
+    ofPixels pixelsbuffer;
+    pixelsbuffer.allocate(1280, 768,3);
+    fbo.readToPixels(pixelsbuffer);
+    
+    cout<<"|||| save start: "<<ofToString(ofGetElapsedTimef())<<endl;
+    string fileName = "output/A" +ofToString(snapcount)+ ofToString(snapcount)+ ".png";
+    if(bSnapshot==true){
+        ofSaveImage(pixelsbuffer, fileName);
+    }
+    //end fbo
+    cout<<"|||| save middl: "<<ofToString(ofGetElapsedTimef())<<endl;
 
-void ofApp::savePic(){
     if (bSnapshot == true){
         // grab a rectangle at 200,200, width and height of 300,180
-        snapImg.grabScreen(0,0,1280,768);
-        
-        string fileName = "a" + ofToString(ofToInt(ofToString(layertestZ*100))) + ".png";
-        snapImg.save(fileName);
         bSnapshot = false;
+        if(snapcount>=2000){
+            bPrint=false;
+        }
     }
+
+}
+
+void ofApp::savePic(){
+    
+    
+    
 }
 
 

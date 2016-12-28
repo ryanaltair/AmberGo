@@ -45,7 +45,7 @@ public:
     bool outputdone=false;
     bool timerResetTriger =false ;
     bool timerToNextLayerTrigger= false ;
-    float exposeTime=0.4;
+    float exposeTime=0.0001;
     ofSerial serial;
     string teststring;// used for serial test
     bool isConnect;
