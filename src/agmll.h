@@ -31,7 +31,7 @@ public:
     //the mesh clone
     ofMesh mergedMesh;
     // main job
-    void addface(ofMesh mesh,ofIndexType i);
+    void addface(ofIndexType i);
     void adddXdY(ofIndexType i);
     void addlinetype(ofIndexType i,int linetype,int riseorfall);
     void addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax);

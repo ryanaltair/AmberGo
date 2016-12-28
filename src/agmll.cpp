@@ -40,7 +40,7 @@ void agmll::update(){
     }
     // step 2: add line list
     if(islinelistfilled<100){
-        int loadstep=mergedMesh.getNumIndices()*0.01+1;
+        int loadstep=mergedMesh.getNumIndices()*1+1;
         if(linelistloaded>=mergedMesh.getNumIndices()){
             islinelistfilled=100;
             for(int i=0;i<linelist.size();i++){
@@ -48,12 +48,13 @@ void agmll::update(){
             }
             return;
         }
-        for(ofIndexType i=linelistloaded;i<mergedMesh.getNumIndices()/3&&i<linelistloaded+loadstep;i+=1){
-            addface(mergedMesh, i);
+        int imax=mergedMesh.getNumIndices();
+        for(ofIndexType i=0;i<imax;i+=3){
+            addface( i);
         }
         ////cout<<"linelist:"<<linelist.size()<<"++++++++++++++++++"<<"\n";
-        linelistloaded+=loadstep;
-        islinelistfilled++;
+       
+        islinelistfilled+=100;
         return;
     }
     
@@ -367,15 +368,15 @@ ofVec3f agmll::getScale(ofMesh mesh){
     
 }
 
-void agmll::addface(ofMesh mesh,ofIndexType i){
-    i=i*3;
+void agmll::addface(ofIndexType i){
+    
     // get the point first
-    ofIndexType ia=mesh.getIndex(i);
-    ofIndexType ib=mesh.getIndex(i+1);
-    ofIndexType ic=mesh.getIndex(i+2);
-    ofVec3f pa=mesh.getVertex(ia);
-    ofVec3f pb=mesh.getVertex(ib);
-    ofVec3f pc=mesh.getVertex(ic);
+    ofIndexType ia=mergedMesh.getIndex(i);
+    ofIndexType ib=mergedMesh.getIndex(i+1);
+    ofIndexType ic=mergedMesh.getIndex(i+2);
+    ofVec3f pa=mergedMesh.getVertex(ia);
+    ofVec3f pb=mergedMesh.getVertex(ib);
+    ofVec3f pc=mergedMesh.getVertex(ic);
     //cout<<"ia,ib,ic"<<ia<<ib<<ic<<"\n";
     if(i==0){// first face
         //ab
