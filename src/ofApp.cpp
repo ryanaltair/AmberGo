@@ -4,8 +4,8 @@
 void ofApp::setup(){
     ofSetWindowTitle("Amber Go Demo");
     panel.setup();
-    panel.sliceHeightBind(layertestZ);
-	ofSetVerticalSync(true);
+    
+    ofSetVerticalSync(true);
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
     modelpath="testcube.stl";
@@ -24,15 +24,15 @@ void ofApp::setup(){
 void ofApp::update(){
     apppreference.updatelayerout(panel.getWidth());
     panel.update();
-    layertestZ=panel.sliceHeight;
+    //panel.layertestZ=panel.sliceHeight;
     loadModel();
-    //sliceHeight=layertestZ;//sliceLayer*sliceLayerThickness;
-    if(layertestZ!=layertestZlast){
-        plate.layertestZ=layertestZ;
-        layertestZlast=layertestZ;
+    //sliceHeight=panel.layertestZ;//sliceLayer*sliceLayerThickness;
+    if(panel.layertestZ!=panel.layertestZlast){
+       // panel.layertestZ=panel.layertestZ;
+        panel.layertestZlast=panel.layertestZ;
         //cout<<"we slice at now "<<endl;
-        plate.sliceAt(layertestZ);
-        merger.sliceAt(layertestZ);
+        plate.sliceAt(panel.layertestZ);
+        merger.sliceAt(panel.layertestZ);
         //cout<<"we slice at end"<<endl;
         plate.update();
     }
@@ -69,12 +69,12 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
     switch(key){
         case OF_KEY_UP:
-            layertestZ++;
-           panel.sliceHeight=layertestZ;
+            panel.layertestZ++;
+          // panel.sliceHeight=panel.layertestZ;
             break;
         case OF_KEY_DOWN:
-            layertestZ--;
-             panel.sliceHeight=layertestZ;
+            panel.layertestZ--;
+         //    panel.sliceHeight=panel.layertestZ;
             break;
         case OF_KEY_LEFT:
             bSnapshot=true;
@@ -228,9 +228,9 @@ void ofApp::drawFBO(){
     string emmmm;
     annnn=ofToString(panel.snapcount);
     int zinpulse;
-    float layertestZmm=layertestZ;
+    float layertestZmm=panel.layertestZ;
     float pulsepermm=50; //for 1204 the 1 round for 4 mm in z , 1 round means 4 mms head up and 200 steps for stepper
-    zinpulse=layertestZmm*pulsepermm+1000;// to easy the bits problem ,we just start from 1000 
+    zinpulse=layertestZmm*pulsepermm+1000;// to easy the bits problem ,we just start from 1000
     emmmm=ofToString(zinpulse);
    // cout<<"|||| save start: "<<ofToString(ofGetElapsedTimef())<<endl;
     string tickfileName = "output/fabfiles/A" +annnn+emmmm+ ".png";
@@ -248,7 +248,7 @@ void ofApp::drawFBO(){
 
     if (bSnapshot == true){
         bSnapshot = false;
-        if(panel.snapcount>=9000||layertestZ>plate.modelSize.z){
+        if(panel.snapcount>=9000||panel.layertestZ>plate.modelSize.z){
             panel.bPrint=false;
         }
     }

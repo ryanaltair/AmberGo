@@ -32,10 +32,10 @@ public:
     ofxDatGuiToggle* showsliceToggle;
     ofxDatGuiSlider* layerthicknessSlider;
     ofxDatGuiSlider* exposedTimeSlider;
-    float sliceHeight=0;
+   // float sliceHeight=0.02;
     void timeUpdate();
     void outputDone(bool done);
-    void sliceHeightBind(float sliceheight);
+    void sliceHeightBind();
     void tryConnect();
     void serialUpdate();
     bool isTimeToNextLayer=false;
@@ -64,7 +64,7 @@ public:
     float sliceMin=0.02;
     float sliceMax=1;
     int snapcount=1000;
-    float layerthickness;
+    float layerthickness=0.02;
     string sliceReady="Slice is ready";
     string sliceUnready="Slice is not ready";
     
@@ -73,4 +73,8 @@ public:
     
     int exposedTime=1000;
         bool ShowSlice=true;
+    
+    float layertestZlast=0.1;
+    float layertestZ=0.1;
+
 };

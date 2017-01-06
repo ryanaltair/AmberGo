@@ -51,8 +51,6 @@ class ofApp : public ofBaseApp {
     ofMesh readyModel;
 
     // test theory
-    float layertestZlast=0;
-    float layertestZ=0;
 
     //output layer
     ofPath layertest;

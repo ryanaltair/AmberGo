@@ -46,6 +46,7 @@ void agpanel::setup(){
     outputToggle->onToggleEvent(this,&agpanel::onToggleEvent);
     showsliceToggle->onToggleEvent(this,&agpanel::onToggleEvent);
     exposedTime=exposedTimeSlider->getValue();
+    sliceHeightBind();
 }
 void agpanel::update(){
     serialUpdate();
@@ -54,7 +55,7 @@ void agpanel::update(){
     
     if(workState==statePrintPreparing){
         cout<<"now we are print preparing"<<endl;
-        sliceHeight=0.02;//the first layer
+        layertestZ=0.02;//the first layer
         timerToNextLayer=ofGetElapsedTimef()+5;
         workState=statePrinting;
     }
@@ -63,11 +64,11 @@ void agpanel::update(){
        
         if(isTimeToNextLayer==true){
          //    cout<<"now we are printing"<<endl;
-            if(sliceHeight>sliceMax-layerthickness){
-                //sliceHeight=-1;
+            if(layertestZ>sliceMax-layerthickness){
+                //layertestZ=-1;
                 workState=statePrintFinish;
                 }else{
-                    sliceHeight+=layerthickness;
+                    layertestZ+=layerthickness;
                    // cout<<"we change slice height at "<< ofGetElapsedTimef()<<" seconds"<<endl;
                 }
            // cout<<"tiemr before "<<timerToNextLayer;
@@ -95,7 +96,7 @@ void agpanel::outputDone(bool done){
 void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 {
     if(e.target==sliceHeightSlider){
-        sliceHeight=e.value;
+        //layertestZ=e.value;
     }
     if(e.target==layerthicknessSlider){
        // layerthickness=e.value;
@@ -155,8 +156,9 @@ void agpanel::onToggleEvent(ofxDatGuiToggleEvent e)
         
     }
 }
-void agpanel::sliceHeightBind(float sliceheight){
-    sliceHeightSlider->bind(sliceHeight);
+void agpanel::sliceHeightBind(){
+    //sliceHeightSlider->bind(sliceHeight);
+    sliceHeightSlider->bind(layertestZ);
     layerthicknessSlider->bind(layerthickness);
      
 
