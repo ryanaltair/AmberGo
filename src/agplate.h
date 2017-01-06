@@ -1,6 +1,7 @@
 #pragma once
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
+
 /**
 use for AmberGo
  as plate
@@ -9,7 +10,7 @@ use for AmberGo
  ground
  outsidebox
  
-
+unit: mm
 
 **/
 class agplate{
@@ -19,12 +20,13 @@ public:
     void setup();
     void update();
     void sliceAt(float Z);
-    void drawincamera();
+    void drawincamera(ofRectangle view);
     void drawModel();
     void addModel(ofMesh model);// add a model
     void addModel(string modelpath);//add a model with assimp
     void deleteModel();
     void cleanModel();
+    void setPosition(ofVec3f newpostion);
     // workplace:
     // ground
     ofBoxPrimitive playground;
@@ -38,6 +40,7 @@ public:
     
     float layertestZ=0;
     ofVec3f modelSize;
+    ofVec3f modelMoce;
     ofVec3f boxSize;// the box size
     ofVec3f pixelSize;
     float groundheight;
@@ -55,7 +58,7 @@ public:
     vector<ofMesh> models;
     ofxAssimpModelLoader assimploader;
     of3dPrimitive nodemodel;
-    
-    ofMatrix4x4 mreadyModel;
     ofEasyCam cam;
+    //ofRectangle view=ofRectangle(0, 0, 320, 320);
+    
 };

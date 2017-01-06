@@ -2,10 +2,10 @@
 
 agplate::agplate(){
     
-    boxSize.x=1280;//126.72mm
-    boxSize.y=800;//74.88mm
-    boxSize.z=1393;//138mm
-    groundheight=10;
+    boxSize.x=126.72; //1280;//126.72mm
+    boxSize.y=74.88; //800;//74.88mm
+    boxSize.z=138;//1393;//138mm
+    groundheight=2;
     mreset.setTranslation(0, 0, 0);
 }
 agplate::~agplate(){
@@ -21,15 +21,13 @@ void agplate::setup(){
     outsideBox.set(boxSize.x,boxSize.y,boxSize.z);
     moutsideBox.setTranslation(0, 0, 0);
     outsideBox.setTransformMatrix(moutsideBox);
-    sliceLayPlane.set(1280,800,0.4);
+    sliceLayPlane.set(boxSize.x,boxSize.y,0.4);
     
-    cam.setDistance(2000);
+    cam.setDistance(200);
     
-    mreadyModel.setTranslation(0, 0, modelSize.z*0.5);
-}
+ }
 
 void agplate::update(){
-    mreadyModel.setTranslation(0, 0, 0);
     msliceLayPlane.setTranslation(0, 0, layertestZ);
 }
 
@@ -53,14 +51,17 @@ void agplate::addModel(ofMesh model){
 void agplate::addModel(string modelpath){
     drawmode=1;
     assimploader.loadModel(modelpath);
+   
     nodemodel.getMesh()=assimploader.getMesh(0);
+    nodemodel.setScale(100, 100, 100);
     cout<<"add a assimp model in plate"<<endl;
     
     
 }
-void agplate::drawincamera(){
-    cam.begin();
-
+void agplate::drawincamera(ofRectangle view){
+    
+    cam.begin(view);
+    ofBackground(ofColor::lightBlue);
     if(sliceLayPlaneEnable==1){
 
         ofSetColor(255,0,0,127);
@@ -83,7 +84,7 @@ void agplate::drawincamera(){
 void agplate::drawModel(){
     ofSetColor(ofColor::darkCyan);
     if(drawmode==1){
-        assimploader.drawFaces();
+        //assimploader.drawFaces();
         return;
     }
     if(models.size()>0){
@@ -93,10 +94,13 @@ void agplate::drawModel(){
     if(drawmode==0){
     
     }
-    nodemodel.setTransformMatrix(mreadyModel);
-    //nodemodel.draw();
-      //ofSetColor(ofColor::black);
-nodemodel.draw();
+   
+   
+    nodemodel.draw();
 }
 
+void agplate::setPosition(ofVec3f newpostion){
+    nodemodel.setPosition(-newpostion);
+    cout<<"position"<<ofToString(newpostion);
+}
 

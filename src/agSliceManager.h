@@ -23,8 +23,7 @@ public:
         cout<<"-----modelpath:"<<path<<endl;
         assimpmodel.loadModel(path);
         assimpmodel.disableTextures();
-        meshmodel=assimpmodel.getMesh(0);
-        meshmodel.disableTextures();
+                meshmodel.disableTextures();
         // Mutex blocking is set to true by default
         // It is rare that one would want to use startThread(false).
         isThreadEnd=false;
@@ -32,6 +31,12 @@ public:
         needMerge=true;
         startThread();
         ofResetElapsedTimeCounter();
+    }
+    void setmmperpixel(ofVec3f mmperpixel){
+        fmmperpixel=mmperpixel;
+    }
+    void setpixelpermm(ofVec3f pixelpermm){
+        fpixelpermm=pixelpermm;
     }
     bool sliceAt(float zheight)
     {
@@ -177,12 +182,18 @@ public:
     // work in thread
     
     
-    //merge
+    //merge and scale
     void stepMerge(){
     
         if(needMerge==true){
+            assimpmodel.setScale(fpixelpermm.x,fpixelpermm.y,fpixelpermm.z);
+            
+            assimpmodel.setScale(1000,1000,1000);
+            meshmodel=assimpmodel.getMesh(0);
+
             easyLogTime("merge start");
             meshmodel.mergeDuplicateVertices();
+            
             needMerge=false;
             needLoad=true;
             easyLogTime("merge end");
@@ -252,7 +263,8 @@ protected:
     // Note, if we simply want to count in a thread-safe manner without worrying
     // about mutexes, we might use Poco::AtomicCounter instead.
     int count;
-    
+    ofVec3f fpixelpermm;
+    ofVec3f fmmperpixel;
     //
     void easyLogTime(string title){
         cout<<"------";

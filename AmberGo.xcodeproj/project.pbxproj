@@ -86,6 +86,8 @@
 		64C563B8158C37E9D07AE29D /* ofxDatGuiFRM.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiFRM.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiFRM.h; sourceTree = SOURCE_ROOT; };
 		6A0E743407465957DB764ED3 /* mesh.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = mesh.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/mesh.h; sourceTree = SOURCE_ROOT; };
 		6C1DCBEF1E0903A30077E2A0 /* agTimeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agTimeManager.h; sourceTree = "<group>"; };
+		6CFF5A2D1E1DDB7500AC8D2A /* agmodelinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agmodelinfo.h; sourceTree = "<group>"; };
+		6CFF5A2E1E1DDCF400AC8D2A /* agAppPreference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agAppPreference.h; sourceTree = "<group>"; };
 		6E069CE4C58E970E3429DBE5 /* Importer.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Importer.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Importer.hpp; sourceTree = SOURCE_ROOT; };
 		744031A3E8F8DAF9FE6F3EA8 /* ofxDatGuiGroups.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiGroups.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiGroups.h; sourceTree = SOURCE_ROOT; };
 		7709D5ABAE20C358D6C1DB75 /* agpanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = agpanel.cpp; path = src/agpanel.cpp; sourceTree = SOURCE_ROOT; };
@@ -396,6 +398,8 @@
 				781F2F9F6B618CA32DD9EEDD /* agplate.h */,
 				DB731077A0B2BBD4CD225C77 /* agSliceManager.h */,
 				6C1DCBEF1E0903A30077E2A0 /* agTimeManager.h */,
+				6CFF5A2D1E1DDB7500AC8D2A /* agmodelinfo.h */,
+				6CFF5A2E1E1DDCF400AC8D2A /* agAppPreference.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;

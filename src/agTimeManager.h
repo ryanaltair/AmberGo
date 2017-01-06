@@ -1,7 +1,9 @@
 #pragma once
 #include "ofMain.h"
-
-class agtimer{
+/**
+this is not work now 
+ **/
+class agtimemanager{
 public:
     void startPrint(){
         if(state==statemodelReady){

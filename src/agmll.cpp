@@ -6,6 +6,7 @@ agmll::agmll(){
 }
 
 void agmll::setup(ofMesh mesh){
+    
     mergedMesh=mesh;
     
     //clean up
@@ -40,7 +41,7 @@ void agmll::update(){
     }
     // step 2: add line list
     if(islinelistfilled<100){
-        addface( );
+        addface();
         islinelistfilled+=100;
         return;
     }
@@ -52,6 +53,7 @@ void agmll::update(){
             isdXdYlistfilled=100;
             return;
         }
+        
         for(ofIndexType i=dxdylistloaded;i<linelist.size()*0.5&&i<dxdylistloaded+dxdyloadstep;i+=1){
             adddXdY(i);
             
@@ -178,7 +180,9 @@ ofPath agmll::layertestat(float z){
     alluntouched();
     continueflag=0;
     layertestpath.clear();
-    testatZ=z;
+    z+=meshMin.z;
+    testatZ=z;//+meshMin.z;
+   // cout<<"z="<<testatZ<<" minZ "<<meshMin.z<<endl;
     ofPath returnpath;
     if(isdXdYlistfilled!=100){
         return returnpath;
@@ -371,9 +375,9 @@ void agmll::addface(){
          ia=mergedMesh.getIndex(i);
          ib=mergedMesh.getIndex(i+1);
          ic=mergedMesh.getIndex(i+2);
-         pa=mergedMesh.getVertex(ia);
-         pb=mergedMesh.getVertex(ib);
-         pc=mergedMesh.getVertex(ic);
+        // pa=mergedMesh.getVertex(ia);
+        // pb=mergedMesh.getVertex(ib);
+        // pc=mergedMesh.getVertex(ic);
         //ab
         addnewline(ia,ib, ic);
         //ac
@@ -384,14 +388,15 @@ void agmll::addface(){
     }
     counter0=0;
     counter1=0;
+   
     for(i=3;i<imax;i+=3){//i>0
         // get the point first
          ia=mergedMesh.getIndex(i);
          ib=mergedMesh.getIndex(i+1);
          ic=mergedMesh.getIndex(i+2);
-         pa=mergedMesh.getVertex(ia);
-         pb=mergedMesh.getVertex(ib);
-         pc=mergedMesh.getVertex(ic);
+         //pa=mergedMesh.getVertex(ia);
+         //pb=mergedMesh.getVertex(ib);
+         //pc=mergedMesh.getVertex(ic);
         int oldline0=searchline(ia,ib);
         
         // line exist and not
@@ -623,24 +628,26 @@ ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
     
     if(ip0<ip1){
         for(ofIndexType j=0;j<linemax;j+=2){
+              counter0++;
             if(ip0==linelist[j]&&ip1==linelist[j+1]){
                 
                 ////cout<<"find the same1"<<"\n";
-                 counter0++;
+                 //counter0++;
                 return j;
                 
             }
         }
     }else{// ip1<ip0
         for(ofIndexType j=0;j<linemax;j+=2){
+            counter1++;
             if(ip1==linelist[j]&&ip0==linelist[j+1]){
-                counter0++;
+                
                 ////cout<<"find the same2"<<"\n";
                 return j;
             }
         }
     }
-    counter1++;
+    //counter1++;
     return -1;// false
 }
 ofVec3f agmll::getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z){

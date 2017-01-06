@@ -4,7 +4,8 @@
 /**
  use for AmberGo
  as panel
- 
+ and serial work 
+ and output work
  **/
 
 class agpanel{
@@ -13,15 +14,24 @@ public:
     void setup();
     void update();
     ofxDatGui* gui;
+    //events
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onTextInputEvent(ofxDatGuiTextInputEvent e);
+ 
+    //componment
     ofxDatGuiSlider* sliceHeightSlider;
     ofxDatGuiSlider* sliceProgressPercentSlider;
     ofxDatGuiButton* printStartButton;
+    ofxDatGuiButton* printStopButton;
     ofxDatGuiButton* connectButton;
     ofxDatGuiTextInput* sendMessageTextInput;
+    ofxDatGuiLabel* sliceReadyLabel;
+    ofxDatGuiToggle* outputToggle;
+    ofxDatGuiToggle* showsliceToggle;
+    ofxDatGuiSlider* layerthicknessSlider;
+    ofxDatGuiSlider* exposedTimeSlider;
     float sliceHeight=0;
     void timeUpdate();
     void outputDone(bool done);
@@ -30,7 +40,9 @@ public:
     void serialUpdate();
     bool isTimeToNextLayer=false;
     int workState=0;
-    
+    float getWidth();
+    void setSliceReady();
+    void setSliceUnready();
     const int stateModelPrepare=1;
     const int stateModelReady=2;
     const int statePrintReady=3;
@@ -48,5 +60,17 @@ public:
     float exposeTime=0.0001;
     ofSerial serial;
     string teststring;// used for serial test
-    bool isConnect;
+    bool isConnect=false;
+    float sliceMin=0.02;
+    float sliceMax=1;
+    int snapcount=1000;
+    float layerthickness;
+    string sliceReady="Slice is ready";
+    string sliceUnready="Slice is not ready";
+    
+    bool isOutput=false;
+    bool bPrint=false;
+    
+    int exposedTime=1000;
+        bool ShowSlice=true;
 };

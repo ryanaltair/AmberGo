@@ -7,7 +7,7 @@
 #include "agplate.h"
 #include "agpanel.h"
 #include "agSliceManager.h"
-
+#include "agAppPreference.h"
 
 
 class ofApp : public ofBaseApp {
@@ -28,7 +28,6 @@ class ofApp : public ofBaseApp {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-    void savePic();
     //side window
     void drawSideWindow(ofEventArgs & args);
     //add on
@@ -36,7 +35,7 @@ class ofApp : public ofBaseApp {
 		
     // threaded object. Merger
     agSliceManager merger;
-    bool bLoaded=false;
+    bool bModelLoaded=false;
 
     
     //palte
@@ -68,8 +67,7 @@ class ofApp : public ofBaseApp {
 
     //drag and drop info
     string modelpath;
-    bool isModelChanged=false;
-    
+
     
     ///snap
     void drawFBO();
@@ -77,10 +75,12 @@ class ofApp : public ofBaseApp {
     ofFbo fbo;
     ofPixels pixelsbuffer;
     
-    ofImage snapImg;
-    int snapcount=1000;
-    bool bPrint=false;
+  //  ofImage snapImg;
+     
     
     // timer
     float timer;
+    
+    
+    agAppPreference apppreference;
 };

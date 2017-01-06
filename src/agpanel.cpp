@@ -11,23 +11,41 @@ void agpanel::setup(){
     
     // GUI start
     // instantiate and position the gui //
+   // gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     
     gui->addFRM();
     //gui->addBreak();
     //gui->addButton("Click!");
-    sliceHeightSlider=gui->addSlider("sliceHeight", 0, 1393,0);
+    sliceHeightSlider=gui->addSlider("sliceHeight", 0, 139.3,0);
     sliceProgressPercentSlider=gui->addSlider("progress", 0, 100, 0);
+    sliceProgressPercentSlider->setVisible(false);
+    sliceReadyLabel=gui->addLabel("slice is ready");
+    sliceReadyLabel->setLabel(sliceUnready);
     printStartButton=gui->addButton("start print");
+    printStopButton=gui->addButton("stop print");
+    outputToggle=gui->addToggle("output");
+    outputToggle->setChecked(false);
+    showsliceToggle=gui->addToggle("slice Preview");
+    showsliceToggle->setChecked(true);
+    layerthicknessSlider=gui->addSlider("layer thickness", 0.02, 3.30, 0.16);
+    exposedTimeSlider=gui->addSlider("exposed time:second", 0, 12,3);
     connectButton=gui->addButton("amber is offline");
-   
+    connectButton->setVisible(false);
     sendMessageTextInput=gui->addTextInput("sendMsg:");
+    sendMessageTextInput->setVisible(false);
      gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    layerthicknessSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    exposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     printStartButton->onButtonEvent(this, &agpanel::onButtonEvent);
+    printStopButton->onButtonEvent(this,&agpanel::onButtonEvent);
     connectButton->onButtonEvent(this,&agpanel::onButtonEvent);
     sendMessageTextInput->onTextInputEvent(this,&agpanel::onTextInputEvent);
+    outputToggle->onToggleEvent(this,&agpanel::onToggleEvent);
+    showsliceToggle->onToggleEvent(this,&agpanel::onToggleEvent);
+    exposedTime=exposedTimeSlider->getValue();
 }
 void agpanel::update(){
     serialUpdate();
@@ -36,7 +54,7 @@ void agpanel::update(){
     
     if(workState==statePrintPreparing){
         cout<<"now we are print preparing"<<endl;
-        sliceHeight=0.2;
+        sliceHeight=0.02;//the first layer
         timerToNextLayer=ofGetElapsedTimef()+5;
         workState=statePrinting;
     }
@@ -45,11 +63,11 @@ void agpanel::update(){
        
         if(isTimeToNextLayer==true){
          //    cout<<"now we are printing"<<endl;
-            if(sliceHeight>1000){
-                sliceHeight=-1;
+            if(sliceHeight>sliceMax-layerthickness){
+                //sliceHeight=-1;
                 workState=statePrintFinish;
                 }else{
-            sliceHeight+=0.35;
+                    sliceHeight+=layerthickness;
                    // cout<<"we change slice height at "<< ofGetElapsedTimef()<<" seconds"<<endl;
                 }
            // cout<<"tiemr before "<<timerToNextLayer;
@@ -76,7 +94,17 @@ void agpanel::outputDone(bool done){
 }
 void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 {
-    sliceHeight=e.value;
+    if(e.target==sliceHeightSlider){
+        sliceHeight=e.value;
+    }
+    if(e.target==layerthicknessSlider){
+       // layerthickness=e.value;
+    }
+    if(e.target==exposedTimeSlider){
+        float i=e.value;
+        exposedTimeSlider->setValue(i);
+        exposedTime=e.value;
+    }
     //cout << "the new value of the slider = " << e.value << endl;
    //cout << "the new scale of the slider = " << e.scale << endl;
 }
@@ -84,16 +112,29 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
 {
     if(e.target==printStartButton){
         workState=statePrintPreparing;
+        if(isOutput==true){
+            bPrint=true;
+        }
         if(workState==statePrintReady){
             workState=statePrintPreparing;
         }
     
     }
+    if(e.target==printStopButton){
+        if(workState!=statePrintFinish){
+        workState=statePrintFinish;
+        }
+        if(isOutput==true){
+            bPrint=false;
+        }
+        
+        
+    }
     if(e.target==connectButton){
         tryConnect();
     
     }
-    cout << e.target->getLabel() << " was clicked!"  << endl;
+    
 }
 void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
 {
@@ -103,8 +144,21 @@ void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
     }
 
 }
+void agpanel::onToggleEvent(ofxDatGuiToggleEvent e)
+{
+    if(e.target==outputToggle){
+        isOutput=outputToggle->getChecked();
+        
+    }
+    if(e.target==showsliceToggle){
+        ShowSlice=outputToggle->getChecked();
+        
+    }
+}
 void agpanel::sliceHeightBind(float sliceheight){
     sliceHeightSlider->bind(sliceHeight);
+    layerthicknessSlider->bind(layerthickness);
+     
 
 }
 
@@ -144,4 +198,16 @@ void agpanel::serialUpdate(){
     }
     
 }
+float agpanel::getWidth(){
+    float f=gui->getWidth();
+    return f;
 
+}
+void agpanel::setSliceReady(){
+    sliceReadyLabel->setLabel(sliceReady);
+
+}
+void agpanel::setSliceUnready(){
+    sliceReadyLabel->setLabel(sliceUnready);
+    
+}
