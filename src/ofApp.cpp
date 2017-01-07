@@ -6,6 +6,7 @@ void ofApp::setup(){
     panel.setup();
     
     ofSetVerticalSync(true);
+    ofSetFrameRate(60);
 	// this uses depth information for occlusion
 	// rather than always drawing things on top of each other
     modelpath="testcube.stl";
@@ -182,7 +183,7 @@ void ofApp::loadModel(){
     
     // when loading
     if(merger.isThreadRunning()==true){
-        cout<<"jell"<<endl;
+    //    cout<<"jell"<<endl;
         return;
     }
     //when loaded

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-
+#include "agline.h"
 class agmll{
 public:
     agmll();
@@ -12,6 +12,7 @@ public:
     float dH=0.01;
     vector<ofVec3f> pointlist;
     vector<ofIndexType> linelist;// {p0 p1} the index point to point list add with addnewline()
+    map<agline,ofIndexType> linecopymap;// use for searchline , for great speed
     vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
     vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list add with addnewline() and addoldline
     vector<float> dXdYlist;// init with addnewline() work with adddXdY()
@@ -126,3 +127,4 @@ private:
     ofIndexType counter0=0;
     ofIndexType counter1=0;
 };
+

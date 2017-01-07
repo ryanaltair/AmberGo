@@ -538,15 +538,23 @@ ofVec3f agmll::getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z){
 void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
     ////cout<<"ip0,ip1:"<<ip0<<","<<ip1<<"\n";
     ////cout<<"before"<<linelist.size();
+    
     if(ip0<ip1){
+       agline newline(ip0,ip1);
+        linecopymap[newline]=linelist.size();
         linelist.push_back(ip0);
         linelist.push_back(ip1);
         //cout<<"0<1"<<"\n";
     }else{// ip1<ip0
+        agline newline(ip1,ip0);
+        linecopymap[newline]=linelist.size();
+
         linelist.push_back(ip1);
         linelist.push_back(ip0);
+        //linecopymap[newline]=ip1;
         //cout<<"1<0"<<"\n";
     }
+    
     ////cout<<linelist[linelist.size()-2];
     
     ////cout<<linelist[linelist.size()-1];
@@ -576,7 +584,7 @@ void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
     }
 }
 ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
-    ofIndexType linemax=linelist.size();
+    
     /**
     if(ip0<ip1){
         for(ofIndexType i=0;i<linemax;i+=2){
@@ -627,7 +635,18 @@ ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
      **/
     
     if(ip0<ip1){
-        for(ofIndexType j=0;j<linemax;j+=2){
+        
+        if(1){
+            agline findline(ip0,ip1);
+            auto it=linecopymap.find(findline);
+            if(it==linecopymap.end()){
+                //not found
+                return -1;
+            }else{
+                return it->second;
+            }
+        }else{
+        for(ofIndexType j=0;j<linelist.size();j+=2){
               counter0++;
             if(ip0==linelist[j]&&ip1==linelist[j+1]){
                 
@@ -637,14 +656,27 @@ ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
                 
             }
         }
+        }
     }else{// ip1<ip0
-        for(ofIndexType j=0;j<linemax;j+=2){
+        if(1){
+            agline findline(ip1,ip0);
+            auto it=linecopymap.find(findline);
+            if(it==linecopymap.end()){
+                //not found
+                return -1;
+            }else{
+                return it->second;
+            }
+        }else{
+            // the old theory
+        for(ofIndexType j=0;j<linelist.size();j+=2){
             counter1++;
             if(ip1==linelist[j]&&ip0==linelist[j+1]){
                 
                 ////cout<<"find the same2"<<"\n";
                 return j;
             }
+        }
         }
     }
     //counter1++;
