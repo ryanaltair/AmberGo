@@ -14,6 +14,7 @@ agplate::~agplate(){
 
 
 void agplate::setup(){
+    cam.orbit(0, 40, cam.getDistance());
     playground.set(boxSize.x,boxSize.y,groundheight);
     mplayground.setTranslation(0, 0,-groundheight*0.5);
     playground.setTransformMatrix(mplayground);

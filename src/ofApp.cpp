@@ -19,6 +19,7 @@ void ofApp::setup(){
     fbosettings.textureTarget = GL_TEXTURE_2D;
     fbo.allocate(fbosettings);
     // fbo end
+    
 }
 
 //--------------------------------------------------------------
@@ -78,7 +79,9 @@ void ofApp::keyPressed(int key){
          //    panel.sliceHeight=panel.layertestZ;
             break;
         case OF_KEY_LEFT:
-            bSnapshot=true;
+            //bSnapshot=true;
+            //plate.cam.orbit(1, 0, plate.cam.getDistance());
+            //plate.cam.rotate(90, plate.cam.getUpDir() );
             break;
         case OF_KEY_RIGHT:
             panel.bPrint=true;
