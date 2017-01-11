@@ -34,7 +34,7 @@ public:
     ofMesh mergedMesh;
     // main job
     void addface();
-    void adddXdY(ofIndexType i);
+    void adddXdY();
     void addlinetype(ofIndexType i,int linetype,int riseorfall);
     void addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax);
      ofVec3f getScale();
@@ -89,7 +89,7 @@ private:
     void alluntouched();
     void justtouch(ofIndexType ip);
     ofIndexType continueflag=0;
-    ofIndexType findnextline(ofIndexType nexxlineip0,ofIndexType nexelineip1);
+    ofIndexType findnextline(ofIndexType lineip0,ofIndexType lineip1);
     ofPath layertestpath;
     ofIndexType ipstartL=0;
     ofIndexType ipstartH=0; // ipstart0<ipstart1 always

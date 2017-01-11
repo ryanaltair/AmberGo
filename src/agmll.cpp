@@ -33,7 +33,7 @@ void agmll::update(){
     //calc work here
     // step 1: merge mesh points
     if(ismeshMerged<100){
-        //mergedMesh.mergeDuplicateVertices();
+        mergedMesh.mergeDuplicateVertices();
         addpointlist(mergedMesh);
         getScale(mergedMesh);
         ismeshMerged=100;
@@ -48,19 +48,14 @@ void agmll::update(){
     
     // step 3: add dXdY
     if(isdXdYlistfilled<100){
-        int dxdyloadstep=linelist.size()*0.01+1;
         if(dxdylistloaded>=linelist.size()){
             isdXdYlistfilled=100;
             return;
         }
-        
-        for(ofIndexType i=dxdylistloaded;i<linelist.size()*0.5&&i<dxdylistloaded+dxdyloadstep;i+=1){
-            adddXdY(i);
-            
-        }
+         adddXdY();
         ////cout<<"dxdylist:"<<dxdylistloaded<<"++++++++++++++++++"<<"\n";
-        dxdylistloaded+=dxdyloadstep;
-        isdXdYlistfilled++;
+        
+        isdXdYlistfilled=100;
         return;
     }
     // step 4: to do list
@@ -134,9 +129,16 @@ void agmll::getipHipLfrom(ofIndexType indexpoint0, ofIndexType indexpoint1){
         ipH=linelist[indexpoint0];
     }
 }
-ofIndexType agmll::findnextline(ofIndexType nextlineip0, ofIndexType nextlineip1){
-    iplp0=nextlineip0;
-    iplp1=nextlineip1;
+/**
+ find the next line
+
+ @param nextlineip0 the ip0 of line we find
+ @param nextlineip1 the ip1 of line we find
+ @return return the ip0 of the line we found
+ */
+ofIndexType agmll::findnextline(ofIndexType lineip0, ofIndexType lineip1){
+    iplp0=lineip0;
+    iplp1=lineip1;
     if(iplp0<iplp1){
         //do nothing
     }else{// ip0>ip1 need swap
@@ -368,7 +370,6 @@ void agmll::addface(){
     ofVec3f pb;
     ofVec3f pc;
     ofIndexType i=0;
-   ofIndexType imax=mergedMesh.getNumIndices();
     //cout<<"ia,ib,ic"<<ia<<ib<<ic<<"\n";
     if(i==0){// first face
         // get the point first
@@ -389,7 +390,7 @@ void agmll::addface(){
     counter0=0;
     counter1=0;
    
-    for(i=3;i<imax;i+=3){//i>0
+    for(i=3;i<mergedMesh.getNumIndices();i+=3){//i>0
         // get the point first
          ia=mergedMesh.getIndex(i);
          ib=mergedMesh.getIndex(i+1);
@@ -403,7 +404,6 @@ void agmll::addface(){
         // ab
         if(oldline0>=0){
             addoldline(oldline0, ic);
-            
             ////cout<<"add old line"<<"\n";
         }else{
             addnewline(ia, ib, ic);
@@ -427,14 +427,14 @@ void agmll::addface(){
         }
         // new line
     }
-    cout<<"count compare:"<<counter0<<":"<<counter1<<endl;
-}
-void agmll::adddXdY(ofIndexType i){
+    }
+void agmll::adddXdY(){
     if(islinelistfilled<100){// can't work when linelist is not filled
         return;
     }
+    for(ofIndexType i=0;i<linelist.size();i+=2){
+     //   cout<<"adddxdy"<<i<<endl;
     ofVec3f p0,p1,pL,pH;
-    i=i*2;
     p0=pointlist[linelist[i]];
     p1=pointlist[linelist[i+1]];
     // if horizonline
@@ -443,7 +443,7 @@ void agmll::adddXdY(ofIndexType i){
         addtouchedlist(i, isUntouched, p0.z);
         linehorizonlist[i]=true;
         linehorizonlist[i+1]=true;
-        return;
+        continue;
     }
     //if line vertical
     if(p0.x==p1.x&&p0.y==p1.y){
@@ -487,6 +487,7 @@ void agmll::adddXdY(ofIndexType i){
         dXdYlist[i+1]=0;
     }else{
         dXdYlist[i+1]=(pH.y-pL.y)*divH*dH;
+    }
     }
 }
 void agmll::addlinetype(ofIndexType i,int linetype,int riseorfall){
@@ -548,7 +549,6 @@ void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
     }else{// ip1<ip0
         agline newline(ip1,ip0);
         linecopymap[newline]=linelist.size();
-
         linelist.push_back(ip1);
         linelist.push_back(ip0);
         //linecopymap[newline]=ip1;

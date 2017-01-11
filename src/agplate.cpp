@@ -18,12 +18,10 @@ void agplate::setup(){
     playground.set(boxSize.x,boxSize.y,groundheight);
     mplayground.setTranslation(0, 0,-groundheight*0.5);
     playground.setTransformMatrix(mplayground);
-    
     outsideBox.set(boxSize.x,boxSize.y,boxSize.z);
     moutsideBox.setTranslation(0, 0, 0);
     outsideBox.setTransformMatrix(moutsideBox);
     sliceLayPlane.set(boxSize.x,boxSize.y,0.4);
-    
     cam.setDistance(200);
     
  }
@@ -31,6 +29,8 @@ void agplate::setup(){
 void agplate::update(){
     msliceLayPlane.setTranslation(0, 0, layertestZ);
 }
+
+
 
 void agplate::sliceAt(float Z){
     layertestZ=Z;

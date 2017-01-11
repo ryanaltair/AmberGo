@@ -1,18 +1,23 @@
-#include "ofApp.h"
+#include "agApp.h"
 
 //--------------------------------------------------------------
-void ofApp::setup(){
-    ofSetWindowTitle("Amber Go Demo");
+void agApp::setup(){
+    //for app looks like a app
+    ofSetWindowTitle("Amber Go Demo");//
+    ofSetEscapeQuitsApp(false);
     panel.setup();
     
+    // set framerate // PS: setVSYNC will failed in Windows but work well in Mac
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
-	// this uses depth information for occlusion
-	// rather than always drawing things on top of each other
+    
+    // init the modelpath
     modelpath="testcube.stl";
     apppreference.isModelChanged=true;
+    
+    // init the plate which hold the 3D model we see
     plate.setup();
-    //setup fbo
+    //setup fbo which will for export images
     ofFbo::Settings fbosettings;
     fbosettings.width = 1280;
     fbosettings.height =768;
@@ -23,7 +28,7 @@ void ofApp::setup(){
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
+void agApp::update(){
     apppreference.updatelayerout(panel.getWidth());
     panel.update();
     //panel.layertestZ=panel.sliceHeight;
@@ -56,7 +61,7 @@ void ofApp::update(){
    }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
+void agApp::draw(){
     ofEnableDepthTest();
     ofBackground(ofColor::black);
     plate.drawincamera(apppreference.plateview);
@@ -68,7 +73,7 @@ void ofApp::draw(){
 
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
+void agApp::keyPressed(int key){
     switch(key){
         case OF_KEY_UP:
             panel.layertestZ++;
@@ -90,52 +95,52 @@ void ofApp::keyPressed(int key){
 }
 
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key){
+void agApp::keyReleased(int key){
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y){
+void agApp::mouseMoved(int x, int y){
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
+void agApp::mouseDragged(int x, int y, int button){
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
+void agApp::mousePressed(int x, int y, int button){
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
+void agApp::mouseReleased(int x, int y, int button){
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
+void agApp::mouseEntered(int x, int y){
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
+void agApp::mouseExited(int x, int y){
 
 }
 
 //--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
+void agApp::windowResized(int w, int h){
 
 }
 
 //--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
+void agApp::gotMessage(ofMessage msg){
 
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
+void agApp::dragEvent(ofDragInfo dragInfo){ 
     if( dragInfo.files.size() > 0 ){
         //dragPt = dragInfo.position;
         apppreference.isModelChanged=true;
@@ -147,7 +152,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 }
 //side window
 
-void ofApp::drawSideWindow(ofEventArgs & args){
+void agApp::drawSideWindow(ofEventArgs & args){
     fbo.draw(0,0);
     
     //savePic();
@@ -156,7 +161,7 @@ void ofApp::drawSideWindow(ofEventArgs & args){
 
 //addons
 
-void ofApp::loadModel(){
+void agApp::loadModel(){
     if(apppreference.isModelChanged==false){
         return;
       
@@ -164,18 +169,6 @@ void ofApp::loadModel(){
     
     //assimp model load
     if(modelpath.size()>0){
-        
-        //plate.addModel(modelpath);
-        
-        assimpLoader.loadModel(modelpath);
-        if(assimpLoader.getMeshCount()>1){
-            //plate.addModel(assimpLoader.getMesh(1));
-            
-            assimpLoader.drawFaces();
-        }else{
-            plate.addModel(assimpLoader.getMesh(0));
-            
-        }
         panel.setSliceUnready();
         merger.setpixelpermm(apppreference.getpixelpermm());
         merger.setmmperpixel(apppreference.getmmperpixel());
@@ -186,21 +179,19 @@ void ofApp::loadModel(){
     
     // when loading
     if(merger.isThreadRunning()==true){
-    //    cout<<"jell"<<endl;
         return;
     }
     //when loaded
     if(bModelLoaded==false){
-        readyModel=merger.meshmodel;
         bModelLoaded=true;
         return;
     }
-    
+    plate.addModel(merger.assimpmodel.getMesh(0));
     panel.setSliceReady();
-    mll.setup(readyModel);
-    plate.modelSize=mll.getScale();
+    plate.modelSize=merger.mll.getScale();
     ofVec3f newposti;
-    newposti=mll.meshMin;
+
+    newposti=merger.mll.meshMin;
     newposti.x=0;//-plate.modelSize.x/2;
     newposti.y=0;//-plate.modelSize.y/2;
     plate.setPosition(newposti);
@@ -208,7 +199,10 @@ void ofApp::loadModel(){
     cout<<"modelsize"<<plate.modelSize<<endl;
     apppreference.isModelChanged=false;
 }
-void ofApp::drawFBO(){
+/**
+ draw the fbo and save the pic as png file
+ */
+void agApp::drawFBO(){
     // now we try fbo
     timer=ofGetElapsedTimef();
     

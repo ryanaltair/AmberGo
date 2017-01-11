@@ -81,30 +81,42 @@ public:
             if(lock())
             {
                 // step merge: the mesh
-                stepMerge();
-                
+                if(needMerge==true){
+                    stepMerge();
+                    needMerge=false;
+                    needLoad=true;
+
+                }
                 
                 //step load:
                 //easyLogTime("need we load?");
-                stepLoad();
+                if(needLoad==true){
+                    stepLoad();
+                    needLoad=false;
+                    needSlice=true;
+                }
+                
                 //
                 //easyLogTime("need we update?");
-                stepUpdate();
+                if(needSlice==true){
+                    stepUpdate();
+                    needSlice=false;
+
+                }
                 
                 //easyLogTime("need we Slice?");
-                stepSliceAt();
-                
+                if(needSliceAt>=0){
+                    stepSliceAt();
+                    needSliceAt=-1;
+                }
                 //easyLogTime("all we done ?");
                 isThreadEnd=true;
 
                 unlock();
 
-               
-
                 if(shouldThrowTestException > 0)
                 {
                     shouldThrowTestException = 0;
-
                     // Throw an exception to test the global ofBaseThreadErrorHandler.
                     // Users that require more specialized exception handling,
                     // should make sure that their threaded objects catch all
@@ -135,19 +147,10 @@ public:
 
         if(lock())
         {
-            // The mutex is now locked and the "count"
-            // variable is protected.  Time to read it.
-            ss << count;
-
-            // Unlock the mutex.  This is only
-            // called if lock() returned true above.
             unlock();
         }
         else
         {
-            // If we reach this else statement, it means that we could not
-            // lock our mutex, and so we do not need to call unlock().
-            // Calling unlock without locking will lead to problems.
             ofLogWarning("threadedFunction()") << "Unable to lock mutex.";
         }
 
@@ -185,39 +188,25 @@ public:
     //merge and scale
     void stepMerge(){
     
-        if(needMerge==true){
-            assimpmodel.setScale(fpixelpermm.x,fpixelpermm.y,fpixelpermm.z);
+        
+        meshmodel=assimpmodel.getMesh(0);
+            //easyLogTime("merge start");
+            //meshmodel.mergeDuplicateVertices();
+            //easyLogTime("merge end");
             
-            assimpmodel.setScale(1000,1000,1000);
-            meshmodel=assimpmodel.getMesh(0);
-
-            easyLogTime("merge start");
-            meshmodel.mergeDuplicateVertices();
-            
-            needMerge=false;
-            needLoad=true;
-            easyLogTime("merge end");
-            
-        }
+        
        
     }
     //mll load
     void stepLoad(){
-        if(needLoad==true){
             easyLogTime("load model start");
             mll.setup(meshmodel);
-            needLoad=false;
-            needSlice=true;
-            
             easyLogTime("load model end");
-        }
-        
     }
     //mll update loop
     
     void stepUpdate(){
-        if(needSlice==true){
-            
+        
             easyLogTime("load model start");
             float timeLast=ofGetElapsedTimef();
            
@@ -235,20 +224,19 @@ public:
             isModelReadySlice=true;
             easyLogTime("load model end");
             cout<<"ready for slice"<<endl;
-            needSlice=false;
-        }
+        
     }
     void stepSliceAt(){
         
-        if(needSliceAt>=0){
+        
             // cout<<"we are slicing from"<<ofToString(ofGetElapsedTimef()) ;
             layertest=mll.layertestat(needSliceAt);
           //  cout<<" to "<<ofToString(ofGetElapsedTimef()) <<endl;
             
             isSliceChanged=true;
         //cout<<"we just slice  at"<<needSliceAt<<endl;
-        }
-        needSliceAt=-1;
+        
+        
     }
 protected:
     // A flag to check and see if we should throw a test exception.

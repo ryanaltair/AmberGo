@@ -10,7 +10,7 @@
 #include "agAppPreference.h"
 
 
-class ofApp : public ofBaseApp {
+class agApp : public ofBaseApp {
 	public:
     //gl loop
 		void setup();
@@ -31,6 +31,11 @@ class ofApp : public ofBaseApp {
     //side window
     void drawSideWindow(ofEventArgs & args);
     //add on
+    
+    /**
+     when loadpath was changed,
+     it will load model with thread called merger
+     */
     void loadModel();
 		
     // threaded object. Merger
@@ -48,7 +53,7 @@ class ofApp : public ofBaseApp {
     ofxAssimpModelLoader assimpLoader;
     private:
     //
-    ofMesh readyModel;
+    //ofMesh readyModel;
 
     // test theory
 
@@ -56,11 +61,7 @@ class ofApp : public ofBaseApp {
     ofPath layertest;
     ofMatrix4x4 layertestmove;
 
-      
-    // addons ofxMLL
-    agmll mll;
-    ofVec3f meshScale;
-    
+   
     
 
     //drag and drop info
@@ -68,6 +69,9 @@ class ofApp : public ofBaseApp {
 
     
     ///snap
+    /**
+     draw the fbo which hold the slicelayer
+     */
     void drawFBO();
     bool bSnapshot=false;
     ofFbo fbo;
