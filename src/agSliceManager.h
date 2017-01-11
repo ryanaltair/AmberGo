@@ -23,12 +23,12 @@ public:
         cout<<"-----modelpath:"<<path<<endl;
         assimpmodel.loadModel(path);
         assimpmodel.disableTextures();
-                meshmodel.disableTextures();
+        meshmodel.disableTextures();
         // Mutex blocking is set to true by default
         // It is rare that one would want to use startThread(false).
         isThreadEnd=false;
         isModelReadySlice=false;
-        needMerge=true;
+        needCheck=true;
         startThread();
         ofResetElapsedTimeCounter();
     }
@@ -81,11 +81,10 @@ public:
             if(lock())
             {
                 // step merge: the mesh
-                if(needMerge==true){
-                    stepMerge();
-                    needMerge=false;
+                if(needCheck==true){
+                    stepCheck();
+                    needCheck=false;
                     needLoad=true;
-
                 }
                 
                 //step load:
@@ -176,7 +175,7 @@ public:
     //needing flag
     bool isThreadEnd=false;// true when everything is done
     bool needLoad=false;
-    bool needMerge =false;//
+    bool needCheck =false;//
     bool needSlice=false;
     
     float needSliceAt=-1;// -1 means no need
@@ -186,22 +185,14 @@ public:
     
     
     //merge and scale
-    void stepMerge(){
-    
-        
-        meshmodel=assimpmodel.getMesh(0);
-            //easyLogTime("merge start");
-            //meshmodel.mergeDuplicateVertices();
-            //easyLogTime("merge end");
-            
-        
+    void stepCheck(){
        
     }
     //mll load
     void stepLoad(){
-            easyLogTime("load model start");
-            mll.setup(meshmodel);
-            easyLogTime("load model end");
+        easyLogTime("load model start");
+        mll.setup(assimpmodel.getMesh(0));
+        easyLogTime("load model end");
     }
     //mll update loop
     
@@ -212,11 +203,11 @@ public:
            
             while(mll.islinelistfilled<100){
                 mll.update();
-                            }
+            }
             
             float timeWaste=ofGetElapsedTimef()-timeLast;
             cout<<"------ add line take:"<<timeWaste<<endl;
-            easyPercent(mll.islinelistfilled);
+            //easyPercent(mll.islinelistfilled);
             while(mll.isdXdYlistfilled<100){
                 mll.update();
                // easyPercent(mll.isdXdYlistfilled);
@@ -228,11 +219,12 @@ public:
     }
     void stepSliceAt(){
         
-        
+        easyLogTimeFrom("slice");
             // cout<<"we are slicing from"<<ofToString(ofGetElapsedTimef()) ;
             layertest=mll.layertestat(needSliceAt);
           //  cout<<" to "<<ofToString(ofGetElapsedTimef()) <<endl;
-            
+        easyLogTimeTo("slice");
+
             isSliceChanged=true;
         //cout<<"we just slice  at"<<needSliceAt<<endl;
         
@@ -259,12 +251,25 @@ protected:
 
     cout<<title<<":"<<ofToString(ofGetElapsedTimef()) <<" senconds "<<endl;
     }
+    void easyLogTimeFrom(string title){
+        cout<<"------";
+        timekeep=ofGetElapsedTimef();
+        cout<<title<<" from:"<<ofToString(timekeep) <<" senconds "<<endl;
+    }
+    void easyLogTimeTo(string title){
+        cout<<"------";
+        
+        float timetake=ofGetElapsedTimef()-timekeep;
+        timekeep=ofGetElapsedTimef();
+        cout<<title<<"  to:"<<ofToString(timekeep) <<" senconds "<<endl;
+        cout<<title<<"take:"<<ofToString(timetake) <<" senconds "<<endl;
+    }
     void easyPercent(int percent){
         cout<<"------";
         
         cout<<"progress:"<<ofToString(percent) <<"% |" <<ofToString(ofGetElapsedTimef())<<" second"<<endl;
         
     }
-    
+    float timekeep;
 
 };

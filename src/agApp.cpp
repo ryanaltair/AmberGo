@@ -46,14 +46,17 @@ void agApp::update(){
 
     if(merger.isSliceChanged==true){
        // cout<<"B:we just got to here to try layertest"<<"\n";
-        layertest=merger.layertest;
-        drawFBO();
-        panel.outputDone(true);
-        merger.isSliceChanged=false;
-        if(panel.bPrint==true){
-            bSnapshot=true;
-            panel.snapcount++;
+        if(merger.isThreadRunning()==false){
+            layertest=merger.layertest;
+            drawFBO();
+            panel.outputDone(true);
+            merger.isSliceChanged=false;
+            if(panel.bPrint==true){
+                bSnapshot=true;
+                panel.snapcount++;
+            }
         }
+        
     }
     //mll.update();
     //cout<<"dxdyfilled"<<mll.isdXdYlistfilled<<endl;

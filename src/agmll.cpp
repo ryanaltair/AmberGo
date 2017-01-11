@@ -84,8 +84,6 @@ void agmll::stepreset(){
     ipL=0;
     ipa=0;//ipa=nearpointlist[ip0]
     ipb=0;//ipb=nearpointlist[ip1]
-    //dX=dXdYlist[ip0]
-    //dY=dXdYlist[ip1]
     // how to refer a point
     // point =pointlist[iplp0]
     // point =pointlist[linelist[ip0]]
@@ -146,18 +144,16 @@ ofIndexType agmll::findnextline(ofIndexType lineip0, ofIndexType lineip1){
         iplp1=iplp0;
         iplp0=iplp2;
     }
-    //find the iplp0 iplp1
-    for(int i=0;i<linelist.size();i+=2){
-        if(linelist[i]==iplp0&&linelist[i+1]==iplp1){
-            ip0=i;
-            ip1=i+1;
-            ipa=nearpointlist[ip0];
-            ipb=nearpointlist[ip1];
-            justtouch(ip0);
-            debuglinelist(ip0);
-            break;
-        }
-    }
+    
+    //new theory
+         ip0=searchline(iplp0, iplp1);
+    ip1=ip0+1;
+    ipa=nearpointlist[ip0];
+    ipb=nearpointlist[ip1];
+    justtouch(ip0);
+    debuglinelist(ip0);
+ 
+  
     return ip0;
 
 }
@@ -189,18 +185,22 @@ ofPath agmll::layertestat(float z){
     if(isdXdYlistfilled!=100){
         return returnpath;
     }
-    
-    for(ofIndexType continuepoint=0;continuepoint<linelist.size();continuepoint+=2){
+    ofIndexType continuepoint;
+    for( continuepoint=0;continuepoint<linelist.size();continuepoint+=2){
 
         //continuepoint=linelist.size();
     stepreset();
     //step start
     // find a cross point
-        if(continueflag==linelist.size()){break;}
-        ofIndexType iCross=findcrosspointat(z);
-        if(iCross==1){// iCross== 1 means we failed to find the cross point
+        if(continueflag==linelist.size()){
             break;
         }
+        ofIndexType iCross=findcrosspointat(z);
+        if(iCross==linelist.size()){// iCross== linelist.size means we failed to find the cross point
+        //    cout<<"find nothing yet"<<endl;
+            break;// that we failed to a slice layer because there is nothing on this layer
+        }
+        // cout<<"find something yet"<<endl;
         layertestpath.clear();
         
         ip0=iCross;
@@ -210,7 +210,7 @@ ofPath agmll::layertestat(float z){
     
   
     //step loop
-  //  //cout<<"we just going to loop"<<"\n";
+//    cout<<"we just going to loop"<<"\n";
     
     int loopcount=0;
     bool isloopover=false;
@@ -268,13 +268,13 @@ ofPath agmll::layertestat(float z){
     }
     layertestpath.close();
         returnpath.append(layertestpath);
-      //  cout<<"now we close the sub path"<<endl;
+     //  cout<<"now we close the sub path"<<endl;
     }
 
    // returnpath=layertestpath;
     // cout<<"------layertest end------"<<endl;
     returnpath.close();
-    
+    cout<<"continepoint="<<continuepoint<<endl;
     returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
     returnpath.setStrokeColor(ofColor::blue);
     returnpath.setFillColor(ofColor::white);
@@ -398,28 +398,33 @@ void agmll::addface(){
          //pa=mergedMesh.getVertex(ia);
          //pb=mergedMesh.getVertex(ib);
          //pc=mergedMesh.getVertex(ic);
-        int oldline0=searchline(ia,ib);
         
+        // the first line ab
+        int oldline0=searchline(ia,ib);
         // line exist and not
         // ab
-        if(oldline0>=0){
+        if(oldline0<linelist.size()){
             addoldline(oldline0, ic);
             ////cout<<"add old line"<<"\n";
         }else{
             addnewline(ia, ib, ic);
         }
+        
+        // the second line ac
         int oldline1=searchline(ia,ic);
         
         //ac
-        if(oldline1>=0){
+        if(oldline1<linelist.size()){
             addoldline(oldline1, ib);
             ////cout<<"add old line"<<"\n";
         }else{
             addnewline(ia, ic, ib);
         }
+        
+        //the third line bc
         int oldline2=searchline(ic,ib);
         //bc
-        if(oldline2>=0){
+        if(oldline2<linelist.size()){
             addoldline(oldline2, ia);
             ////cout<<"add old line"<<"\n";
         }else{
@@ -583,79 +588,25 @@ void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
         return;
     }
 }
+/**
+ find the findline in linelist which need linecopymap help
+ 
+ @param ip0 the findline's ip0
+ @param ip1 the findline's ip1
+ @return i that from linelist[i]=findline // failed whene i =linelist.size()
+ */
 ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
     
-    /**
     if(ip0<ip1){
-        for(ofIndexType i=0;i<linemax;i+=2){
-            if(linehashlist[i+1]!=0){
-                continue;
-            }
-            ofIndexType ihashline=ip0+ip1;
-            if(ihashline!=linehashlist[i]){
-                counter1++;
-                continue;
-            }
-        
-            if(ip0==linelist[i]&&ip1==linelist[i+1]){
-                
-                ////cout<<"find the same1"<<"\n";
-                counter0++;
-                return i;
-                
-            }
-          
-        }
-        
-    }else{//ip0>ip1
-        
-            for(ofIndexType i=0;i<linemax;i+=2){
-                if(linehashlist[i+1]!=0){
-                    continue;
-                }
-                ofIndexType ihashline=ip0+ip1;
-                if(ihashline!=linehashlist[i]){
-                    counter1++;
-                    continue;
-                }
-                
-                if(ip1==linelist[i]&&ip0==linelist[i+1]){
-                    counter0++;
-                    ////cout<<"find the same2"<<"\n";
-                    return i;
-                }
-                
-            }
-            
-        
-        }
-    
-    
-    return -1;
-     **/
-    
-    if(ip0<ip1){
-        
         if(1){
             agline findline(ip0,ip1);
             auto it=linecopymap.find(findline);
             if(it==linecopymap.end()){
                 //not found
-                return -1;
+                return linelist.size();
             }else{
                 return it->second;
             }
-        }else{
-        for(ofIndexType j=0;j<linelist.size();j+=2){
-              counter0++;
-            if(ip0==linelist[j]&&ip1==linelist[j+1]){
-                
-                ////cout<<"find the same1"<<"\n";
-                 //counter0++;
-                return j;
-                
-            }
-        }
         }
     }else{// ip1<ip0
         if(1){
@@ -663,20 +614,10 @@ ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
             auto it=linecopymap.find(findline);
             if(it==linecopymap.end()){
                 //not found
-                return -1;
+                return linelist.size();
             }else{
                 return it->second;
             }
-        }else{
-            // the old theory
-        for(ofIndexType j=0;j<linelist.size();j+=2){
-            counter1++;
-            if(ip1==linelist[j]&&ip0==linelist[j+1]){
-                
-                ////cout<<"find the same2"<<"\n";
-                return j;
-            }
-        }
         }
     }
     //counter1++;
@@ -737,6 +678,12 @@ void agmll::addPointLineToPath(ofVec3f addpoint){
  //cout<<"|||"<<ofToString(addpoint)<<endl;
 }
 
+/**
+ find the first line that we begin when slice at z
+TODO: we need a quickstartlist that hold every z start line
+ @param z slice at z
+ @return return the i for linelist[i]
+ */
 ofIndexType agmll::findcrosspointat(float z){
     ofIndexType ip0=0;//linelist[ip0]
     ofIndexType ip1=0;//linelist[ip1]
@@ -769,7 +716,7 @@ ofIndexType agmll::findcrosspointat(float z){
     }
     continueflag=ip0+2;
   //  cout<<"we find nothing any more so we quit"<<endl;
-    return 1;
+    return linelist.size();
 
 }
 bool agmll::isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,int riseorfall,float planeatz){
