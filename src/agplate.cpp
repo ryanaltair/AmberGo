@@ -98,6 +98,8 @@ void agplate::drawModel(){
    
    
     nodemodel.draw();
+    ofSetColor(ofColor::black);
+    nodemodel.drawWireframe();
 }
 
 void agplate::setPosition(ofVec3f newpostion){

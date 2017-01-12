@@ -105,6 +105,12 @@ void agmll::stepreset(){
     
 
 }
+/**
+ //then we get the new ipH ipL from new ip0 ip1
+
+ @param indexpoint0 <#indexpoint0 description#>
+ @param indexpoint1 <#indexpoint1 description#>
+ */
 void agmll::getipHipLfrom(ofIndexType indexpoint0, ofIndexType indexpoint1){
     if (linetypelist[indexpoint0+1]==riseline) {
         ipL=linelist[indexpoint0];
@@ -171,8 +177,7 @@ ofPath agmll::layertestat(float z) {
     }
     ofIndexType closetestpoint;
     for ( closetestpoint = 0; closetestpoint < linelist.size(); closetestpoint += 2) {
-        
-                stepreset();
+        stepreset();
         //step start
         //find a cross point
         if (continueflag == linelist.size()) {
@@ -205,10 +210,6 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
     
     // ready to go
     ip0 = ipbegin;
-    //cout<<"find a start"<<ip0<<"at"<<closetestpoint<<" flag is:"<<continueflag<<endl;
-    //debuglinelist(ip0);
-    //        stepstart(ip0);
-    //        ip0=i;
     ip1=ip0+1;
     ipa=nearpointlist[ip0];
     ipb=nearpointlist[ip1];
@@ -216,7 +217,6 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
     // get the first point XY
     // get the ph pl
     getipHipLfrom(ip0, ip1);
-    
     //get the XY and move to
     ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, testatZ);
     layerisland.moveTo(XYpoint.x,XYpoint.y);
@@ -241,18 +241,21 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
         } else {
             // cout<<ipnext<<" to "<<linelist[ipstarta]<<endl;
         }
-        
-        loopcount++;
-        // cout<<"loop:"<<loopcount<<endl;
-        // check z with pnext
-        checkpnextZ();
-        //find the lnext that have linelist[i]=iplp0 linelist[i+1]=iplp1
-        // so we find next line
+        //checkpnextZ();
+        if(pointlist[ipnext].z<=z){
+            ipused=ipL;
+            iplp0=ipH;
+            iplp1=ipnext;
+            if(pointlist[ipnext].z==z){
+                testatZoffset=0.000000000001;
+            }
+        }else{
+            ipused=ipH;
+            iplp0=ipL;
+            iplp1=ipnext;
+        }
         findnextline(iplp0, iplp1);
-        
-        //then we get the new ipH ipL from new ip0 ip1
         getipHipLfrom(ip0, ip1);
-        
         //check if it the last line?
         if (isloopover == true) {
             if ((ipL == ipstartL && ipH == ipstartH) || (ipL == ipstartH && ipH == ipstartL)) {
@@ -280,7 +283,6 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
         } else { //ipused==ipb
             ipnext = ipa;
         }
-        
     }
     layerisland.close();
     return layerisland;
