@@ -39,14 +39,15 @@ void agApp::update(){
         panel.layertestZlast=panel.layertestZ;
         //cout<<"we slice at now "<<endl;
         plate.sliceAt(panel.layertestZ);
-        merger.sliceAt(panel.layertestZ);
-        //cout<<"we slice at end"<<endl;
         plate.update();
     }
-
-    if(merger.isSliceChanged==true){
+    if(merger.isThreadRunning()==false){
+        if(merger.layertestZ!=panel.layertestZ){
+        merger.sliceAt(panel.layertestZ);
+        }
+        
+        if(merger.isSliceChanged==true){
        // cout<<"B:we just got to here to try layertest"<<"\n";
-        if(merger.isThreadRunning()==false){
             layertest=merger.layertest;
             drawFBO();
             panel.outputDone(true);
@@ -58,10 +59,7 @@ void agApp::update(){
         }
         
     }
-    //mll.update();
-    //cout<<"dxdyfilled"<<mll.isdXdYlistfilled<<endl;
-    
-   }
+}
 
 //--------------------------------------------------------------
 void agApp::draw(){
@@ -189,7 +187,8 @@ void agApp::loadModel(){
         bModelLoaded=true;
         return;
     }
-    plate.addModel(merger.assimpmodel.getMesh(0));
+    plate.addModel(merger.mll.mergedMesh);
+    merger.assimpmodel.clear();
     panel.setSliceReady();
     plate.modelSize=merger.mll.getScale();
     ofVec3f newposti;

@@ -20,11 +20,13 @@ public:
     /// Start the thread.
     void start(string path)
     {
+        assimpmodel.clear();
+
         cout<<"-----modelpath:"<<path<<endl;
         assimpmodel.loadModel(path);
+        cout<<"the mesh count:"<<assimpmodel.getMeshCount()<<endl;
         assimpmodel.disableTextures();
-        meshmodel.disableTextures();
-        // Mutex blocking is set to true by default
+              // Mutex blocking is set to true by default
         // It is rare that one would want to use startThread(false).
         isThreadEnd=false;
         isModelReadySlice=false;
@@ -42,24 +44,24 @@ public:
     {
         if(isModelReadySlice==false){
             //if mesh have model and get merged?
-            if(meshmodel.getNumIndices()>0&&meshmodel.getNumIndices()>meshmodel.getNumVertices()){
-                
+      
                 if(isThreadRunning()==false){
                     needLoad=true;
                     cout<<"now we loading"<<endl;
                     startThread();
                 }
-            }
+           
             return false;
         }else{//if(isModelReadySlice==true){
         isThreadEnd=false;
             isSliceChanged=false;
+            layertestZ=zheight;
         needSliceAt=zheight;
         startThread();
             return true;
         }
     }
-    
+    float layertestZ;
     /// Signal the thread to stop.  After calling this method,
     /// isThreadRunning() will return false and the while loop will stop
     /// next time it has the chance to.
@@ -169,7 +171,7 @@ public:
     }
 
     ofxAssimpModelLoader assimpmodel;
-    ofMesh meshmodel;
+
     agmll mll;
     ofPath layertest;
     //needing flag
@@ -192,6 +194,7 @@ public:
     void stepLoad(){
         easyLogTime("load model start");
         mll.setup(assimpmodel.getMesh(0));
+        
         easyLogTime("load model end");
     }
     //mll update loop

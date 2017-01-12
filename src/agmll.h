@@ -5,11 +5,15 @@
 class agmll{
 public:
     agmll();
+    ~agmll();
     void setup(ofMesh mesh);
-   
     void draw();
     void update();
+    void cleanmermory();
     float dH=0.01;
+    
+    
+    
     vector<ofVec3f> pointlist;
     vector<ofIndexType> linelist;// {p0 p1} the index point to point list add with addnewline()
     map<agline,ofIndexType> linecopymap;// use for searchline , for great speed
@@ -18,8 +22,8 @@ public:
     vector<float> dXdYlist;// init with addnewline() work with adddXdY()
     vector<int> linetypelist;//init with addnewline() work with adddXdY()
     vector<float> touchedlist;//init with addnewline() work with adddXdY()
-   // vector<ofIndexType> linehashlist;//init with addnewline() work with searchline() but it is slow
     ofPath layertestat(float z);
+    ofPath layertestcloseloop(float z,ofIndexType ipbegin);
     ofPath layertest;
     ofVec3f meshScale;
     ofVec3f meshMax;
@@ -48,20 +52,17 @@ private:
     
     //do loop
     
-    // tools
+    // theory
     ofVec3f getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z);
-    
     void addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn);
     void addoldline(ofIndexType ipl,ofIndexType ipn);
     ofIndexType searchline(ofIndexType ip0,ofIndexType ip1);
-    ofPath addPointToPath(ofPath path,float x,float y,ofIndexType i);
-    void addPointLineToPath(ofVec3f addpoint);
-    void addPointMoveToPath(ofVec3f addpoint);
-    
     ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
-    
     ofIndexType findcrosspointat(float z);// return ip0
     bool isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,int riseorfall,float planeatz);
+    
+    
+    
     // progress flag
     size_t linelistloaded=0;
     size_t dxdylistloaded=0;
@@ -80,9 +81,6 @@ private:
     
     //layertest only
     void stepreset();
-    void stepstart(ofIndexType i);
-    void steploop();
-    void stepHorizon();
     void checkpnextZ();
     void getipHipLfrom(ofIndexType indexpoint0,ofIndexType indexpoint1);
     void addPointToPath(float x,float y,ofIndexType i);
@@ -90,7 +88,6 @@ private:
     void justtouch(ofIndexType ip);
     ofIndexType continueflag=0;
     ofIndexType findnextline(ofIndexType lineip0,ofIndexType lineip1);
-    ofPath layertestpath;
     ofIndexType ipstartL=0;
     ofIndexType ipstartH=0; // ipstart0<ipstart1 always
     ofIndexType ipstarta=0;// we never use ipa as next point until we find it
@@ -108,7 +105,7 @@ private:
     ofIndexType ipa=0;//ipa=nearpointlist[ip0]
     ofIndexType ipb=0;//ipb=nearpointlist[ip1]
     float testatZ;
-    float testatZoffset=0;
+    float testatZoffset=-1;
     //dX=dXdYlist[ip0]
     //dY=dXdYlist[ip1]
     // how to refer a point

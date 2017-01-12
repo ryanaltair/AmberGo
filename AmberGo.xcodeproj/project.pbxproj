@@ -12,6 +12,7 @@
 		5022407459E58DF3EA081C28 /* agpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7709D5ABAE20C358D6C1DB75 /* agpanel.cpp */; };
 		603044E656EA8D499FCF7DEA /* ofxVectorGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 318ABED90EADFB757FFDCCAF /* ofxVectorGraphics.cpp */; };
 		6A4431B76FE68D705ED1A936 /* agplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2163B2B112A9FF00A08A8465 /* agplate.cpp */; };
+		6C9CC4C21E27114900874450 /* aglayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C9CC4C11E27114900874450 /* aglayer.cpp */; };
 		8DED5056525646FA71980866 /* ofxAssimpModelLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE55D82BD962DAC0E94B708 /* ofxAssimpModelLoader.cpp */; };
 		9CF4130A7E6DA19A3DC42B9A /* ofxSmartFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C954E0E8B7DB9D6983309883 /* ofxSmartFont.cpp */; };
 		B4D90A01D5FA83465F468DF1 /* agmll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AF7E81DC2681E62FCAA64F3 /* agmll.cpp */; };
@@ -86,6 +87,8 @@
 		64C563B8158C37E9D07AE29D /* ofxDatGuiFRM.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiFRM.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiFRM.h; sourceTree = SOURCE_ROOT; };
 		6A0E743407465957DB764ED3 /* mesh.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = mesh.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/mesh.h; sourceTree = SOURCE_ROOT; };
 		6C1DCBEF1E0903A30077E2A0 /* agTimeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agTimeManager.h; sourceTree = "<group>"; };
+		6C9CC4C01E27113400874450 /* aglayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aglayer.h; sourceTree = "<group>"; };
+		6C9CC4C11E27114900874450 /* aglayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = aglayer.cpp; sourceTree = "<group>"; };
 		6CB72B1A1E2161FF00104D77 /* agline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agline.h; sourceTree = "<group>"; };
 		6CFF5A2D1E1DDB7500AC8D2A /* agmodelinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agmodelinfo.h; sourceTree = "<group>"; };
 		6CFF5A2E1E1DDCF400AC8D2A /* agAppPreference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agAppPreference.h; sourceTree = "<group>"; };
@@ -393,6 +396,8 @@
 				E4B69E1F0A3A1BDC003C02F2 /* agApp.h */,
 				0AF7E81DC2681E62FCAA64F3 /* agmll.cpp */,
 				7992666836E156FC0505CACF /* agmll.h */,
+				6C9CC4C01E27113400874450 /* aglayer.h */,
+				6C9CC4C11E27114900874450 /* aglayer.cpp */,
 				6CB72B1A1E2161FF00104D77 /* agline.h */,
 				7709D5ABAE20C358D6C1DB75 /* agpanel.cpp */,
 				60E0B54EA2BC9C5E7C8DCC49 /* agpanel.h */,
@@ -524,6 +529,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				6C9CC4C21E27114900874450 /* aglayer.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* agApp.cpp in Sources */,
 				B4D90A01D5FA83465F468DF1 /* agmll.cpp in Sources */,
 				5022407459E58DF3EA081C28 /* agpanel.cpp in Sources */,
