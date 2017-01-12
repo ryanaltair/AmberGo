@@ -86,13 +86,11 @@ private:
     void alluntouched();
     void justtouch(ofIndexType ip);
     ofIndexType continueflag=0;
-     ofIndexType ipstartL=0;
-    ofIndexType ipstartH=0; // ipstart0<ipstart1 always
     ofIndexType ipstarta=0;// we never use ipa as next point until we find it
-    ////cout<<"ipstart:"<<ipstartL<<":"<<ipstartH<<"\n";
+ 
     ofIndexType ipnext=0;
     ofIndexType ipused=0;
-    
+    //ipL=linelist[i];
     ofIndexType ip0=0;//linelist[ip0]
     ofIndexType ip1=0;//linelist[ip1]
     ofIndexType iplp0=0;//pointlist[iplp0] nextline's ip0
@@ -100,8 +98,8 @@ private:
     
     ofIndexType ipH=0;
     ofIndexType ipL=0;
-    ofIndexType ipa=0;//ipa=nearpointlist[ip0]
-    ofIndexType ipb=0;//ipb=nearpointlist[ip1]
+    ofIndexType ipa=0;//ipa=nearpointlist[i0]
+    ofIndexType ipb=0;//ipb=nearpointlist[i1]
     float testatZ;
     float testatZoffset=-1;
     //dX=dXdYlist[ip0]
