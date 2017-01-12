@@ -172,8 +172,7 @@ ofPath agmll::layertestat(float z) {
     ofIndexType closetestpoint;
     for ( closetestpoint = 0; closetestpoint < linelist.size(); closetestpoint += 2) {
         
-        ofPath layerisland;
-        stepreset();
+                stepreset();
         //step start
         //find a cross point
         if (continueflag == linelist.size()) {
@@ -186,87 +185,8 @@ ofPath agmll::layertestat(float z) {
         }
         // cout<<"find something yet"<<endl;
         
-        // ready to go 
-        ip0 = iCross;
-        //cout<<"find a start"<<ip0<<"at"<<closetestpoint<<" flag is:"<<continueflag<<endl;
-        //debuglinelist(ip0);
-//        stepstart(ip0);
-//        ip0=i;
-        ip1=ip0+1;
-        ipa=nearpointlist[ip0];
-        ipb=nearpointlist[ip1];
-        ////cout<<"we find the cross point done"<<"\n";
-        // get the first point XY
-        // get the ph pl
-        getipHipLfrom(ip0, ip1);
-        
-        //get the XY and move to
-        ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, testatZ);
-        layerisland.moveTo(XYpoint.x,XYpoint.y);
-        
-        // set pstart and pnext
-        ipstarta=ipa;
-        ipstartL=ipL;
-        ipstartH=ipH;
-        ipnext=ipb;
-
-        //step loop
-        
-        int loopcount = 0;
-        bool isloopover = false;
-        int finalsteptogo = 1;
-        for (int i = 0; i < linelist.size() + 1; i += 2) {
-            if (isloopover != true && ipnext == ipstarta) {
-                isloopover = true;
-                //cout<<"now loop will over soon"<<"\n";
-                //cout<<ipnext<<" to "<<linelist[ipstarta]<<endl;
-                
-            } else {
-                // cout<<ipnext<<" to "<<linelist[ipstarta]<<endl;
-            }
-            
-            loopcount++;
-            // cout<<"loop:"<<loopcount<<endl;
-            // check z with pnext
-            checkpnextZ();
-            //find the lnext that have linelist[i]=iplp0 linelist[i+1]=iplp1
-            // so we find next line
-            findnextline(iplp0, iplp1);
-            
-            //then we get the new ipH ipL from new ip0 ip1
-            getipHipLfrom(ip0, ip1);
-            
-            //check if it the last line?
-            if (isloopover == true) {
-                if ((ipL == ipstartL && ipH == ipstartH) || (ipL == ipstartH && ipH == ipstartL)) {
-                    finalsteptogo = 0;
-                    // cout<<"we find the last line "<<"\n";
-                } else {
-                    //cout<<"we are near the last line surely"<<"\n";
-                    //cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
-                }
-            }
-            ////cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
-            ofVec3f XYpoint = getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
-            layerisland.lineTo(XYpoint.x,XYpoint.y);
-            //cout<<"we now line to x y "<<XYpoint.x<<","<<XYpoint.y<<" to path"<<endl;
-            
-            if (isloopover == true) {
-                if (finalsteptogo == 0) {
-                    // cout<<"now we go out"<<"\n";
-                    break;
-                }
-            }
-            // set pnext
-            if (ipused == ipa) {
-                ipnext = ipb;
-            } else { //ipused==ipb
-                ipnext = ipa;
-            }
-            
-        }
-        layerisland.close();
-        returnpath.append(layerisland);
+        //layertestcloseloop(z,iCross);
+        returnpath.append( layertestcloseloop(z,iCross));
         // cout<<"now we close the sub path"<<endl;
     }
     // cout<<"------layertest end------"<<endl;
@@ -280,8 +200,90 @@ ofPath agmll::layertestat(float z) {
     returnpath.setStrokeWidth(1);
     return returnpath;
 }
-ofPath agmll::layertestcloseloop(){
-
+ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
+    ofPath layerisland;
+    
+    // ready to go
+    ip0 = ipbegin;
+    //cout<<"find a start"<<ip0<<"at"<<closetestpoint<<" flag is:"<<continueflag<<endl;
+    //debuglinelist(ip0);
+    //        stepstart(ip0);
+    //        ip0=i;
+    ip1=ip0+1;
+    ipa=nearpointlist[ip0];
+    ipb=nearpointlist[ip1];
+    ////cout<<"we find the cross point done"<<"\n";
+    // get the first point XY
+    // get the ph pl
+    getipHipLfrom(ip0, ip1);
+    
+    //get the XY and move to
+    ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, testatZ);
+    layerisland.moveTo(XYpoint.x,XYpoint.y);
+    
+    // set pstart and pnext
+    ipstarta=ipa;
+    ipstartL=ipL;
+    ipstartH=ipH;
+    ipnext=ipb;
+    
+    //step loop
+    
+    int loopcount = 0;
+    bool isloopover = false;
+    int finalsteptogo = 1;
+    for (int i = 0; i < linelist.size() + 1; i += 2) {
+        if (isloopover != true && ipnext == ipstarta) {
+            isloopover = true;
+            //cout<<"now loop will over soon"<<"\n";
+            //cout<<ipnext<<" to "<<linelist[ipstarta]<<endl;
+            
+        } else {
+            // cout<<ipnext<<" to "<<linelist[ipstarta]<<endl;
+        }
+        
+        loopcount++;
+        // cout<<"loop:"<<loopcount<<endl;
+        // check z with pnext
+        checkpnextZ();
+        //find the lnext that have linelist[i]=iplp0 linelist[i+1]=iplp1
+        // so we find next line
+        findnextline(iplp0, iplp1);
+        
+        //then we get the new ipH ipL from new ip0 ip1
+        getipHipLfrom(ip0, ip1);
+        
+        //check if it the last line?
+        if (isloopover == true) {
+            if ((ipL == ipstartL && ipH == ipstartH) || (ipL == ipstartH && ipH == ipstartL)) {
+                finalsteptogo = 0;
+                // cout<<"we find the last line "<<"\n";
+            } else {
+                //cout<<"we are near the last line surely"<<"\n";
+                //cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
+            }
+        }
+        ////cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
+        ofVec3f XYpoint = getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
+        layerisland.lineTo(XYpoint.x,XYpoint.y);
+        //cout<<"we now line to x y "<<XYpoint.x<<","<<XYpoint.y<<" to path"<<endl;
+        
+        if (isloopover == true) {
+            if (finalsteptogo == 0) {
+                // cout<<"now we go out"<<"\n";
+                break;
+            }
+        }
+        // set pnext
+        if (ipused == ipa) {
+            ipnext = ipb;
+        } else { //ipused==ipb
+            ipnext = ipa;
+        }
+        
+    }
+    layerisland.close();
+    return layerisland;
 }
 ofVec3f agmll::getScale(){
     ofMesh mesh=mergedMesh;
