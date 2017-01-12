@@ -105,52 +105,8 @@ void agmll::stepreset(){
     
 
 }
-/**
- //then we get the new ipH ipL from new ip0 ip1
 
- @param indexpoint0 <#indexpoint0 description#>
- @param indexpoint1 <#indexpoint1 description#>
- */
-void agmll::getipHipLfrom(ofIndexType indexpoint0, ofIndexType indexpoint1){
-    if (linetypelist[indexpoint0+1]==riseline) {
-        ipL=linelist[indexpoint0];
-        ipH=linelist[indexpoint1];
-    }else{
-        ipL=linelist[indexpoint1];
-        ipH=linelist[indexpoint0];
-    }
-}
-/**
- find the next line
-
- @param nextlineip0 the ip0 of line we find
- @param nextlineip1 the ip1 of line we find
- @return return the ip0 of the line we found
- */
-ofIndexType agmll::findnextline(ofIndexType lineip0, ofIndexType lineip1){
-    iplp0=lineip0;
-    iplp1=lineip1;
-    if(iplp0<iplp1){
-        //do nothing
-    }else{// ip0>ip1 need swap
-        ofIndexType iplp2=iplp1;
-        iplp1=iplp0;
-        iplp0=iplp2;
-    }
-    
-    //new theory
-         ip0=searchline(iplp0, iplp1);
-    ip1=ip0+1;
-    ipa=nearpointlist[ip0];
-    ipb=nearpointlist[ip1];
-    justtouch(ip0);
-    debuglinelist(ip0);
- 
-  
-    return ip0;
-
-}
-void agmll::checkpnextZ(){
+ void agmll::checkpnextZ(){
     if(pointlist[ipnext].z<=testatZ){
         ipused=ipL;
         iplp0=ipH;
@@ -191,7 +147,7 @@ ofPath agmll::layertestat(float z) {
         // cout<<"find something yet"<<endl;
         
         //layertestcloseloop(z,iCross);
-        returnpath.append( layertestcloseloop(z,iCross));
+        returnpath.append( layertestcloseloop(z,iCross));// add the indie loop to the returnpath
         // cout<<"now we close the sub path"<<endl;
     }
     // cout<<"------layertest end------"<<endl;
@@ -216,9 +172,17 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
     ////cout<<"we find the cross point done"<<"\n";
     // get the first point XY
     // get the ph pl
-    getipHipLfrom(ip0, ip1);
+    //getipHipLfrom(ip0, ip1);
+    if (linetypelist[ip0+1]==riseline) {
+        ipL=linelist[ip0];
+        ipH=linelist[ip1];
+    }else{
+        ipL=linelist[ip1];
+        ipH=linelist[ip0];
+    }
+
     //get the XY and move to
-    ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, testatZ);
+    ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
     layerisland.moveTo(XYpoint.x,XYpoint.y);
     
     // set pstart and pnext
@@ -238,8 +202,6 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
             //cout<<"now loop will over soon"<<"\n";
             //cout<<ipnext<<" to "<<linelist[ipstarta]<<endl;
             
-        } else {
-            // cout<<ipnext<<" to "<<linelist[ipstarta]<<endl;
         }
         //checkpnextZ();
         if(pointlist[ipnext].z<=z){
@@ -254,8 +216,24 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
             iplp0=ipL;
             iplp1=ipnext;
         }
-        findnextline(iplp0, iplp1);
-        getipHipLfrom(ip0, ip1);
+        //findnextline(iplp0, iplp1);
+
+        ip0=searchline(iplp0, iplp1);
+        ip1=ip0+1;
+        ipa=nearpointlist[ip0];
+        ipb=nearpointlist[ip1];
+        justtouch(ip0);
+        debuglinelist(ip0);
+        
+        
+        //getipHipLfrom(ip0, ip1);
+        if (linetypelist[ip0+1]==riseline) {
+            ipL=linelist[ip0];
+            ipH=linelist[ip1];
+        }else{
+            ipL=linelist[ip1];
+            ipH=linelist[ip0];
+        }
         //check if it the last line?
         if (isloopover == true) {
             if ((ipL == ipstartL && ipH == ipstartH) || (ipL == ipstartH && ipH == ipstartL)) {
@@ -266,10 +244,8 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
                 //cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
             }
         }
-        ////cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
         ofVec3f XYpoint = getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
         layerisland.lineTo(XYpoint.x,XYpoint.y);
-        //cout<<"we now line to x y "<<XYpoint.x<<","<<XYpoint.y<<" to path"<<endl;
         
         if (isloopover == true) {
             if (finalsteptogo == 0) {
@@ -602,7 +578,8 @@ void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
  @return i that from linelist[i]=findline // failed whene i =linelist.size()
  */
 ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
-    
+    //if(pointlist[ip0].z<pointlist[ip1].z){
+
     if(ip0<ip1){
         if(1){
             agline findline(ip0,ip1);

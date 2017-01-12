@@ -14,11 +14,11 @@ public:
     
     
     
-    vector<ofVec3f> pointlist;
-    vector<ofIndexType> linelist;// {p0 p1} the index point to point list add with addnewline()
+    vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
+    vector<ofIndexType> linelist;// {ip0 ip1} the index point to point list add with addnewline()
     map<agline,ofIndexType> linecopymap;// use for searchline , for great speed
     vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
-    vector<ofIndexType> nearpointlist;//{pa pb} the index point to point list add with addnewline() and addoldline
+    vector<ofIndexType> nearpointlist;//{ipa ipb} the index refer point list add with addnewline() and addoldline
     vector<float> dXdYlist;// init with addnewline() work with adddXdY()
     vector<int> linetypelist;//init with addnewline() work with adddXdY()
     vector<float> touchedlist;//init with addnewline() work with adddXdY()
@@ -82,13 +82,11 @@ private:
     //layertest only
     void stepreset();
     void checkpnextZ();
-    void getipHipLfrom(ofIndexType indexpoint0,ofIndexType indexpoint1);
     void addPointToPath(float x,float y,ofIndexType i);
     void alluntouched();
     void justtouch(ofIndexType ip);
     ofIndexType continueflag=0;
-    ofIndexType findnextline(ofIndexType lineip0,ofIndexType lineip1);
-    ofIndexType ipstartL=0;
+     ofIndexType ipstartL=0;
     ofIndexType ipstartH=0; // ipstart0<ipstart1 always
     ofIndexType ipstarta=0;// we never use ipa as next point until we find it
     ////cout<<"ipstart:"<<ipstartL<<":"<<ipstartH<<"\n";
