@@ -7,7 +7,6 @@ public:
     agmll();
     ~agmll();
     void setup(ofMesh mesh);
-    void draw();
     void calcaulateModel();
     void cleanmermory();
     float dH=0.01;
@@ -28,20 +27,17 @@ public:
     ofVec3f meshScale;
     ofVec3f meshMax;
     ofVec3f meshMin;
-    ofIndexType linecount=0;
-    //the mesh clone
-    ofMesh mergedMesh;
+    
+    ofMesh mergedMesh;//the mesh clone
     // main job
     void addface();
     void adddXdY();
     void addlinetype(ofIndexType i,int linetype,int riseorfall);
     void addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax);
-     ofVec3f getScale();
-    //static
-    ofVec3f getScale(ofMesh mesh);
+    ofVec3f getScale();
 private:
     //do in setup
-    void addpointlist(ofMesh mesh);
+    void addpointlist();
     
     //do once
     
@@ -68,17 +64,18 @@ private:
     float isTouched=1;
     float isUntouched=-1;
     
+    ofIndexType indexsize;
     
     //layertest only
-   
-  //  void addPointToPath(float x,float y,ofIndexType i);
+    
+    //  void addPointToPath(float x,float y,ofIndexType i);
     void alluntouched();
     void justtouch(ofIndexType i);
     ofIndexType continueflag=0;
     float testatZoffset=0.00001;
-
     
-    //layertest end 
+    
+    //layertest end
     
     
     //debug only
@@ -100,7 +97,21 @@ private:
         for(ofIndexType i=0;i<pointlist.size();i+=1){
             cout<<"point \t "<<i<<"\t"<<pointlist[i]<<endl;
         }
-    
+        
     }
+    void printsize(){
+        ofIndexType linecount=linelist.size();
+        ofIndexType trianglecount=indexsize/3;
+        cout<<"line count "<<linecount<<":"<<endl;
+        cout<<"point count "<<pointlist.size()<<":"<<endl;
+        cout<<"indices size:"<<indexsize<<endl;
+        if(linecount==indexsize){
+            cout<<"it seems calc in right way "<<endl;
+        }else{
+            cout<<"it seems calc in wrong way "<<endl;
+            
+        }
+    }
+    
 };
 

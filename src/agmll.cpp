@@ -9,34 +9,37 @@ agmll::~agmll(){
     
 }
 void agmll::setup(ofMesh mesh){
-    //clean up
-    cleanmermory();
     mergedMesh.clear();
     mergedMesh=mesh;
+    indexsize=mesh.getNumIndices();
 }
+/**
+ use swap to clean the vector
+ */
 void agmll::cleanmermory(){
     
     linelist.clear();
-    //vector<ofIndexType>().swap(linelist);// use for really clean memory
+    vector<ofIndexType>().swap(linelist);// use for really clean memory
     pointlist.clear();
-    //vector<ofVec3f>().swap(pointlist);
+    vector<ofVec3f>().swap(pointlist);
     linehorizonlist.clear();// is this line horizon true horizon // add with addnewline work with adddXdY
-    //vector<bool>().swap(linehorizonlist);// use for really clean memory
+    vector<bool>().swap(linehorizonlist);// use for really clean memory
     nearpointlist.clear();//{pa pb} the index point to point list
-    //vector<ofIndexType>().swap(nearpointlist);
+    vector<ofIndexType>().swap(nearpointlist);
     dXdYlist.clear();// add with addnewline work with adddXdY
-    //vector<float>().swap(dXdYlist);
+    vector<float>().swap(dXdYlist);
     //
 }
 void agmll::calcaulateModel(){
-    //this update will put inside the app update in old day
-    // new this will be excute in thread
+    cleanmermory();
     //calc work here
     mergedMesh.mergeDuplicateVertices();// step 1: merge mesh points
-    addpointlist(mergedMesh);
-    getScale(mergedMesh);
+    
+    addpointlist();
+    getScale();
     addface();  // step 2: add line list
     adddXdY();
+    printsize();
     return;
     
 }
@@ -248,45 +251,7 @@ ofVec3f agmll::getScale(){
     return scale;
     
 }
-
-ofVec3f agmll::getScale(ofMesh mesh){
-    ofVec3f a;
-    a.x=a.y=a.z=0;
-    ofVec3f b;
-    b.x=b.y=b.z=0;
-    
-    ofVec3f scale;
-    for (ofIndexType i=0; i<mesh.getNumVertices(); i++) {
-        // a
-        if(mesh.getVertex(i).x>=a.x){
-            a.x=mesh.getVertex(i).x;
-        }
-        if(mesh.getVertex(i).y>=a.y){
-            a.y=mesh.getVertex(i).y;
-        }
-        if(mesh.getVertex(i).z>=a.z){
-            a.z=mesh.getVertex(i).z;
-        }
-        
-        //b
-        if(mesh.getVertex(i).x<=b.x){
-            b.x=mesh.getVertex(i).x;
-        }
-        if(mesh.getVertex(i).y<=b.y){
-            b.y=mesh.getVertex(i).y;
-        }
-        if(mesh.getVertex(i).z<=b.z){
-            b.z=mesh.getVertex(i).z;
-        }
-    }
-    scale=a-b;
-    meshScale=scale;
-    meshMin=b;
-    meshMax=a;
-    return scale;
-    
-}
-
+ 
 void agmll::addface(){
     // get the point first
     ofIndexType ipA;
@@ -421,12 +386,10 @@ void agmll::alluntouched(){
 void agmll::justtouch(ofIndexType i){
     touchedlist[i]=isTouched;
 }
-// private:
-//do in setup
-void agmll::addpointlist(ofMesh mesh){
-    
-    pointlist.swap(mesh.getVertices());
-    
+
+
+void agmll::addpointlist(){
+    pointlist.swap(mergedMesh.getVertices());
 }
 //do once
 
@@ -691,7 +654,7 @@ void agmll::debuglinelist(ofIndexType index){
     cout<<"point index is:"<<ip0<<":"<<ip1<<"   ";
     if(ip0>pointlist.size()||ip1>pointlist.size()){
         cout<<"waring:index of point > pointlist.size"<<endl;
-        //return;
+        return;
     }else{
         cout<<"pointlist.size:"<<pointlist.size()<<"   ";
     }

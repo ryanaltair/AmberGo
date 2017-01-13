@@ -168,7 +168,7 @@ void agApp::loadModel(){
     //assimp model load
     if(modelpath.size()>0){
         panel.setSliceUnready();
-        threadMerge.start(modelpath);
+        threadMerge.loadModel(modelpath);
         bModelLoaded=false;
         modelpath.clear();
     }

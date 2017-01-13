@@ -13,12 +13,11 @@ class agSliceManager: public ofThread
 public:
     /// Create a agSliceManager and initialize the member
     /// variable in an initialization list.
-    agSliceManager(): count(0), shouldThrowTestException(false)
-    {
+    agSliceManager(){
     }
     
     /// Start the thread.
-    void start(string path)
+    void loadModel(string path)
     {
         assimpmodel.clear();
         
@@ -30,11 +29,14 @@ public:
         // It is rare that one would want to use startThread(false).
         isThreadEnd=false;
         isModelReadySlice=false;
-        needCheck=true;
+        needLoad=true;
+        easyLogTime("load model start");
+        mll.setup(assimpmodel.getMesh(0));
+        easyLogTime("load model end");
         startThread();
         ofResetElapsedTimeCounter();
     }
-   
+    
     bool sliceAt(float zheight)
     {
         if(isModelReadySlice==false){
@@ -57,15 +59,14 @@ public:
         }
     }
     float layertestZ;
-    /// Signal the thread to stop.  After calling this method,
-    /// isThreadRunning() will return false and the while loop will stop
-    /// next time it has the chance to.
     void stop()
     {
         stopThread();
     }
     
-    /// Our implementation of threadedFunction.
+    /**
+     thread contains load or sliceat job
+     */
     void threadedFunction()
     {
         while(isThreadRunning())
@@ -78,112 +79,55 @@ public:
             if(lock())
             {
                 // step merge: the mesh
-                if(needCheck==true){
+                if(needLoad==true){
                     stepLoad();
                     stepUpdate();
-                    needCheck=false;
-                    needSlice=false;
+                    needLoad=false;
                     
                 }
                 
                 //easyLogTime("need we Slice?");
                 if(needSliceAt>=0){
-                    stepSliceAt();
-                    needSliceAt=-1;
+                    if(isModelReadySlice==true){
+                        stepSliceAt();
+                        needSliceAt=-1;
+                    }
                 }
                 //easyLogTime("all we done ?");
                 isThreadEnd=true;
                 
                 unlock();
-                
-                if(shouldThrowTestException > 0)
-                {
-                    shouldThrowTestException = 0;
-                    // Throw an exception to test the global ofBaseThreadErrorHandler.
-                    // Users that require more specialized exception handling,
-                    // should make sure that their threaded objects catch all
-                    // exceptions. ofBaseThreadErrorHandler is only used as a
-                    // way to provide better debugging / logging information in
-                    // the event of an uncaught exception.
-                    throw Poco::ApplicationException("We just threw a test exception!");
-                }
-            }
-            else
-            {
-                // If we reach this else statement, it means that we could not
-                // lock our mutex, and so we do not need to call unlock().
-                // Calling unlock without locking will lead to problems.
-                ofLogWarning("threadedFunction()") << "Unable to lock mutex.";
             }
         }
     }
     
-    /// This drawing function cannot be called from the thread itself because
-    /// it includes OpenGL calls (ofDrawBitmapString).
-    void draw()
-    {
-        stringstream ss;
-        
-        ss << "I am a slowly increasing thread. " << endl;
-        ss << "My current count is: ";
-        
-        if(lock())
-        {
-            unlock();
-        }
-        else
-        {
-            ofLogWarning("threadedFunction()") << "Unable to lock mutex.";
-        }
-        
-        ofDrawBitmapString(ss.str(), 50, 56);
-    }
-    
-    // Use unique_lock to protect a copy of count while getting a copy.
-    int getCount()
-    {
-        unique_lock<std::mutex> lock(mutex);
-        return count;
-    }
-    
-    void throwTestException()
-    {
-        shouldThrowTestException = 1;
-    }
-    
+  
     ofxAssimpModelLoader assimpmodel;
     
     agmll mll;
     ofPath layertest;
     //needing flag
     bool isThreadEnd=false;// true when everything is done
-    bool needLoad=false;
-    bool needCheck =false;//
-    bool needSlice=false;
     
+    bool needLoad=false;
     float needSliceAt=-1;// -1 means no need
     bool isSliceChanged=false;
     float isModelReadySlice=false;
     // work in thread
     
     
-
+    
+protected:
     //mll load
     void stepLoad(){
-        easyLogTime("load model start");
-        mll.setup(assimpmodel.getMesh(0));
-        
-        easyLogTime("load model end");
-    }
+            }
     //mll update loop
     
     void stepUpdate(){
         
-        easyLogTime("load model start");
         float timeLast=ofGetElapsedTimef();
         mll.calcaulateModel();
         float timeWaste=ofGetElapsedTimef()-timeLast;
-        cout<<"------ add line take:"<<timeWaste<<endl;
         isModelReadySlice=true;
         easyLogTime("load model end");
         cout<<"ready for slice"<<endl;
@@ -202,23 +146,8 @@ public:
         
         isSliceChanged=true;
         //cout<<"we just slice  at"<<needSliceAt<<endl;
-        
-        
     }
-protected:
-    // A flag to check and see if we should throw a test exception.
-    Poco::AtomicCounter shouldThrowTestException;
-    // This is a simple variable that we aim to always access from both the
-    // main thread AND this threaded object.  Therefore, we need to protect it
-    // with the mutex.  In the case of simple numerical variables, some
-    // garuntee thread safety for small integral types, but for the sake of
-    // illustration, we use an int.  This int could represent ANY complex data
-    // type that needs to be protected.
-    //
-    // Note, if we simply want to count in a thread-safe manner without worrying
-    // about mutexes, we might use Poco::AtomicCounter instead.
-    int count;
-    //
+    
     void easyLogTime(string title){
         cout<<"------";
         
