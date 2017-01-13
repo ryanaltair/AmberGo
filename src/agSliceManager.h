@@ -16,17 +16,17 @@ public:
     agSliceManager(): count(0), shouldThrowTestException(false)
     {
     }
-
+    
     /// Start the thread.
     void start(string path)
     {
         assimpmodel.clear();
-
+        
         cout<<"-----modelpath:"<<path<<endl;
         assimpmodel.loadModel(path);
         cout<<"the mesh count:"<<assimpmodel.getMeshCount()<<endl;
         assimpmodel.disableTextures();
-              // Mutex blocking is set to true by default
+        // Mutex blocking is set to true by default
         // It is rare that one would want to use startThread(false).
         isThreadEnd=false;
         isModelReadySlice=false;
@@ -44,20 +44,20 @@ public:
     {
         if(isModelReadySlice==false){
             //if mesh have model and get merged?
-      
-                if(isThreadRunning()==false){
-                    needLoad=true;
-                    cout<<"now we loading"<<endl;
-                    startThread();
-                }
-           
+            
+            if(isThreadRunning()==false){
+                needLoad=true;
+                cout<<"now we loading"<<endl;
+                startThread();
+            }
+            
             return false;
         }else{//if(isModelReadySlice==true){
-        isThreadEnd=false;
+            isThreadEnd=false;
             isSliceChanged=false;
             layertestZ=zheight;
-        needSliceAt=zheight;
-        startThread();
+            needSliceAt=zheight;
+            startThread();
             return true;
         }
     }
@@ -69,14 +69,14 @@ public:
     {
         stopThread();
     }
-
+    
     /// Our implementation of threadedFunction.
     void threadedFunction()
     {
         while(isThreadRunning())
         {
             if(isThreadEnd==true){
-            stopThread();
+                stopThread();
             }
             
             // Attempt to lock the mutex.  If blocking is turned on,
@@ -102,7 +102,7 @@ public:
                 if(needSlice==true){
                     stepUpdate();
                     needSlice=false;
-
+                    
                 }
                 
                 //easyLogTime("need we Slice?");
@@ -112,9 +112,9 @@ public:
                 }
                 //easyLogTime("all we done ?");
                 isThreadEnd=true;
-
+                
                 unlock();
-
+                
                 if(shouldThrowTestException > 0)
                 {
                     shouldThrowTestException = 0;
@@ -136,16 +136,16 @@ public:
             }
         }
     }
-
+    
     /// This drawing function cannot be called from the thread itself because
     /// it includes OpenGL calls (ofDrawBitmapString).
     void draw()
     {
         stringstream ss;
-
+        
         ss << "I am a slowly increasing thread. " << endl;
         ss << "My current count is: ";
-
+        
         if(lock())
         {
             unlock();
@@ -154,24 +154,24 @@ public:
         {
             ofLogWarning("threadedFunction()") << "Unable to lock mutex.";
         }
-
+        
         ofDrawBitmapString(ss.str(), 50, 56);
     }
-
+    
     // Use unique_lock to protect a copy of count while getting a copy.
     int getCount()
     {
         unique_lock<std::mutex> lock(mutex);
         return count;
     }
-
+    
     void throwTestException()
     {
         shouldThrowTestException = 1;
     }
-
+    
     ofxAssimpModelLoader assimpmodel;
-
+    
     agmll mll;
     ofPath layertest;
     //needing flag
@@ -188,7 +188,7 @@ public:
     
     //merge and scale
     void stepCheck(){
-       
+        
     }
     //mll load
     void stepLoad(){
@@ -201,23 +201,23 @@ public:
     
     void stepUpdate(){
         
-            easyLogTime("load model start");
-            float timeLast=ofGetElapsedTimef();
-           
-            while(mll.islinelistfilled<100){
-                mll.update();
-            }
-            
-            float timeWaste=ofGetElapsedTimef()-timeLast;
-            cout<<"------ add line take:"<<timeWaste<<endl;
-            //easyPercent(mll.islinelistfilled);
-            while(mll.isdXdYlistfilled<100){
-                mll.update();
-               // easyPercent(mll.isdXdYlistfilled);
-            }
-            isModelReadySlice=true;
-            easyLogTime("load model end");
-            cout<<"ready for slice"<<endl;
+        easyLogTime("load model start");
+        float timeLast=ofGetElapsedTimef();
+        
+        while(mll.islinelistfilled<100){
+            mll.update();
+        }
+        
+        float timeWaste=ofGetElapsedTimef()-timeLast;
+        cout<<"------ add line take:"<<timeWaste<<endl;
+        //easyPercent(mll.islinelistfilled);
+        while(mll.isdXdYlistfilled<100){
+            mll.update();
+            // easyPercent(mll.isdXdYlistfilled);
+        }
+        isModelReadySlice=true;
+        easyLogTime("load model end");
+        cout<<"ready for slice"<<endl;
         
         cout<<"linelist.size:"<<mll.linelist.size()<<endl;
         cout<<"pointlist:"<<mll.pointlist.size()<<endl;
@@ -226,12 +226,12 @@ public:
     void stepSliceAt(){
         
         //easyLogTimeFrom("slice");
-            // cout<<"we are slicing from"<<ofToString(ofGetElapsedTimef()) ;
-            layertest=mll.layertestat(needSliceAt);
-          //  cout<<" to "<<ofToString(ofGetElapsedTimef()) <<endl;
+        // cout<<"we are slicing from"<<ofToString(ofGetElapsedTimef()) ;
+        layertest=mll.layertestat(needSliceAt);
+        //  cout<<" to "<<ofToString(ofGetElapsedTimef()) <<endl;
         //easyLogTimeTo("slice");
-
-            isSliceChanged=true;
+        
+        isSliceChanged=true;
         //cout<<"we just slice  at"<<needSliceAt<<endl;
         
         
@@ -254,8 +254,8 @@ protected:
     //
     void easyLogTime(string title){
         cout<<"------";
-
-    cout<<title<<":"<<ofToString(ofGetElapsedTimef()) <<" senconds "<<endl;
+        
+        cout<<title<<":"<<ofToString(ofGetElapsedTimef()) <<" senconds "<<endl;
     }
     void easyLogTimeFrom(string title){
         cout<<"------";
@@ -277,5 +277,5 @@ protected:
         
     }
     float timekeep;
-
+    
 };

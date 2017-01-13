@@ -41,10 +41,8 @@ private:
      it will load model with thread called merger
      */
     void loadModel();
-    agSliceManager merger;// threaded object. Merger
-    
+    agSliceManager threadMerge;// threaded object. Merger
     bool bModelLoaded=false;
-    
     agplate plate;//palte
     agpanel panel;    //GUI
     agAppPreference apppreference;// store the prefer

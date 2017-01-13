@@ -17,7 +17,4 @@ class agmodelinfo{
     float width;// the x
     float length;// the y
     float height;// the z
-    
-
-
 }

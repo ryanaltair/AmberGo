@@ -41,17 +41,17 @@ void agApp::update(){
         plate.sliceAt(panel.layertestZ);
         plate.update();
     }
-    if(merger.isThreadRunning()==false){
-        if(merger.layertestZ!=panel.layertestZ){
-        merger.sliceAt(panel.layertestZ);
+    if(threadMerge.isThreadRunning()==false){
+        if(threadMerge.layertestZ!=panel.layertestZ){
+        threadMerge.sliceAt(panel.layertestZ);
         }
         
-        if(merger.isSliceChanged==true){
+        if(threadMerge.isSliceChanged==true){
        // cout<<"B:we just got to here to try layertest"<<"\n";
-            layertest=merger.layertest;
+            layertest=threadMerge.layertest;
             drawFBO();
             panel.outputDone(true);
-            merger.isSliceChanged=false;
+            threadMerge.isSliceChanged=false;
             if(panel.bPrint==true){
                 bSnapshot=true;
                 panel.snapcount++;
@@ -171,15 +171,15 @@ void agApp::loadModel(){
     //assimp model load
     if(modelpath.size()>0){
         panel.setSliceUnready();
-        merger.setpixelpermm(apppreference.getpixelpermm());
-        merger.setmmperpixel(apppreference.getmmperpixel());
-        merger.start(modelpath);
+        threadMerge.setpixelpermm(apppreference.getpixelpermm());
+        threadMerge.setmmperpixel(apppreference.getmmperpixel());
+        threadMerge.start(modelpath);
         bModelLoaded=false;
         modelpath.clear();
     }
     
     // when loading
-    if(merger.isThreadRunning()==true){
+    if(threadMerge.isThreadRunning()==true){
         return;
     }
     //when loaded
@@ -187,13 +187,13 @@ void agApp::loadModel(){
         bModelLoaded=true;
         return;
     }
-    plate.addModel(merger.mll.mergedMesh);
-    merger.assimpmodel.clear();
+    plate.addModel(threadMerge.mll.mergedMesh);
+    threadMerge.assimpmodel.clear();
     panel.setSliceReady();
-    plate.modelSize=merger.mll.getScale();
+    plate.modelSize=threadMerge.mll.getScale();
     ofVec3f newposti;
 
-    newposti=merger.mll.meshMin;
+    newposti=threadMerge.mll.meshMin;
     newposti.x=0;//-plate.modelSize.x/2;
     newposti.y=0;//-plate.modelSize.y/2;
     plate.setPosition(newposti);
