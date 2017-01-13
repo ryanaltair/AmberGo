@@ -8,7 +8,7 @@ public:
     ~agmll();
     void setup(ofMesh mesh);
     void draw();
-    void update();
+    void calcaulateModel();
     void cleanmermory();
     float dH=0.01;
     
@@ -29,11 +29,6 @@ public:
     ofVec3f meshMax;
     ofVec3f meshMin;
     ofIndexType linecount=0;
-    //process flag
-    int ismeshMerged=0;//100 means done
-    int islinelistfilled=0;//100 means filled
-    int isdXdYlistfilled=0;//100 means filled
-    int isAllReady=0;//100 means all done
     //the mesh clone
     ofMesh mergedMesh;
     // main job
@@ -62,11 +57,6 @@ private:
     bool isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,int riseorfall,float planeatz);
     
     
-    
-    // progress flag
-    size_t linelistloaded=0;
-    size_t dxdylistloaded=0;
-    
     int horizonline=1;
     int verticalline=2;
     int bevelline=3;
@@ -76,12 +66,12 @@ private:
     int unknown=0;
     
     float isTouched=1;
-    float isUntouched=0;
+    float isUntouched=-1;
     
     
     //layertest only
    
-    void addPointToPath(float x,float y,ofIndexType i);
+  //  void addPointToPath(float x,float y,ofIndexType i);
     void alluntouched();
     void justtouch(ofIndexType i);
     ofIndexType continueflag=0;
@@ -92,7 +82,7 @@ private:
     
     
     //debug only
-    void debuglinelist(ofIndexType ip);
+    void debuglinelist(ofIndexType index);
     ofIndexType counter0=0;
     ofIndexType counter1=0;
     void printlineandpoint(){

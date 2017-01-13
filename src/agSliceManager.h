@@ -34,12 +34,7 @@ public:
         startThread();
         ofResetElapsedTimeCounter();
     }
-    void setmmperpixel(ofVec3f mmperpixel){
-        fmmperpixel=mmperpixel;
-    }
-    void setpixelpermm(ofVec3f pixelpermm){
-        fpixelpermm=pixelpermm;
-    }
+   
     bool sliceAt(float zheight)
     {
         if(isModelReadySlice==false){
@@ -84,23 +79,9 @@ public:
             {
                 // step merge: the mesh
                 if(needCheck==true){
-                    stepCheck();
-                    needCheck=false;
-                    needLoad=true;
-                }
-                
-                //step load:
-                //easyLogTime("need we load?");
-                if(needLoad==true){
                     stepLoad();
-                    needLoad=false;
-                    needSlice=true;
-                }
-                
-                //
-                //easyLogTime("need we update?");
-                if(needSlice==true){
                     stepUpdate();
+                    needCheck=false;
                     needSlice=false;
                     
                 }
@@ -186,10 +167,7 @@ public:
     // work in thread
     
     
-    //merge and scale
-    void stepCheck(){
-        
-    }
+
     //mll load
     void stepLoad(){
         easyLogTime("load model start");
@@ -203,18 +181,9 @@ public:
         
         easyLogTime("load model start");
         float timeLast=ofGetElapsedTimef();
-        
-        while(mll.islinelistfilled<100){
-            mll.update();
-        }
-        
+        mll.calcaulateModel();
         float timeWaste=ofGetElapsedTimef()-timeLast;
         cout<<"------ add line take:"<<timeWaste<<endl;
-        //easyPercent(mll.islinelistfilled);
-        while(mll.isdXdYlistfilled<100){
-            mll.update();
-            // easyPercent(mll.isdXdYlistfilled);
-        }
         isModelReadySlice=true;
         easyLogTime("load model end");
         cout<<"ready for slice"<<endl;
@@ -249,8 +218,6 @@ protected:
     // Note, if we simply want to count in a thread-safe manner without worrying
     // about mutexes, we might use Poco::AtomicCounter instead.
     int count;
-    ofVec3f fpixelpermm;
-    ofVec3f fmmperpixel;
     //
     void easyLogTime(string title){
         cout<<"------";

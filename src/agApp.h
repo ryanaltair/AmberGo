@@ -51,7 +51,7 @@ private:
     string modelpath;  //drag and drop info
 
     bool bSnapshot=false;
-    ofFbo fbo;
+        ofFbo fbo;
  
     
 };

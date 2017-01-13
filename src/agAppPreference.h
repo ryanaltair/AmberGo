@@ -9,7 +9,7 @@
  
  
  TODO:
- - 由多方面构成 主要由以下影响
+ - 打印速度由多方面构成 主要由以下影响
  - 拔模高度 readygap的高度 fixed
  - 上升速度 unfixed
  - 停整时间 拔模完成后等待下降的时间 really small and fixed
@@ -65,7 +65,8 @@ public:
     //the toggle
 
     bool bPrint=false;
-    
+    bool bHaveModelLoaded=false;
+
     
     bool isModelChanged=false;
     ofVec3f getmmperpixel(){

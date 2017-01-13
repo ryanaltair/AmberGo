@@ -20,42 +20,30 @@ public:
     void update();
     void sliceAt(float Z);
     void drawincamera(ofRectangle view);
-    void drawModel();
+    void drawModels();
     void addModel(ofMesh model);// add a model
     void deleteModel();
     void cleanModel();
     void setPosition(ofVec3f newpostion);
     // workplace:
-    // ground
-    ofBoxPrimitive playground;
-    ofMatrix4x4 mplayground;
-    // box
-    ofBoxPrimitive outsideBox;
-    ofMatrix4x4 moutsideBox;
-    // slicelayer
-    ofBoxPrimitive sliceLayPlane;
-    ofMatrix4x4 msliceLayPlane;
-    
+    ofBoxPrimitive playground;    // ground
+    ofBoxPrimitive outsideBox;    // box
+    ofBoxPrimitive sliceLayPlane;    // slicelayer
+   
     float layertestZ=0;
     ofVec3f modelSize;
-    ofVec3f modelMoce;
     ofVec3f boxSize;// the box size
     ofVec3f pixelSize;
     float groundheight;
   
-    ofMatrix4x4 mreset;
-   
-  //drawmode set
-    int drawmode=0;//0 for meshes 1 for assimps
+    
+    int drawmode=0;//drawmode set 0 for meshes 1 for assimps
     
     // enables
     int outsideBoxEnable=0;
     int sliceLayPlaneEnable=1;
     
-    //models
-    vector<ofMesh> models; 
-    of3dPrimitive nodemodel;
+    vector<of3dPrimitive> nodemodels;    //models
     ofEasyCam cam;
-    //ofRectangle view=ofRectangle(0, 0, 320, 320);
-    
+   
 };

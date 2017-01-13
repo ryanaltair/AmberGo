@@ -12,8 +12,8 @@ void agApp::setup(){
     ofSetFrameRate(60);
     
     // init the modelpath
-    modelpath="testcube.stl";
-    apppreference.isModelChanged=true;
+//    modelpath="testcube.stl";
+//    apppreference.isModelChanged=true;
     
     // init the plate which hold the 3D model we see
     plate.setup();
@@ -31,17 +31,15 @@ void agApp::setup(){
 void agApp::update(){
     apppreference.updatelayerout(panel.getWidth());
     panel.update();
-    //panel.layertestZ=panel.sliceHeight;
     loadModel();
-    //sliceHeight=panel.layertestZ;//sliceLayer*sliceLayerThickness;
     if(panel.layertestZ!=panel.layertestZlast){
-       // panel.layertestZ=panel.layertestZ;
         panel.layertestZlast=panel.layertestZ;
         //cout<<"we slice at now "<<endl;
         plate.sliceAt(panel.layertestZ);
         plate.update();
     }
     if(threadMerge.isThreadRunning()==false){
+        if(apppreference.bHaveModelLoaded==false){return;}
         if(threadMerge.layertestZ!=panel.layertestZ){
         threadMerge.sliceAt(panel.layertestZ);
         }
@@ -167,12 +165,9 @@ void agApp::loadModel(){
         return;
       
     }
-    
     //assimp model load
     if(modelpath.size()>0){
         panel.setSliceUnready();
-        threadMerge.setpixelpermm(apppreference.getpixelpermm());
-        threadMerge.setmmperpixel(apppreference.getmmperpixel());
         threadMerge.start(modelpath);
         bModelLoaded=false;
         modelpath.clear();
@@ -200,6 +195,7 @@ void agApp::loadModel(){
     panel.sliceMax=plate.modelSize.z;
     cout<<"modelsize"<<plate.modelSize<<endl;
     apppreference.isModelChanged=false;
+    apppreference.bHaveModelLoaded=true;
 }
 /**
  draw the fbo and save the pic as png file
