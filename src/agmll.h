@@ -15,7 +15,7 @@ public:
     
     
     vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
-    vector<ofIndexType> linelist;// {ip0 ip1} the index point to point list add with addnewline()
+    vector<ofIndexType> linelist;// {ip0 ip1} the index point to point list add with addnewline() and p0 will always lower
     map<agline,ofIndexType> linecopymap;// use for searchline , for great speed
     vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
     vector<ofIndexType> nearpointlist;//{ipa ipb} the index refer point list add with addnewline() and addoldline
@@ -80,20 +80,12 @@ private:
     
     
     //layertest only
-    void stepreset(); 
+   
     void addPointToPath(float x,float y,ofIndexType i);
     void alluntouched();
-    void justtouch(ofIndexType ip);
+    void justtouch(ofIndexType i);
     ofIndexType continueflag=0;
-    float testatZoffset=-1;
-    //dX=dXdYlist[ip0]
-    //dY=dXdYlist[ip1]
-    // how to refer a point
-    // point =pointlist[iplp0]
-    // point =pointlist[linelist[ip0]]
-    // point =pointlist[nearpointlist[ip0]]
-    // point =pointlist[ipa]
-    
+    float testatZoffset=0.00001;
 
     
     //layertest end 
@@ -103,5 +95,22 @@ private:
     void debuglinelist(ofIndexType ip);
     ofIndexType counter0=0;
     ofIndexType counter1=0;
+    void printlineandpoint(){
+        cout<<"linelist "<<linelist.size()/2<<":"<<endl;
+        for(ofIndexType i=0;i<linelist.size();i+=2){
+            cout<<"line \t"<<i/2+1<<"\t"<<linelist[i]<<"\t"<<linelist[i+1];
+            if(pointlist[linelist[i]].z==pointlist[linelist[i+1]].z){
+                cout<<"\t -"<<endl;
+            }else{
+                cout<<endl;
+            }
+            
+        }
+        cout<<"pointlist "<<pointlist.size()<<":"<<endl;
+        for(ofIndexType i=0;i<pointlist.size();i+=1){
+            cout<<"point \t "<<i<<"\t"<<pointlist[i]<<endl;
+        }
+    
+    }
 };
 

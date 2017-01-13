@@ -1,6 +1,5 @@
 #pragma once
 #include "ofMain.h"
-#include "ofxAssimpModelLoader.h"
 
 /**
 use for AmberGo
@@ -23,7 +22,6 @@ public:
     void drawincamera(ofRectangle view);
     void drawModel();
     void addModel(ofMesh model);// add a model
-    void addModel(string modelpath);//add a model with assimp
     void deleteModel();
     void cleanModel();
     void setPosition(ofVec3f newpostion);
@@ -55,8 +53,7 @@ public:
     int sliceLayPlaneEnable=1;
     
     //models
-    vector<ofMesh> models;
-    ofxAssimpModelLoader assimploader;
+    vector<ofMesh> models; 
     of3dPrimitive nodemodel;
     ofEasyCam cam;
     //ofRectangle view=ofRectangle(0, 0, 320, 320);

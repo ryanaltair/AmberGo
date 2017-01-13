@@ -206,8 +206,6 @@ void agApp::loadModel(){
  */
 void agApp::drawFBO(){
     // now we try fbo
-    timer=ofGetElapsedTimef();
-    
     fbo.begin();
     
     ofClear(ofColor::black);

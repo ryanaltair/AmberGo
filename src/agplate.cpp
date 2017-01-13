@@ -49,16 +49,7 @@ void agplate::addModel(ofMesh model){
 
 
 }
-void agplate::addModel(string modelpath){
-    drawmode=1;
-    assimploader.loadModel(modelpath);
-   
-    nodemodel.getMesh()=assimploader.getMesh(0);
-    nodemodel.setScale(100, 100, 100);
-    cout<<"add a assimp model in plate"<<endl;
-    
-    
-}
+
 void agplate::drawincamera(ofRectangle view){
     
     cam.begin(view);

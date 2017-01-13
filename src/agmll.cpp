@@ -76,24 +76,11 @@ void agmll::update(){
     }
     
 }
-//step reset
-void agmll::stepreset(){
-    
-    //stepreset
-    
-    
-    // how to refer a point
-    // point =pointlist[iplp0]
-    // point =pointlist[linelist[ip0]]
-    // point =pointlist[nearpointlist[ip0]]
-    // point =pointlist[ipa]
-    
-    
-    
-}
+ 
 
 // public
 ofPath agmll::layertestat(float z) {
+    printlineandpoint();
     alluntouched();
     continueflag = 0;
     z += meshMin.z;
@@ -103,7 +90,7 @@ ofPath agmll::layertestat(float z) {
     }
     ofIndexType closetestpoint;
     for ( closetestpoint = 0; closetestpoint < linelist.size(); closetestpoint += 2) {
-        stepreset();
+        
         //step start
         //find a cross point
         if (continueflag == linelist.size()) {
@@ -120,13 +107,19 @@ ofPath agmll::layertestat(float z) {
     }
     // cout<<"------layertest end------"<<endl;
     returnpath.close();
-    cout << "continepoint=" << closetestpoint << endl;
-    returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
-    returnpath.setStrokeColor(ofColor::blue);
-    returnpath.setFillColor(ofColor::white);
-    returnpath.setFilled(true);
+//    cout << "continepoint=" << closetestpoint << endl;
+    returnpath.setStrokeColor(ofColor::white);
+    returnpath.setFilled(false);
+    returnpath.setStrokeWidth(10);
+    if(0){
+        returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
+        returnpath.setStrokeColor(ofColor::blue);
+        returnpath.setFillColor(ofColor::white);
+        returnpath.setFilled(true);
+        returnpath.setStrokeWidth(1);
+    }
     // cout<<"windingmode"<<returnpath.getWindingMode()<<endl;
-    returnpath.setStrokeWidth(1);
+    
     return returnpath;
 }
 ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
@@ -136,7 +129,7 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
     ofIndexType ipHigh,ipLow;
     ofIndexType ipNearA,ipNearB;
     ofIndexType ipUsed,ipNext0,ipNext1;
-    
+    ofVec3f oldpoint;
     // ready to go
     if(1){
         i0=ipbegin;
@@ -146,18 +139,13 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
         ////cout<<"we find the cross point done"<<"\n";
         // get the first point XY
         // get the ph pl
-        //getipHipLfrom(ip0, ip1);
-        if (linetypelist[i0+1]==riseline) {
-            ipLow=linelist[i0];
-            ipHigh=linelist[i1];
-        }else{
-            ipLow=linelist[i1];
-            ipHigh=linelist[i0];
-        }
-        
+        ipLow=linelist[i0];
+        ipHigh=linelist[i1];
         //get the XY and move to
         ofVec3f XYpoint=getXY(pointlist[ipHigh], pointlist[ipLow], dXdYlist[i0], dXdYlist[i1], dH, z);
+        oldpoint=XYpoint;
         layerisland.moveTo(XYpoint.x,XYpoint.y);
+        
         // set pstart and pnext
         iStart0=i0;
         iStart1=i1;
@@ -165,68 +153,81 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
         ipNext0=ipNearB;
     }
     //step loop
-    
+//    cout<<"loop start"<<endl;
     int loopcount = 0;
     bool isloopover = false;
     int finalsteptogo = 1;
-    for (int i = 0; i < linelist.size() + 1; i += 2) {
+    for (unsigned long i = 0; i < linelist.size() + 1; i += 1) {
         if (isloopover != true && ipNext0 == ipStartA) {
             isloopover = true;
-            //cout<<"now loop will over soon"<<"\n";
-            //cout<<ipNext<<" to "<<linelist[ipStartA]<<endl;
+//            cout<<"now loop will over soon"<<" : ";
+//            cout<<ipNext0<<" to "<<ipStartA<<endl;
+//            cout<<i<<" to "<<ipStartA<<endl;
         }
         //checkpnextZ
+        float nextZ=z;
         if(ipNext0>pointlist.size()){
             cout<<"wrong!!!!!!!!"<<endl;
         }
-        int nextLineTheory;
+        bool nextLineTheoryUseHigh;
+        float nextpointZ=pointlist[ipNext0].z;
+        if(nextpointZ>=pointlist[ipHigh].z){
+            nextLineTheoryUseHigh=false;
+        }else if(nextpointZ<=pointlist[ipLow].z){
+            nextLineTheoryUseHigh=true;
+        }else{
+            if(nextpointZ<=z){
+                nextLineTheoryUseHigh=true;
+            }else{
+                nextLineTheoryUseHigh=false;
+            }
+            
+        }
         
         
-        
-        
-        float nextZ=z;
-        if(pointlist[ipNext0].z<=nextZ){
+        if(nextLineTheoryUseHigh==true){
             ipUsed=ipLow;
             ipNext1=ipHigh;
-           
+            
         }else{
             ipUsed=ipHigh;
             ipNext1=ipLow;
-
         }
         
         //
         if(1){
             i0=searchline(ipNext0,ipNext1);
+            //cout<<"i0:"<<i0<<":"<<linelist.size()<<":"<<pointlist.size()<<endl;
             i1=i0+1;
             ipNearA=nearpointlist[i0];
             ipNearB=nearpointlist[i1];
             justtouch(i0);
-            //getipHipLfrom(ip0, ip1);
-            if (linetypelist[i0+1]==riseline) {
-                ipLow=linelist[i0];
-                ipHigh=linelist[i1];
-            }else{
-                ipLow=linelist[i1];
-                ipHigh=linelist[i0];
-            }
-            //check if it the last line?
-            if (isloopover == true) {
-                if (i0 == iStart0 && i1 == iStart1) {
-                    finalsteptogo = 0;
-                    // cout<<"we find the last line "<<"\n";
-                }
-            }
+            ipLow=linelist[i0];
+            ipHigh=linelist[i1];
             if(ipHigh>=pointlist.size()){
                 debuglinelist(i0);
                 cout<<"EXC_BAD_ACESS"<<ipHigh<<":"<<pointlist.size()<<endl;
             }
             ofVec3f XYpoint = getXY(pointlist[ipHigh], pointlist[ipLow], dXdYlist[i0], dXdYlist[i1], dH, z);
+            if(oldpoint!=XYpoint){
             layerisland.lineTo(XYpoint.x,XYpoint.y);
-            
+            }
+            oldpoint=XYpoint;
             if (isloopover == true) {
+                 //check if it the last line?
+//                i--;
+                if (i0 == iStart0 && i1 == iStart1) {
+                    finalsteptogo = 0;
+//                    cout<<"we find the last line right way"<<"\n";
+                }
+                if (i1 == iStart0 && i0 == iStart1) {
+                    finalsteptogo = 0;
+//                    cout<<"we find the last line wrong way "<<"\n";
+                }
                 if (finalsteptogo == 0) {
-                    // cout<<"now we go out"<<"\n";
+//                     cout<<"now we go out"<<"\n";
+//                    cout<<ipNext0<<" to "<<ipStartA<<endl;
+//                    cout<<i<<" to "<<ipStartA<<endl;
                     break;
                 }
             }
@@ -237,8 +238,6 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType ipbegin){
                 ipNext0 = ipNearA;
             }
             // modify the z if we need
-           
-            
         }
     }
     layerisland.close();
@@ -323,72 +322,56 @@ ofVec3f agmll::getScale(ofMesh mesh){
 
 void agmll::addface(){
     // get the point first
-    ofIndexType ia;
-    ofIndexType ib;
-    ofIndexType ic;
+    ofIndexType ipA;
+    ofIndexType ipB;
+    ofIndexType ipC;
     ofVec3f pa;
     ofVec3f pb;
     ofVec3f pc;
     ofIndexType i=0;
-    //cout<<"ia,ib,ic"<<ia<<ib<<ic<<"\n";
-    if(i==0){// first face
-        // get the point first
-        ia=mergedMesh.getIndex(i);
-        ib=mergedMesh.getIndex(i+1);
-        ic=mergedMesh.getIndex(i+2);
-        // pa=mergedMesh.getVertex(ia);
-        // pb=mergedMesh.getVertex(ib);
-        // pc=mergedMesh.getVertex(ic);
-        //ab
-        addnewline(ia,ib, ic);
-        //ac
-        addnewline(ia,ic,ib);
-        //bc
-        addnewline(ib,ic,ia);
-        //cout<<"first 3 line"<<"\n";
-    }
+    //cout<<"ipA,ipB,ipC"<<ipA<<ipB<<ipC<<"\n";
     counter0=0;
     counter1=0;
     
-    for(i=3;i<mergedMesh.getNumIndices();i+=3){//i>0
+    for(i=0;i<mergedMesh.getNumIndices();i+=3){//i>0
         // get the point first
-        ia=mergedMesh.getIndex(i);
-        ib=mergedMesh.getIndex(i+1);
-        ic=mergedMesh.getIndex(i+2);
-        //pa=mergedMesh.getVertex(ia);
-        //pb=mergedMesh.getVertex(ib);
-        //pc=mergedMesh.getVertex(ic);
+        ipA=mergedMesh.getIndex(i);
+        ipB=mergedMesh.getIndex(i+1);
+        ipC=mergedMesh.getIndex(i+2);
+        //pa=mergedMesh.getVertex(ipA);
+        //pb=mergedMesh.getVertex(ipB);
+        //pc=mergedMesh.getVertex(ipC);
         
         // the first line ab
-        int oldline0=searchline(ia,ib);
+        int oldline0=searchline(ipA,ipB);
         // line exist and not
         // ab
         if(oldline0<linelist.size()){
-            addoldline(oldline0, ic);
+            addoldline(oldline0, ipC);
             ////cout<<"add old line"<<"\n";
         }else{
-            addnewline(ia, ib, ic);
+            addnewline(ipA, ipB, ipC);
         }
         
         // the second line ac
-        int oldline1=searchline(ia,ic);
+        int oldline1=searchline(ipA,ipC);
         
         //ac
         if(oldline1<linelist.size()){
-            addoldline(oldline1, ib);
+            addoldline(oldline1, ipB);
             ////cout<<"add old line"<<"\n";
         }else{
-            addnewline(ia, ic, ib);
+            addnewline(ipA, ipC, ipB);
         }
         
         //the third line bc
-        int oldline2=searchline(ic,ib);
+        int oldline2=searchline(ipC,ipB);
         //bc
         if(oldline2<linelist.size()){
-            addoldline(oldline2, ia);
+            addoldline(oldline2, ipA);
             ////cout<<"add old line"<<"\n";
         }else{
-            addnewline(ic, ib, ia);
+            addnewline(ipC, ipB, ipA);
         }
         // new line
     }
@@ -471,15 +454,15 @@ void agmll::alluntouched(){
     }
     
 }
-void agmll::justtouch(ofIndexType ip){
-    touchedlist[ip]=isTouched;
+void agmll::justtouch(ofIndexType i){
+    touchedlist[i]=isTouched;
 }
 // private:
 //do in setup
 void agmll::addpointlist(ofMesh mesh){
-    for(ofIndexType i=0;i<mesh.getNumVertices();i++){
-        pointlist.push_back(mesh.getVertex(i));
-    }
+    
+    pointlist.swap(mesh.getVertices());
+    
 }
 //do once
 
@@ -493,34 +476,51 @@ ofVec3f agmll::getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z){
     
     float divdH=1/dH;
     float h=z-pL.z;
-    if(testatZoffset>0){// lower the z will help easy get
-        //   h=h+testatZoffset;
-    }
+    
     returnpoint.x=pL.x+dX*divdH*h;
     returnpoint.y=pL.y+dY*divdH*h;
     returnpoint.z=z;
     //cout<<"getXY():"<<ofToString(returnpoint)<<" when pH:"<<ofToString(pH)<<" pL:"<<ofToString(pL)<<endl;
-    testatZoffset=-1;
     return returnpoint;
 }
 
 void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
     ////cout<<"ip0,ip1:"<<ip0<<","<<ip1<<"\n";
     ////cout<<"before"<<linelist.size();
-    
-    if(ip0<ip1){
+    if(pointlist[ip0].z<pointlist[ip1].z){
+        // if(ip0<ip1){
         agline newline(ip0,ip1);
         linecopymap[newline]=linelist.size();
         linelist.push_back(ip0);
         linelist.push_back(ip1);
-        //cout<<"0<1"<<"\n";
-    }else{// ip1<ip0
+        cout<<"---------- < "<<"\n";
+    }else if(pointlist[ip0].z>pointlist[ip1].z){// ip1<ip0
         agline newline(ip1,ip0);
         linecopymap[newline]=linelist.size();
         linelist.push_back(ip1);
         linelist.push_back(ip0);
+        cout<<"---------- > "<<"\n";
         //linecopymap[newline]=ip1;
         //cout<<"1<0"<<"\n";
+    }else{
+        // if they the same
+        // make sure ip0<ip1
+        if(ip0<ip1){
+            agline newline(ip0,ip1);
+            linelist.push_back(ip0);
+            linelist.push_back(ip1);
+            linecopymap[newline]=linelist.size();
+            cout<<"---------- - "<<ip0<<":"<<ip1<<"\n";
+        }else{
+            agline newline(ip1,ip0);
+            linelist.push_back(ip1);
+            linelist.push_back(ip0);
+            linecopymap[newline]=linelist.size();
+             cout<<"---------- - "<<ip1<<":"<<ip0<<"\n";
+        }
+        
+       
+    
     }
     
     ////cout<<linelist[linelist.size()-2];
@@ -559,9 +559,8 @@ void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
  @return i that from linelist[i]=findline // failed whene i =linelist.size()
  */
 ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
-    //if(pointlist[ip0].z<pointlist[ip1].z){
-    
-    if(ip0<ip1){
+    if(pointlist[ip0].z<pointlist[ip1].z){
+//     if(ip0<ip1){
         if(1){
             agline findline(ip0,ip1);
             auto it=linecopymap.find(findline);
@@ -572,7 +571,7 @@ ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
                 return it->second;
             }
         }
-    }else{// ip1<ip0
+    }else if(pointlist[ip0].z>pointlist[ip1].z){// ip1<ip0
         if(1){
             agline findline(ip1,ip0);
             auto it=linecopymap.find(findline);
@@ -583,6 +582,30 @@ ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
                 return it->second;
             }
         }
+    }else{//pointlist[ip0].z==pointlist[ip1].z
+        if(ip0<ip1){
+            agline findline(ip0,ip1);
+            auto it=linecopymap.find(findline);
+            if(it==linecopymap.end()){
+                //not found
+                return linelist.size();
+            }else{
+                return it->second;
+            }
+
+        }else{
+            agline findline(ip1,ip0);
+            auto it=linecopymap.find(findline);
+            if(it==linecopymap.end()){
+                //not found
+                return linelist.size();
+            }else{
+                return it->second;
+            }
+
+        }
+       
+    
     }
     //counter1++;
     return -1;// false

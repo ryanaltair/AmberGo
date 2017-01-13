@@ -219,14 +219,17 @@ public:
             easyLogTime("load model end");
             cout<<"ready for slice"<<endl;
         
+        cout<<"linelist.size:"<<mll.linelist.size()<<endl;
+        cout<<"pointlist:"<<mll.pointlist.size()<<endl;
+        
     }
     void stepSliceAt(){
         
-        easyLogTimeFrom("slice");
+        //easyLogTimeFrom("slice");
             // cout<<"we are slicing from"<<ofToString(ofGetElapsedTimef()) ;
             layertest=mll.layertestat(needSliceAt);
           //  cout<<" to "<<ofToString(ofGetElapsedTimef()) <<endl;
-        easyLogTimeTo("slice");
+        //easyLogTimeTo("slice");
 
             isSliceChanged=true;
         //cout<<"we just slice  at"<<needSliceAt<<endl;
