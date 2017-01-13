@@ -39,7 +39,7 @@ void agmll::calcaulateModel(){
     getScale();
     addface();  // step 2: add line list
     adddXdY();
-    printsize();
+    //printsize();
     return;
     
 }
@@ -251,7 +251,7 @@ ofVec3f agmll::getScale(){
     return scale;
     
 }
- 
+
 void agmll::addface(){
     // get the point first
     ofIndexType ipA;
@@ -260,7 +260,7 @@ void agmll::addface(){
     ofVec3f pa;
     ofVec3f pb;
     ofVec3f pc;
-    ofIndexType i=0;
+    ofIndexType i;
     //cout<<"ipA,ipB,ipC"<<ipA<<ipB<<ipC<<"\n";
     counter0=0;
     counter1=0;
@@ -270,43 +270,48 @@ void agmll::addface(){
         ipA=mergedMesh.getIndex(i);
         ipB=mergedMesh.getIndex(i+1);
         ipC=mergedMesh.getIndex(i+2);
-        //pa=mergedMesh.getVertex(ipA);
-        //pb=mergedMesh.getVertex(ipB);
-        //pc=mergedMesh.getVertex(ipC);
-        
+       
         // the first line ab
         int oldline0=searchline(ipA,ipB);
-        // line exist and not
-        // ab
         if(oldline0<linelist.size()){
             addoldline(oldline0, ipC);
             ////cout<<"add old line"<<"\n";
+            counter0++;
         }else{
             addnewline(ipA, ipB, ipC);
+            counter1++;
         }
         
         // the second line ac
         int oldline1=searchline(ipA,ipC);
-        
-        //ac
         if(oldline1<linelist.size()){
             addoldline(oldline1, ipB);
             ////cout<<"add old line"<<"\n";
+            counter0++;
         }else{
             addnewline(ipA, ipC, ipB);
+            counter1++;
         }
         
         //the third line bc
         int oldline2=searchline(ipC,ipB);
-        //bc
         if(oldline2<linelist.size()){
+            counter0++;
             addoldline(oldline2, ipA);
             ////cout<<"add old line"<<"\n";
         }else{
             addnewline(ipC, ipB, ipA);
+            counter1++;
         }
-        // new line
+        
+        
     }
+   
+    cout<<"add new"<<counter1<<":"<<counter0<<endl;
+    if(counter1!=counter0){
+        cout<<"add face get problem"<<endl;
+    }
+    printsize();
 }
 void agmll::adddXdY(){
     for(ofIndexType i=0;i<linelist.size();i+=2){
@@ -389,7 +394,8 @@ void agmll::justtouch(ofIndexType i){
 
 
 void agmll::addpointlist(){
-    pointlist.swap(mergedMesh.getVertices());
+    ofMesh mesh=mergedMesh;
+    pointlist.swap(mesh.getVertices());
 }
 //do once
 

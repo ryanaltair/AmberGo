@@ -83,9 +83,7 @@ public:
                     stepLoad();
                     stepUpdate();
                     needLoad=false;
-                    
                 }
-                
                 //easyLogTime("need we Slice?");
                 if(needSliceAt>=0){
                     if(isModelReadySlice==true){
@@ -95,7 +93,6 @@ public:
                 }
                 //easyLogTime("all we done ?");
                 isThreadEnd=true;
-                
                 unlock();
             }
         }
