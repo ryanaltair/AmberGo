@@ -52,12 +52,10 @@ private:
      float divdH;
     //do in setup
     void addpointlist();
-
+    agline zsortline(agline line);
     // theory
     ofVec3f getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float divdH,float z);
-    void addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn);
-    void addoldline(ofIndexType ipl,ofIndexType ipn);
-    ofIndexType searchline(ofIndexType ip0,ofIndexType ip1);
+    ofIndexType searchline(agline line);
     ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
     ofIndexType findcrosspointat(ofIndexType startflag,float z);// a new return cross
     bool isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,int riseorfall,float planeatz);

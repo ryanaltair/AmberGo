@@ -20,18 +20,19 @@ void agmll::cleanmermory(){
     divdH=1/dH;
     horizonFacetHeightlist.clear();
     linelist.clear();
-    vector<ofIndexType>().swap(linelist);// use for really clean memory
     pointlist.clear();
-    vector<ofVec3f>().swap(pointlist);
     linehorizonlist.clear();// is this line horizon true horizon // add with addnewline work with adddXdY
-    vector<bool>().swap(linehorizonlist);// use for really clean memory
     nearpointlist.clear();//{pa pb} the index point to point list
-    vector<ofIndexType>().swap(nearpointlist);
     dXdYlist.clear();// add with addnewline work with adddXdY
-    vector<float>().swap(dXdYlist);
+    linecopymap.clear();
+    vector<ofIndexType>().swap(linelist);// use for really clean memory
+       vector<ofVec3f>().swap(pointlist);
+     vector<bool>().swap(linehorizonlist);// use for really clean memory
+    vector<ofIndexType>().swap(nearpointlist);
+     vector<float>().swap(dXdYlist);
     
     
-  
+    
     //
 }
 void agmll::calcaulateModel(){
@@ -63,7 +64,7 @@ ofPath agmll::layertestat(float z) {
         if(findzhorizon+1!=horizonFacetHeightlist.size()){
             float zmoveup=horizonFacetHeightlist[findzhorizon+1]-z;
             z=z+zmoveup/2;// now we safa to slice at z
-        
+            
         }else{
             z=z+0.001;
         }
@@ -172,7 +173,9 @@ ofPath agmll::layertestcloseloop(float z,ofIndexType iBegin){
         
         //
         if(1){
-            i0=searchline(ipNext0,ipNext1);
+            agline nextline;
+            nextline.set(ipNext0,ipNext1);
+            i0=searchline(nextline);
             //cout<<"i0:"<<i0<<":"<<linelist.size()<<":"<<pointlist.size()<<endl;
             i1=i0+1;
             ipNearA=nearpointlist[i0];
@@ -262,6 +265,9 @@ ofVec3f agmll::getScale(){
     
 }
 
+/**
+ add linelist and nearpointlist
+ */
 void agmll::addFacet(){
     // get the point first
     ofIndexType ipA;
@@ -275,69 +281,73 @@ void agmll::addFacet(){
     counter1=0;
     ofIndexType facetcount=0;
     
-    
     for(ifacet=0;ifacet<mergedMesh.getNumIndices();ifacet+=3){//ifacet>0
         // get the point first
         ipA=mergedMesh.getIndex(ifacet);
         ipB=mergedMesh.getIndex(ifacet+1);
         ipC=mergedMesh.getIndex(ifacet+2);
-        
+        agline lineAB,lineAC,lineBC;
+        vector<agline> lines;
+        vector<ofIndexType> sidepoint;
+        lines.resize(3);
+        sidepoint.resize(3);
+        lines[0].set(ipA,ipB);
+        sidepoint[0]=ipC;
+        lines[1].set(ipA,ipC);
+        sidepoint[1]=ipB;
+        lines[2].set(ipB,ipC);
+        sidepoint[2]=ipA;
         
         //check if a horizon facet
         float zhorizon=pointlist[ipA].z;
         if(zhorizon==pointlist[ipB].z&&zhorizon==pointlist[ipC].z){//
             if(ofContains(horizonFacetHeightlist, zhorizon)==false){
-            horizonFacetHeightlist.push_back(zhorizon);
-            facetcount++;
+                horizonFacetHeightlist.push_back(zhorizon);
+                facetcount++;
             }
         }
-        // the first line ab
-        int oldline0=searchline(ipA,ipB);
-        if(oldline0<linelist.size()){
-            addoldline(oldline0, ipC);
-            ////cout<<"add old line"<<"\n";
-            counter0++;
-        }else{
-            addnewline(ipA, ipB, ipC);
-            counter1++;
+        
+        //add lines to the linelist
+        for(int i=0;i<3;i++){
+            int indexoldline=searchline(lines[i]);
+            ofIndexType ipn=sidepoint[i];
+            if(indexoldline<linelist.size()){
+                //addoldline(indexoldline, ipn);
+                if(nearpointlist[indexoldline]==nearpointlist[indexoldline+1]){
+                    nearpointlist[indexoldline+1]=ipn;
+                    //return;
+                }else{
+                    cout<<"waring!! add old line failed"<<endl;
+                }
+                
+                counter1++;
+            }else{
+                agline newline=zsortline(lines[i]);
+                linecopymap[newline]=linelist.size();
+                linelist.push_back(newline.ip0);
+                linelist.push_back(newline.ip1);
+                nearpointlist.push_back(ipn);
+                nearpointlist.push_back(ipn);
+                counter0++;
+            }
         }
-        
-        // the second line ac
-        int oldline1=searchline(ipA,ipC);
-        if(oldline1<linelist.size()){
-            addoldline(oldline1, ipB);
-            ////cout<<"add old line"<<"\n";
-            counter0++;
-        }else{
-            addnewline(ipA, ipC, ipB);
-            counter1++;
-        }
-        
-        //the third line bc
-        int oldline2=searchline(ipC,ipB);
-        if(oldline2<linelist.size()){
-            counter0++;
-            addoldline(oldline2, ipA);
-            ////cout<<"add old line"<<"\n";
-        }else{
-            addnewline(ipC, ipB, ipA);
-            counter1++;
-        }
-        
-        
     }
     
     
     ofSort(horizonFacetHeightlist);
-    for(int i=0;i<horizonFacetHeightlist.size();i++){
-        cout<<i<<":"<<horizonFacetHeightlist[i]<<endl;
+    if(/* DISABLES CODE */ (0)){
+        for(int i=0;i<horizonFacetHeightlist.size();i++){
+            cout<<i<<":"<<horizonFacetHeightlist[i]<<endl;
+        }
     }
     //now we add the rest list
-    ofIndexType linelistlen=linelist.size();
+    size_t linelistlen=linelist.size();
     dXdYlist.assign(linelistlen, 0);
     linehorizonlist.assign(linelistlen, false);
     linetypelist.assign(linelistlen, false);
     touchedlist.assign(linelistlen, 0);
+    
+    //check out
     cout<<"horizong facet:"<<facetcount<<":"<<(counter0+counter1)/3<<", "<<(counter0+counter1)<<"?="<<mergedMesh.getNumIndices()<<endl;
     cout<<"add new"<<counter1<<":"<<counter0<<endl;
     if(counter1!=counter0){
@@ -446,11 +456,11 @@ ofVec3f agmll::getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float divdH,float z
     return returnpoint;
 }
 
-void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
-    ////cout<<"ip0,ip1:"<<ip0<<","<<ip1<<"\n";
-    ////cout<<"before"<<linelist.size();
-    //check the ip first
-    
+
+agline agmll::zsortline(agline line){
+    ofIndexType ip0,ip1;
+    ip0=line.ip0;
+    ip1=line.ip1;
     if(ip0>pointlist.size()||ip1>pointlist.size()){
         cout<<"we get a bigggggg ip "<<ip0<<"\t"<<ip1<<"\t"<<pointlist.size()<<endl;
     }
@@ -466,43 +476,18 @@ void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
             newline.set(ip1,ip0);
         }
     }
-    
-    linecopymap[newline]=linelist.size();
-    linelist.push_back(newline.ip0);
-    linelist.push_back(newline.ip1);
-    nearpointlist.push_back(ipn);
-    nearpointlist.push_back(ipn);
-    
-   
+    return newline;
 }
-void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
-    if(nearpointlist[ipl]==nearpointlist[ipl+1]){
-        nearpointlist[ipl+1]=ipn;
-        return;
-    }
-    cout<<"waring!! add old line failed"<<endl;
-}
+ 
 /**
  find the findline in linelist which need linecopymap help
  
- @param ip0 the findline's ip0
- @param ip1 the findline's ip1
+ @param agline we will find
  @return i that from linelist[i]=findline // failed whene i =linelist.size()
  */
-ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
-    agline findline;
-    if(pointlist[ip0].z<pointlist[ip1].z){
-        findline.set(ip0,ip1);
-    }else if(pointlist[ip0].z>pointlist[ip1].z){
-         findline.set(ip1,ip0);
-    }else{//pointlist[ip0].z==pointlist[ip1].z makesure we find ipA<ipB findline(ipA,ipB)
-        if(ip0<=ip1){
-             findline.set(ip0,ip1);
-        }else{
-             findline.set(ip1,ip0);
-        }
-    }
-    auto it=linecopymap.find(findline);
+ofIndexType agmll::searchline( agline line){
+    
+    auto it=linecopymap.find(zsortline(line));
     if(it==linecopymap.end()){
         //not found
         return linelist.size();
