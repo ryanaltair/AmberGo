@@ -26,10 +26,10 @@ void agmll::cleanmermory(){
     dXdYlist.clear();// add with addnewline work with adddXdY
     linecopymap.clear();
     vector<ofIndexType>().swap(linelist);// use for really clean memory
-       vector<ofVec3f>().swap(pointlist);
-     vector<bool>().swap(linehorizonlist);// use for really clean memory
+    vector<ofVec3f>().swap(pointlist);
+    vector<bool>().swap(linehorizonlist);// use for really clean memory
     vector<ofIndexType>().swap(nearpointlist);
-     vector<float>().swap(dXdYlist);
+    vector<float>().swap(dXdYlist);
     
     
     
@@ -478,7 +478,7 @@ agline agmll::zsortline(agline line){
     }
     return newline;
 }
- 
+
 /**
  find the findline in linelist which need linecopymap help
  
