@@ -2,6 +2,18 @@
 
 #include "ofMain.h"
 #include "agline.h"
+
+/**
+ work flow:
+ get the mesh 
+ merge it
+ calculate:
+    1. get the point list
+    2. use mesh data to output linelist
+ 
+ output data use sliceat
+ 
+ **/
 class agmll{
 public:
     agmll();
@@ -10,7 +22,7 @@ public:
     void calcaulateModel();
     void cleanmermory();
     float dH=0.01;
-    
+   
     
     
     vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
@@ -21,36 +33,35 @@ public:
     vector<float> dXdYlist;// init with addnewline() work with adddXdY()
     vector<int> linetypelist;//init with addnewline() work with adddXdY()
     vector<float> touchedlist;//init with addnewline() work with adddXdY()
-    ofPath layertestat(float z);
-    ofPath layertestcloseloop(float z,ofIndexType ipbegin);
-    ofPath layertest;
+    vector<float> horizonFacetHeightlist;// hold every height that get horizong facet/triangle
+    ofPath layertestat(float z);// return a whole layer path
+    ofPath layertestcloseloop(float z,ofIndexType iBegin);// return a single closed loop path
+    ofPath layertest;// store the output path
     ofVec3f meshScale;
     ofVec3f meshMax;
     ofVec3f meshMin;
     
     ofMesh mergedMesh;//the mesh clone
     // main job
-    void addface();
+    void addFacet();
     void adddXdY();
     void addlinetype(ofIndexType i,int linetype,int riseorfall);
     void addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax);
     ofVec3f getScale();
 private:
+     float divdH;
     //do in setup
     void addpointlist();
-    
-    //do once
-    
-    //do loop
-    
+
     // theory
-    ofVec3f getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z);
+    ofVec3f getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float divdH,float z);
     void addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn);
     void addoldline(ofIndexType ipl,ofIndexType ipn);
     ofIndexType searchline(ofIndexType ip0,ofIndexType ip1);
     ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
-    ofIndexType findcrosspointat(float z);// return ip0
+    ofIndexType findcrosspointat(ofIndexType startflag,float z);// a new return cross
     bool isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,int riseorfall,float planeatz);
+    bool isPointPlaneCross(ofVec3f pointHigher,ofVec3f pointLower,float planeatz);
     
     
     int horizonline=1;
@@ -68,10 +79,7 @@ private:
     
     //layertest only
     
-    //  void addPointToPath(float x,float y,ofIndexType i);
-    void alluntouched();
     void justtouch(ofIndexType i);
-    ofIndexType continueflag=0;
     float testatZoffset=0.00001;
     
     
@@ -102,8 +110,8 @@ private:
     void printsize(){
         ofIndexType linecount=linelist.size();
         ofIndexType trianglecount=indexsize/3;
-        cout<<"line count "<<linecount<<":"<<endl;
-        cout<<"point count "<<pointlist.size()<<":"<<endl;
+        cout<<"line count :"<<linecount<<endl;
+        cout<<"point count :"<<pointlist.size()<<endl;
         cout<<"indices size:"<<indexsize<<endl;
         if(linecount==indexsize){
             cout<<"it seems calc in right way "<<endl;

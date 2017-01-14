@@ -163,7 +163,6 @@ void agApp::drawSideWindow(ofEventArgs & args){
 void agApp::loadModel(){
     if(apppreference.isModelChanged==false){
         return;
-      
     }
     //assimp model load
     if(modelpath.size()>0){
@@ -193,7 +192,7 @@ void agApp::loadModel(){
     newposti.y=0;//-plate.modelSize.y/2;
     plate.setPosition(newposti);
     panel.sliceMax=plate.modelSize.z;
-    cout<<"modelsize"<<plate.modelSize<<endl;
+    cout<<" modelsize:"<<plate.modelSize<<endl;
     apppreference.isModelChanged=false;
     apppreference.bHaveModelLoaded=true;
 }

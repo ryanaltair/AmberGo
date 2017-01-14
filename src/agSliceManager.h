@@ -59,6 +59,9 @@ public:
         }
     }
     float layertestZ;
+    /**
+      stop the thread mamually
+     */
     void stop()
     {
         stopThread();
@@ -81,7 +84,6 @@ public:
                 // step merge: the mesh
                 if(needLoad==true){
                     stepLoad();
-                    stepUpdate();
                     needLoad=false;
                 }
                 //easyLogTime("need we Slice?");
@@ -98,18 +100,18 @@ public:
         }
     }
     
-  
+    
     ofxAssimpModelLoader assimpmodel;
     
-    agmll mll;
-    ofPath layertest;
+    agmll mll;// the work slicer
+    ofPath layertest; //the output layer path
     //needing flag
     bool isThreadEnd=false;// true when everything is done
     
     bool needLoad=false;
     float needSliceAt=-1;// -1 means no need
     bool isSliceChanged=false;
-    float isModelReadySlice=false;
+    bool isModelReadySlice=false;
     // work in thread
     
     
@@ -117,33 +119,18 @@ public:
 protected:
     //mll load
     void stepLoad(){
-            }
-    //mll update loop
-    
-    void stepUpdate(){
-        
-        float timeLast=ofGetElapsedTimef();
+        easyLogTimeFrom("load model");
         mll.calcaulateModel();
-        float timeWaste=ofGetElapsedTimef()-timeLast;
         isModelReadySlice=true;
-        easyLogTime("load model end");
-        cout<<"ready for slice"<<endl;
-        
-        cout<<"linelist.size:"<<mll.linelist.size()<<endl;
-        cout<<"pointlist:"<<mll.pointlist.size()<<endl;
-        
+        easyLogTimeTo("load model");
     }
+    /**
+     use mll slice at testlayeratZ
+     */
     void stepSliceAt(){
-        
-        //easyLogTimeFrom("slice");
-        // cout<<"we are slicing from"<<ofToString(ofGetElapsedTimef()) ;
-        layertest=mll.layertestat(needSliceAt);
-        //  cout<<" to "<<ofToString(ofGetElapsedTimef()) <<endl;
-        //easyLogTimeTo("slice");
-        
-        isSliceChanged=true;
-        //cout<<"we just slice  at"<<needSliceAt<<endl;
-    }
+         layertest=mll.layertestat(needSliceAt);
+         isSliceChanged=true;
+     }
     
     void easyLogTime(string title){
         cout<<"------";
@@ -157,10 +144,10 @@ protected:
     }
     void easyLogTimeTo(string title){
         cout<<"------";
-        
         float timetake=ofGetElapsedTimef()-timekeep;
         timekeep=ofGetElapsedTimef();
         cout<<title<<"  to:"<<ofToString(timekeep) <<" senconds "<<endl;
+        cout<<"------";
         cout<<title<<"take:"<<ofToString(timetake) <<" senconds "<<endl;
     }
     void easyPercent(int percent){

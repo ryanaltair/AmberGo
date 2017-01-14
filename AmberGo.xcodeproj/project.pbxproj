@@ -89,6 +89,7 @@
 		6C9CC4C01E27113400874450 /* aglayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aglayer.h; sourceTree = "<group>"; };
 		6C9CC4C11E27114900874450 /* aglayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = aglayer.cpp; sourceTree = "<group>"; };
 		6CB72B1A1E2161FF00104D77 /* agline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agline.h; sourceTree = "<group>"; };
+		6CEBAD6A1E29D2BF00208830 /* agmllhelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agmllhelper.h; sourceTree = "<group>"; };
 		6CFF5A2D1E1DDB7500AC8D2A /* agmodelinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agmodelinfo.h; sourceTree = "<group>"; };
 		6CFF5A2E1E1DDCF400AC8D2A /* agAppPreference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agAppPreference.h; sourceTree = "<group>"; };
 		6E069CE4C58E970E3429DBE5 /* Importer.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Importer.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Importer.hpp; sourceTree = SOURCE_ROOT; };
@@ -395,6 +396,7 @@
 				E4B69E1F0A3A1BDC003C02F2 /* agApp.h */,
 				0AF7E81DC2681E62FCAA64F3 /* agmll.cpp */,
 				7992666836E156FC0505CACF /* agmll.h */,
+				6CEBAD6A1E29D2BF00208830 /* agmllhelper.h */,
 				6C9CC4C01E27113400874450 /* aglayer.h */,
 				6C9CC4C11E27114900874450 /* aglayer.cpp */,
 				6CB72B1A1E2161FF00104D77 /* agline.h */,
