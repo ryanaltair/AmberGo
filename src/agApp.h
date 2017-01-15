@@ -36,6 +36,8 @@ private:
      draw the fbo which hold the slicelayer
      */
     void drawFBO();
+    void saveImage(string picname);
+    void outputLayer();
     /**
      when loadpath was changed,
      it will load model with thread called merger
@@ -52,6 +54,22 @@ private:
     
     bool bSnapshot=false;
     ofFbo fbo;
-    
+    ofPixels pixelsbuffer;
+    ofPixels pixelsbuffervoid;
+   //timetest
+    float timekeep;
+    void easyLogTimeFrom(string title){
+        cout<<"------";
+        timekeep=ofGetElapsedTimef();
+        cout<<title<<" from:"<<ofToString(timekeep) <<" senconds "<<endl;
+    }
+    void easyLogTimeTo(string title){
+        cout<<"------";
+        float timetake=ofGetElapsedTimef()-timekeep;
+        timekeep=ofGetElapsedTimef();
+        cout<<title<<"  to:"<<ofToString(timekeep) <<" senconds "<<endl;
+        cout<<"------";
+        cout<<title<<"take:"<<ofToString(timetake) <<" senconds "<<endl;
+    }
     
 };

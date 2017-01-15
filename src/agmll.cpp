@@ -50,6 +50,7 @@ void agmll::calcaulateModel(){
 
 
 // public
+
 ofPath agmll::layertestat(float z) {
     
     // printlineandpoint();

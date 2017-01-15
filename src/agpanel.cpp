@@ -23,7 +23,9 @@ void agpanel::setup(){
     sliceReadyLabel=gui->addLabel("slice is ready");
     sliceReadyLabel->setLabel(sliceUnready);
     printStartButton=gui->addButton("start print");
-    printStopButton=gui->addButton("stop print");
+    printPauseButton=gui->addButton("Pause");
+    allSliceButton=gui->addButton("all slice!!");
+    showAllSliceButton=gui->addButton("show all");
     outputToggle=gui->addToggle("output");
     outputToggle->setChecked(false);
     showsliceToggle=gui->addToggle("slice Preview");
@@ -40,7 +42,9 @@ void agpanel::setup(){
     layerthicknessSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     exposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     printStartButton->onButtonEvent(this, &agpanel::onButtonEvent);
-    printStopButton->onButtonEvent(this,&agpanel::onButtonEvent);
+    printPauseButton->onButtonEvent(this,&agpanel::onButtonEvent);
+    allSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
+    showAllSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
     connectButton->onButtonEvent(this,&agpanel::onButtonEvent);
     sendMessageTextInput->onTextInputEvent(this,&agpanel::onTextInputEvent);
     outputToggle->onToggleEvent(this,&agpanel::onToggleEvent);
@@ -95,12 +99,7 @@ void agpanel::outputDone(bool done){
 }
 void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 {
-    if(e.target==sliceHeightSlider){
-        //layertestZ=e.value;
-    }
-    if(e.target==layerthicknessSlider){
-        // layerthickness=e.value;
-    }
+   
     if(e.target==exposedTimeSlider){
         float i=e.value;
         exposedTimeSlider->setValue(i);
@@ -121,21 +120,32 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
         }
         
     }
-    if(e.target==printStopButton){
+    if(e.target==printPauseButton){
         if(workState!=statePrintFinish){
             workState=statePrintFinish;
         }
         if(isOutput==true){
             bPrint=false;
         }
-        
+        if(bShowAllSlice!=false){
+            bShowAllSlice=false;
+        }else{
+            bShowAllSlice=true;
+        }
         
     }
     if(e.target==connectButton){
         tryConnect();
         
     }
-    
+    if(e.target==allSliceButton){
+        bAllSlice=true;
+    }
+    if(e.target==showAllSliceButton){
+        
+        bShowAllSlice=true;
+        iShowAllSliceLayerCount=0;
+    }
 }
 void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
 {

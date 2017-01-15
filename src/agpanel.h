@@ -24,7 +24,9 @@ public:
     ofxDatGuiSlider* sliceHeightSlider;
     ofxDatGuiSlider* sliceProgressPercentSlider;
     ofxDatGuiButton* printStartButton;
-    ofxDatGuiButton* printStopButton;
+    ofxDatGuiButton* printPauseButton;
+    ofxDatGuiButton* allSliceButton;
+    ofxDatGuiButton* showAllSliceButton;
     ofxDatGuiButton* connectButton;
     ofxDatGuiTextInput* sendMessageTextInput;
     ofxDatGuiLabel* sliceReadyLabel;
@@ -70,10 +72,11 @@ public:
     
     bool isOutput=false;
     bool bPrint=false;
-    
+    bool bAllSlice=false;
     int exposedTime=1000;
     bool ShowSlice=true;
-    
+    bool bShowAllSlice=false;
+    ofIndexType iShowAllSliceLayerCount=0;
     float layertestZlast=0.1;
     float layertestZ=0.1;
     

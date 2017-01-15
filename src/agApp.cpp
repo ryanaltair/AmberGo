@@ -8,12 +8,12 @@ void agApp::setup(){
     panel.setup();
     
     // set framerate // PS: setVSYNC will failed in Windows but work well in Mac
-    ofSetVerticalSync(true);
+     ofSetVerticalSync(true);
     ofSetFrameRate(60);
     
     // init the modelpath
-//    modelpath="testcube.stl";
-//    apppreference.isModelChanged=true;
+    //    modelpath="testcube.stl";
+    //    apppreference.isModelChanged=true;
     
     // init the plate which hold the 3D model we see
     plate.setup();
@@ -23,6 +23,8 @@ void agApp::setup(){
     fbosettings.height =768;
     fbosettings.textureTarget = GL_TEXTURE_2D;
     fbo.allocate(fbosettings);
+    pixelsbuffer.allocate(1280, 768,3);
+    pixelsbuffervoid.allocate(1280, 768, 3);
     // fbo end
     
 }
@@ -40,19 +42,48 @@ void agApp::update(){
     }
     if(threadMerge.isThreadRunning()==false){
         if(apppreference.bHaveModelLoaded==false){return;}
+        if(panel.bAllSlice==true){
+            if(threadMerge.isAllSliceDone==false){
+                threadMerge.allSlice(panel.layerthickness);
+            }
+            panel.bAllSlice=false;
+            
+        }
         if(threadMerge.layertestZ!=panel.layertestZ){
-        threadMerge.sliceAt(panel.layertestZ);
+            //threadMerge.sliceAt(panel.layertestZ);
         }
         
-        if(threadMerge.isSliceChanged==true){
-       // cout<<"B:we just got to here to try layertest"<<"\n";
+        if(/* DISABLES CODE */ (0)&&threadMerge.isSliceChanged==true){
+            // cout<<"B:we just got to here to try layertest"<<"\n";
             layertest=threadMerge.layertest;
-            drawFBO();
-            panel.outputDone(true);
-            threadMerge.isSliceChanged=false;
             if(panel.bPrint==true){
                 bSnapshot=true;
                 panel.snapcount++;
+            }
+            drawFBO();
+            outputLayer();
+            panel.outputDone(true);
+            threadMerge.isSliceChanged=false;
+        }
+        if(threadMerge.isAllSliceDone==true&&panel.bShowAllSlice==true){
+            if(panel.iShowAllSliceLayerCount<threadMerge.alllayertests.size()){
+                panel.layertestZ=panel.layerthickness*panel.iShowAllSliceLayerCount;
+                layertest=threadMerge.alllayertests[panel.iShowAllSliceLayerCount];
+                panel.iShowAllSliceLayerCount++;
+                if(panel.bPrint==true){
+                    bSnapshot=true;
+                    panel.snapcount++;
+                }
+                if(panel.iShowAllSliceLayerCount==1){
+                    easyLogTimeFrom("output");
+                }
+                drawFBO();
+                string pathname="output2/"+ofToString(panel.iShowAllSliceLayerCount)+".png";
+                saveImage(pathname);
+                if(panel.iShowAllSliceLayerCount==threadMerge.alllayertests.size()-1){
+                    
+                    easyLogTimeTo("output");
+                }
             }
         }
         
@@ -76,16 +107,14 @@ void agApp::keyPressed(int key){
     switch(key){
         case OF_KEY_UP:
             panel.layertestZ++;
-          // panel.sliceHeight=panel.layertestZ;
+            // panel.sliceHeight=panel.layertestZ;
             break;
         case OF_KEY_DOWN:
             panel.layertestZ--;
-         //    panel.sliceHeight=panel.layertestZ;
+            //    panel.sliceHeight=panel.layertestZ;
             break;
         case OF_KEY_LEFT:
-            //bSnapshot=true;
-            //plate.cam.orbit(1, 0, plate.cam.getDistance());
-            //plate.cam.rotate(90, plate.cam.getUpDir() );
+            panel.bAllSlice=true;
             break;
         case OF_KEY_RIGHT:
             panel.bPrint=true;
@@ -95,51 +124,51 @@ void agApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void agApp::keyReleased(int key){
-
+    
 }
 
 //--------------------------------------------------------------
 void agApp::mouseMoved(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void agApp::mouseDragged(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void agApp::mousePressed(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void agApp::mouseReleased(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void agApp::mouseEntered(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void agApp::mouseExited(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void agApp::windowResized(int w, int h){
-
+    
 }
 
 //--------------------------------------------------------------
 void agApp::gotMessage(ofMessage msg){
-
+    
 }
 
 //--------------------------------------------------------------
-void agApp::dragEvent(ofDragInfo dragInfo){ 
+void agApp::dragEvent(ofDragInfo dragInfo){
     if( dragInfo.files.size() > 0 ){
         //dragPt = dragInfo.position;
         apppreference.isModelChanged=true;
@@ -186,7 +215,7 @@ void agApp::loadModel(){
     panel.setSliceReady();
     plate.modelSize=threadMerge.mll.getScale();
     ofVec3f newposti;
-
+    
     newposti=threadMerge.mll.meshMin;
     newposti.x=0;//-plate.modelSize.x/2;
     newposti.y=0;//-plate.modelSize.y/2;
@@ -197,24 +226,32 @@ void agApp::loadModel(){
     apppreference.bHaveModelLoaded=true;
 }
 /**
- draw the fbo and save the pic as png file
+ draw the fbo
  */
 void agApp::drawFBO(){
     // now we try fbo
     fbo.begin();
-    
     ofClear(ofColor::black);
     //ofBackground(0,0,0);
     layertest.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
     layertest.draw(1280/2,768/2);
     fbo.end();
-    
-    //put fbo into pixels
-    ofPixels pixelsbuffer;
-    ofPixels pixelsbuffervoid;
-    pixelsbuffer.allocate(1280, 768,3);
-    pixelsbuffervoid.allocate(1280, 768, 3);
+}
+void agApp::saveImage(string picname){
     fbo.readToPixels(pixelsbuffer);
+    if(1){
+        ofSaveImage(pixelsbuffer, picname);
+        //cout<<"save image"<<endl;
+        bSnapshot = false;
+    }
+    
+}
+/**
+ output the slice use FBO as png file
+ */
+void agApp::outputLayer(){
+    fbo.readToPixels(pixelsbuffer);
+    
     
     // and save images with pixels
     string annnn;
@@ -225,7 +262,7 @@ void agApp::drawFBO(){
     float pulsepermm=50; //for 1204 the 1 round for 4 mm in z , 1 round means 4 mms head up and 200 steps for stepper
     zinpulse=layertestZmm*pulsepermm+1000;// to easy the bits problem ,we just start from 1000
     emmmm=ofToString(zinpulse);
-   // cout<<"|||| save start: "<<ofToString(ofGetElapsedTimef())<<endl;
+    // cout<<"|||| save start: "<<ofToString(ofGetElapsedTimef())<<endl;
     string tickfileName = "output/fabfiles/A" +annnn+emmmm+ ".png";
     panel.snapcount+=1;
     annnn=ofToString(panel.snapcount);
@@ -234,18 +271,14 @@ void agApp::drawFBO(){
     if(bSnapshot==true){
         ofSaveImage(pixelsbuffer, tickfileName);
         ofSaveImage(pixelsbuffervoid, tockfileName);
-
-    }
-    //end fbo
-    //cout<<"|||| save middl: "<<ofToString(ofGetElapsedTimef())<<endl;
-
-    if (bSnapshot == true){
+        cout<<"save image"<<endl;
         bSnapshot = false;
+        
         if(panel.snapcount>=9000||panel.layertestZ>plate.modelSize.z){
             panel.bPrint=false;
         }
     }
-
+    
 }
 
 

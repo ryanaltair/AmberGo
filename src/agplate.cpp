@@ -13,7 +13,7 @@ agplate::~agplate(){
 
 
 /**
- init the playground and box , and cam 
+ init the playground and box , and cam
  */
 void agplate::setup(){
     //cam.orbit(180, 0, cam.getDistance());
@@ -64,9 +64,9 @@ void agplate::drawincamera(ofRectangle view){
         
     }
     drawModels();
-    ofSetColor(150);
+    ofSetColor(ofColor::darkCyan);
     playground.draw();// the ground
-
+    
     if(outsideBoxEnable==1){
         ofSetColor(20, 20, 20, 50);
         outsideBox.draw();  // the outsidebox

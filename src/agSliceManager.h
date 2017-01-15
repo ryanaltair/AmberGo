@@ -31,7 +31,12 @@ public:
         isModelReadySlice=false;
         needLoad=true;
         easyLogTime("load model start");
-        mll.setup(assimpmodel.getMesh(0));
+        ofMesh meshbuffer;
+        for(int i=0;i<assimpmodel.getMeshCount();i++){
+            meshbuffer.append(assimpmodel.getMesh(i));
+        }
+         mll.setup(meshbuffer);
+        isAllSliceDone=false;
         easyLogTime("load model end");
         startThread();
         ofResetElapsedTimeCounter();
@@ -57,6 +62,32 @@ public:
             startThread();
             return true;
         }
+    }
+    bool allSlice(float layerthickness){
+        
+        if(isModelReadySlice==false){
+            //if mesh have model and get merged?
+            
+            if(isThreadRunning()==false){
+                needLoad=true;
+                cout<<"now we loading"<<endl;
+                startThread();
+            }
+            
+            return false;
+        }else{//if(isModelReadySlice==true){
+            isThreadEnd=false;
+            isSliceChanged=false;
+            allthickness=layerthickness;
+            needAllSlice=true;
+            startThread();
+            return true;
+        }
+        
+        
+        
+        
+        
     }
     float layertestZ;
     /**
@@ -93,6 +124,13 @@ public:
                         needSliceAt=-1;
                     }
                 }
+                if(needAllSlice==true){
+                    cout<<"some happens"<<endl;
+                    if(isModelReadySlice==true){
+                        stepAllSlice();
+                        needAllSlice=false;
+                    }
+                }
                 //easyLogTime("all we done ?");
                 isThreadEnd=true;
                 unlock();
@@ -105,11 +143,15 @@ public:
     
     agmll mll;// the work slicer
     ofPath layertest; //the output layer path
+    vector<ofPath> alllayertests;
     //needing flag
     bool isThreadEnd=false;// true when everything is done
     
     bool needLoad=false;
     float needSliceAt=-1;// -1 means no need
+    bool needAllSlice=false;
+    bool isAllSliceDone=false;
+    float allthickness=0.02;
     bool isSliceChanged=false;
     bool isModelReadySlice=false;
     // work in thread
@@ -131,7 +173,18 @@ protected:
         layertest=mll.layertestat(needSliceAt);
         isSliceChanged=true;
     }
-    
+    void stepAllSlice(){
+        easyLogTimeFrom("all slice");
+        vector<ofPath> layers;
+        float z;
+        for(z=0.02;z<mll.meshScale.z;z+=allthickness){
+            layers.push_back(mll.layertestat(z));
+        }
+        alllayertests=layers;
+        isAllSliceDone=true;
+        cout<<"layers:"<<layers.size()<<endl;
+        easyLogTimeTo("all slicer");
+    }
     void easyLogTime(string title){
         cout<<"------";
         

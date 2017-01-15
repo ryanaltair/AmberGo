@@ -1,9 +1,9 @@
 #pragma once
 #include "ofMain.h"
 
-/** 
-here contain all the model info
-like scale location etc
+/**
+ here contain all the model info
+ like scale location etc
  
  **/
 
