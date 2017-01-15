@@ -4,19 +4,15 @@
 #include "ofThread.h"
 #include "ofxAssimpModelLoader.h"
 #include "agmll.h"
-/// This is the agSliceManager created by extending ofThread.
-/// It contains slice that will be accessed from within and outside the
-/// thread and demonstrates several of the data protection mechanisms (aka
-/// mutexes).
+
 class agSliceManager: public ofThread
 {
 public:
-    /// Create a agSliceManager and initialize the member
-    /// variable in an initialization list.
+   
     agSliceManager(){
     }
     
-    /// Start the thread.
+    /// which Start the thread.
     void loadModel(string path)
     {
         assimpmodel.clear();
@@ -40,8 +36,8 @@ public:
         easyLogTime("load model end");
         startThread();
         ofResetElapsedTimeCounter();
+        alllayertests.clear();
     }
-    
     bool sliceAt(float zheight)
     {
         if(isModelReadySlice==false){
@@ -64,10 +60,8 @@ public:
         }
     }
     bool allSlice(float layerthickness){
-        
         if(isModelReadySlice==false){
             //if mesh have model and get merged?
-            
             if(isThreadRunning()==false){
                 needLoad=true;
                 cout<<"now we loading"<<endl;
@@ -83,11 +77,6 @@ public:
             startThread();
             return true;
         }
-        
-        
-        
-        
-        
     }
     float layertestZ;
     /**
@@ -99,7 +88,7 @@ public:
     }
     
     /**
-     thread contains load or sliceat job
+     thread contains load or sliceAt job
      */
     void threadedFunction()
     {
@@ -108,7 +97,6 @@ public:
             if(isThreadEnd==true){
                 stopThread();
             }
-            
             // Attempt to lock the mutex.  If blocking is turned on,
             if(lock())
             {
@@ -125,7 +113,6 @@ public:
                     }
                 }
                 if(needAllSlice==true){
-                    cout<<"some happens"<<endl;
                     if(isModelReadySlice==true){
                         stepAllSlice();
                         needAllSlice=false;
@@ -155,9 +142,6 @@ public:
     bool isSliceChanged=false;
     bool isModelReadySlice=false;
     // work in thread
-    
-    
-    
 protected:
     //mll load
     void stepLoad(){
@@ -177,7 +161,7 @@ protected:
         easyLogTimeFrom("all slice");
         vector<ofPath> layers;
         float z;
-        for(z=0.02;z<mll.meshScale.z;z+=allthickness){
+        for(z=0.002;z<mll.meshScale.z;z+=allthickness){
             layers.push_back(mll.layertestat(z));
         }
         alllayertests=layers;
@@ -187,7 +171,6 @@ protected:
     }
     void easyLogTime(string title){
         cout<<"------";
-        
         cout<<title<<":"<<ofToString(ofGetElapsedTimef()) <<" senconds "<<endl;
     }
     void easyLogTimeFrom(string title){
@@ -205,7 +188,6 @@ protected:
     }
     void easyPercent(int percent){
         cout<<"------";
-        
         cout<<"progress:"<<ofToString(percent) <<"% |" <<ofToString(ofGetElapsedTimef())<<" second"<<endl;
         
     }
