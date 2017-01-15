@@ -1,17 +1,17 @@
 #include "agpanel.h"
 
 agpanel::agpanel(){
-
+    
 }
 
 
 void agpanel::setup(){
-//initial
+    //initial
     isConnect=false;
     
     // GUI start
     // instantiate and position the gui //
-   // gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
+    // gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     
     gui->addFRM();
@@ -34,7 +34,7 @@ void agpanel::setup(){
     connectButton->setVisible(false);
     sendMessageTextInput=gui->addTextInput("sendMsg:");
     sendMessageTextInput->setVisible(false);
-     gui->setTheme(new ofxDatGuiThemeSmoke());
+    gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     layerthicknessSlider->onSliderEvent(this, &agpanel::onSliderEvent);
@@ -61,20 +61,20 @@ void agpanel::update(){
     }
     if(workState==statePrinting&&outputdone==true){
         
-       
+        
         if(isTimeToNextLayer==true){
-         //    cout<<"now we are printing"<<endl;
+            //    cout<<"now we are printing"<<endl;
             if(layertestZ>sliceMax-layerthickness){
                 //layertestZ=-1;
                 workState=statePrintFinish;
-                }else{
-                    layertestZ+=layerthickness;
-                   // cout<<"we change slice height at "<< ofGetElapsedTimef()<<" seconds"<<endl;
-                }
-           // cout<<"tiemr before "<<timerToNextLayer;
+            }else{
+                layertestZ+=layerthickness;
+                // cout<<"we change slice height at "<< ofGetElapsedTimef()<<" seconds"<<endl;
+            }
+            // cout<<"tiemr before "<<timerToNextLayer;
             timerToNextLayer=ofGetElapsedTimef()+exposeTime;
             
-          //  cout<<" tiemr after "<<timerToNextLayer<<endl;
+            //  cout<<" tiemr after "<<timerToNextLayer<<endl;
             isTimeToNextLayer=false;
             outputdone=false;
             
@@ -99,7 +99,7 @@ void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
         //layertestZ=e.value;
     }
     if(e.target==layerthicknessSlider){
-       // layerthickness=e.value;
+        // layerthickness=e.value;
     }
     if(e.target==exposedTimeSlider){
         float i=e.value;
@@ -107,7 +107,7 @@ void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
         exposedTime=e.value;
     }
     //cout << "the new value of the slider = " << e.value << endl;
-   //cout << "the new scale of the slider = " << e.scale << endl;
+    //cout << "the new scale of the slider = " << e.scale << endl;
 }
 void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
 {
@@ -119,11 +119,11 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
         if(workState==statePrintReady){
             workState=statePrintPreparing;
         }
-    
+        
     }
     if(e.target==printStopButton){
         if(workState!=statePrintFinish){
-        workState=statePrintFinish;
+            workState=statePrintFinish;
         }
         if(isOutput==true){
             bPrint=false;
@@ -133,7 +133,7 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
     }
     if(e.target==connectButton){
         tryConnect();
-    
+        
     }
     
 }
@@ -143,7 +143,7 @@ void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
     for(int i=0;i<e.text.size();i++){
         serial.writeByte(e.text[i]);
     }
-
+    
 }
 void agpanel::onToggleEvent(ofxDatGuiToggleEvent e)
 {
@@ -160,8 +160,8 @@ void agpanel::sliceHeightBind(){
     //sliceHeightSlider->bind(sliceHeight);
     sliceHeightSlider->bind(layertestZ);
     layerthicknessSlider->bind(layerthickness);
-     
-
+    
+    
 }
 
 void agpanel::tryConnect(){
@@ -171,7 +171,7 @@ void agpanel::tryConnect(){
         serial.close();
         serial.setup(0,115200);
     }
-
+    
 }
 
 void agpanel::serialUpdate(){
@@ -188,13 +188,13 @@ void agpanel::serialUpdate(){
         isConnect=true;
         myByte = serial.readByte();
         if ( myByte == OF_SERIAL_NO_DATA ){
-           cout<<"no data was read"<<endl;
+            cout<<"no data was read"<<endl;
         }
         else if ( myByte == OF_SERIAL_ERROR ){
             cout<<"an error occurred"<<endl;
         }
         else{
-        teststring+=myByte;
+            teststring+=myByte;
             cout<<teststring<<endl;
         }
     }
@@ -203,11 +203,11 @@ void agpanel::serialUpdate(){
 float agpanel::getWidth(){
     float f=gui->getWidth();
     return f;
-
+    
 }
 void agpanel::setSliceReady(){
     sliceReadyLabel->setLabel(sliceReady);
-
+    
 }
 void agpanel::setSliceUnready(){
     sliceReadyLabel->setLabel(sliceUnready);

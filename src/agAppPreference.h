@@ -58,15 +58,15 @@ public:
     ofVec3f printscale;
     float exposedTime;
     float layerThickness;
-
+    
     float xyratio=768.0/1280.0; // use for slice view ratio y= x* xyratio
-
+    
     
     //the toggle
-
+    
     bool bPrint=false;
     bool bHaveModelLoaded=false;
-
+    
     
     bool isModelChanged=false;
     ofVec3f getmmperpixel(){

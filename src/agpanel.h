@@ -4,7 +4,7 @@
 /**
  use for AmberGo
  as panel
- and serial work 
+ and serial work
  and output work
  **/
 
@@ -19,7 +19,7 @@ public:
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onTextInputEvent(ofxDatGuiTextInputEvent e);
- 
+    
     //componment
     ofxDatGuiSlider* sliceHeightSlider;
     ofxDatGuiSlider* sliceProgressPercentSlider;
@@ -32,7 +32,7 @@ public:
     ofxDatGuiToggle* showsliceToggle;
     ofxDatGuiSlider* layerthicknessSlider;
     ofxDatGuiSlider* exposedTimeSlider;
-   // float sliceHeight=0.02;
+    // float sliceHeight=0.02;
     void timeUpdate();
     void outputDone(bool done);
     void sliceHeightBind();
@@ -72,9 +72,9 @@ public:
     bool bPrint=false;
     
     int exposedTime=1000;
-        bool ShowSlice=true;
+    bool ShowSlice=true;
     
     float layertestZlast=0.1;
     float layertestZ=0.1;
-
+    
 };

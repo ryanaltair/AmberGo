@@ -2,16 +2,16 @@
 #include "ofMain.h"
 
 /**
-use for AmberGo
+ use for AmberGo
  as plate
  include:
  model(s)
  ground
  outsidebox
  
-unit: mm
-
-**/
+ unit: mm
+ 
+ **/
 class agplate{
 public:
     agplate();
@@ -29,14 +29,12 @@ public:
     ofBoxPrimitive playground;    // ground
     ofBoxPrimitive outsideBox;    // box
     ofBoxPrimitive sliceLayPlane;    // slicelayer
-   
+    
     float layertestZ=0;
     ofVec3f modelSize;
     ofVec3f boxSize;// the box size
     ofVec3f pixelSize;
     float groundheight;
-  
-    
     int drawmode=0;//drawmode set 0 for meshes 1 for assimps
     
     // enables
@@ -45,5 +43,5 @@ public:
     
     vector<of3dPrimitive> nodemodels;    //models
     ofEasyCam cam;
-   
+    
 };

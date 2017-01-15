@@ -5,11 +5,11 @@
 
 /**
  work flow:
- get the mesh 
+ get the mesh
  merge it
  calculate:
-    1. get the point list
-    2. use mesh data to output linelist
+ 1. get the point list
+ 2. use mesh data to output linelist
  
  output data use sliceat
  
@@ -22,7 +22,7 @@ public:
     void calcaulateModel();
     void cleanmermory();
     float dH=0.01;
-   
+    
     
     
     vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
@@ -49,7 +49,7 @@ public:
     void addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax);
     ofVec3f getScale();
 private:
-     float divdH;
+    float divdH;
     //do in setup
     void addpointlist();
     agline zsortline(agline line);

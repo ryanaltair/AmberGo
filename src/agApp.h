@@ -26,7 +26,7 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-   
+    
     
 private:
     //side window
@@ -49,9 +49,9 @@ private:
     
     ofPath layertest;//output layer
     string modelpath;  //drag and drop info
-
+    
     bool bSnapshot=false;
-        ofFbo fbo;
- 
+    ofFbo fbo;
+    
     
 };

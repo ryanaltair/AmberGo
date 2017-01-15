@@ -60,7 +60,7 @@ public:
     }
     float layertestZ;
     /**
-      stop the thread mamually
+     stop the thread mamually
      */
     void stop()
     {
@@ -128,9 +128,9 @@ protected:
      use mll slice at testlayeratZ
      */
     void stepSliceAt(){
-         layertest=mll.layertestat(needSliceAt);
-         isSliceChanged=true;
-     }
+        layertest=mll.layertestat(needSliceAt);
+        isSliceChanged=true;
+    }
     
     void easyLogTime(string title){
         cout<<"------";
