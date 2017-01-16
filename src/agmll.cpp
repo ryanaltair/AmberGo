@@ -17,7 +17,12 @@ void agmll::setup(ofMesh mesh){
  use swap to clean the vector
  */
 void agmll::cleanmermory(){
-    divdH=1/dH;
+    
+    vector<ofIndexType>().swap(linelist);// use for really clean memory
+    vector<ofVec3f>().swap(pointlist);
+    vector<bool>().swap(linehorizonlist);// use for really clean memory
+    vector<ofIndexType>().swap(nearpointlist);
+    vector<float>().swap(dXdYlist);
     horizonFacetHeightlist.clear();
     linelist.clear();
     pointlist.clear();
@@ -25,11 +30,6 @@ void agmll::cleanmermory(){
     nearpointlist.clear();//{pa pb} the index point to point list
     dXdYlist.clear();// add with addnewline work with adddXdY
     linecopymap.clear();
-    vector<ofIndexType>().swap(linelist);// use for really clean memory
-    vector<ofVec3f>().swap(pointlist);
-    vector<bool>().swap(linehorizonlist);// use for really clean memory
-    vector<ofIndexType>().swap(nearpointlist);
-    vector<float>().swap(dXdYlist);
     
     
     
@@ -64,8 +64,11 @@ ofPath agmll::layertestat(float z) {
     if(findzhorizon<horizonFacetHeightlist.size()){// means find it is horizon facet
         if(findzhorizon+1!=horizonFacetHeightlist.size()){
             float zmoveup=horizonFacetHeightlist[findzhorizon+1]-z;
-            z=z+zmoveup/2;// now we safa to slice at z
-            
+            if(zmoveup>dH){
+                z=z+0.001;// now we safa to slice at z
+            }else{
+                z=z+zmoveup/2;// now we safa to slice at z
+            }
         }else{
             z=z+0.001;
         }
@@ -359,6 +362,8 @@ void agmll::addFacet(){
     
 }
 void agmll::adddXdY(){
+    float divdH;// divdH=1/H
+    divdH=1/dH;
     for(ofIndexType i=0;i<linelist.size();i+=2){
         //   cout<<"adddxdy"<<i<<endl;
         ofVec3f p0,p1,pL,pH;
@@ -541,6 +546,7 @@ bool agmll::isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,in
     }else if(riseorfall==fallline){
         pointLower=pointlist[linelist[indexpoint1]];
         pointHigher=pointlist[linelist[indexpoint0]];
+        cout<<"!!!!!!!!!we find a falling line";
         
     }
     

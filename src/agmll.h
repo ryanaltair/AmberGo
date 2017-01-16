@@ -21,18 +21,19 @@ public:
     void setup(ofMesh mesh);
     void calcaulateModel();
     void cleanmermory();
+    ofVec3f getScale();
     float dH=0.01;
     
     
-    
+    // main data
     vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
-    vector<ofIndexType> linelist;// {ip0 ip1} the index point to point list add with addnewline() and p0 will always lower
+    vector<ofIndexType> linelist;// hlod {ipL ipH} the index point to point list add with addnewline() and pL will be lower
     map<agline,ofIndexType> linecopymap;// use for searchline , for great speed
     vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
     vector<ofIndexType> nearpointlist;//{ipa ipb} the index refer point list add with addnewline() and addoldline
-    vector<float> dXdYlist;// init with addnewline() work with adddXdY()
-    vector<int> linetypelist;//init with addnewline() work with adddXdY()
-    vector<float> touchedlist;//init with addnewline() work with adddXdY()
+    vector<float> dXdYlist;// init with addFacet() work with adddXdY()
+    vector<int> linetypelist;//init with addFacet() work with adddXdY()
+    vector<float> touchedlist;//init with addFacet() work with adddXdY()
     vector<float> horizonFacetHeightlist;// hold every height that get horizong facet/triangle
     ofPath layertestat(float z);// return a whole layer path
     ofPath layertestcloseloop(float z,ofIndexType iBegin);// return a single closed loop path
@@ -42,16 +43,16 @@ public:
     ofVec3f meshMin;
     
     ofMesh mergedMesh;//the mesh clone
-    // main job
+    
+private:
+    float divdH;// divdH=1/H
+    //do in setup
+    void addpointlist();
+    // calcaulateModel job
     void addFacet();
     void adddXdY();
     void addlinetype(ofIndexType i,int linetype,int riseorfall);
     void addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax);
-    ofVec3f getScale();
-private:
-    float divdH;
-    //do in setup
-    void addpointlist();
     agline zsortline(agline line);
     // theory
     ofVec3f getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float divdH,float z);
