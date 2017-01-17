@@ -24,7 +24,15 @@ public:
     ofVec3f getScale();
     float dH=0.01;
     
+   ofPath layertestat(float z);// return a whole layer path
+    ofPath layertestcloseloop(float z,ofIndexType iBegin);// return a single closed loop path
+    ofPath layertest;// store the output path
+    ofVec3f meshScale;
+    ofVec3f meshMax;
+    ofVec3f meshMin;
+    ofMesh mergedMesh;//the mesh clone
     
+private:
     // main data
     vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
     vector<ofIndexType> linelist;// hlod {ipL ipH} the index point to point list add with addnewline() and pL will be lower
@@ -35,16 +43,7 @@ public:
     vector<int> linetypelist;//init with addFacet() work with adddXdY()
     vector<float> touchedlist;//init with addFacet() work with adddXdY()
     vector<float> horizonFacetHeightlist;// hold every height that get horizong facet/triangle
-    ofPath layertestat(float z);// return a whole layer path
-    ofPath layertestcloseloop(float z,ofIndexType iBegin);// return a single closed loop path
-    ofPath layertest;// store the output path
-    ofVec3f meshScale;
-    ofVec3f meshMax;
-    ofVec3f meshMin;
     
-    ofMesh mergedMesh;//the mesh clone
-    
-private:
     float divdH;// divdH=1/H
     //do in setup
     void addpointlist();
@@ -59,8 +58,7 @@ private:
     ofIndexType searchline(agline line);
     ofVec3f getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z);
     ofIndexType findcrosspointat(ofIndexType startflag,float z);// a new return cross
-    bool isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,int riseorfall,float planeatz);
-    bool isPointPlaneCross(ofVec3f pointHigher,ofVec3f pointLower,float planeatz);
+   bool isPointPlaneCross(ofVec3f pointHigher,ofVec3f pointLower,float planeatz);
     
     
     int horizonline=1;
@@ -74,19 +72,15 @@ private:
     float isTouched=1;
     float isUntouched=-1;
     
-    ofIndexType indexsize;
+    
     
     //layertest only
-    
     void justtouch(ofIndexType i);
-    float testatZoffset=0.00001;
-    
-    
     //layertest end
     
     
     //debug only
-    void debuglinelist(ofIndexType index);
+    ofIndexType indexsize;
     ofIndexType counter0=0;
     ofIndexType counter1=0;
     void printlineandpoint(){
@@ -119,6 +113,35 @@ private:
             
         }
     }
+    void debuglinelist(ofIndexType index){
+        cout<<"index0,index1:"<<index<<","<<index+1<<"   ";
+        if(index+1>linelist.size()){
+            cout<<"waring:ip>linelist.size"<<endl;
+            return;
+        }else{
+            cout<<"linelist.size:"<<linelist.size()<<"   ";
+        }
+        ofIndexType ip0=linelist[index];
+        ofIndexType ip1=linelist[index+1];
+        cout<<"point index is:"<<ip0<<":"<<ip1<<"   ";
+        if(ip0>pointlist.size()||ip1>pointlist.size()){
+            cout<<"waring:index of point > pointlist.size"<<endl;
+            return;
+        }else{
+            cout<<"pointlist.size:"<<pointlist.size()<<"   ";
+        }
+        ofPoint point0,point1;
+        point0=pointlist[ip0];
+        point1=pointlist[ip1];
+        cout<<"line from:"<<ofToString(point0)<<" to "<<ofToString(point1)<<"   ";
+        if(point0.x==point1.x&&point0.y==point1.y&&point0.z==point1.z){
+            cout<<"this is a singlepoint;"<<endl;
+        }else{
+            cout<<"this is a line;"<<endl;
+        }
+        
+    }
+
     
 };
 

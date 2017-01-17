@@ -43,5 +43,7 @@ public:
     
     vector<of3dPrimitive> nodemodels;    //models
     ofEasyCam cam;
+    ofLight envlight;// environment light
+    vector<ofLight> lights;
     
 };

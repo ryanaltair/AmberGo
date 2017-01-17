@@ -5,12 +5,19 @@
 class agline{
 public:
     ofIndexType ip0,ip1;
+    bool zsort=false;
     agline(){
     }
     void set(ofIndexType ip0Value,ofIndexType ip1Value){
         ip0=ip0Value;
         ip1=ip1Value;
     }
+    void markZSortTrue(){
+        zsort=true;
+    };
+    bool getzsort(){
+        return zsort;
+    };
     bool operator < ( const agline& other) const
     {
         if ( ip0 == other.ip0 ) {

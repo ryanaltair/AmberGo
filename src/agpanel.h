@@ -3,8 +3,7 @@
 #include "ofxDatGui.h"
 /**
  use for AmberGo
- as panel
- and serial work
+ as panel 
  and output work
  **/
 
@@ -23,46 +22,20 @@ public:
     //componment
     ofxDatGuiSlider* sliceHeightSlider;
     ofxDatGuiSlider* sliceProgressPercentSlider;
-    ofxDatGuiButton* printStartButton;
     ofxDatGuiButton* printPauseButton;
     ofxDatGuiButton* allSliceButton;
     ofxDatGuiButton* showAllSliceButton;
-    ofxDatGuiButton* connectButton;
-    ofxDatGuiTextInput* sendMessageTextInput;
-    ofxDatGuiLabel* sliceReadyLabel;
+     ofxDatGuiLabel* sliceReadyLabel;
     ofxDatGuiToggle* outputToggle;
     ofxDatGuiToggle* showsliceToggle;
     ofxDatGuiSlider* layerthicknessSlider;
     ofxDatGuiSlider* exposedTimeSlider;
-    // float sliceHeight=0.02;
-    void timeUpdate();
     void outputDone(bool done);
     void sliceHeightBind();
-    void tryConnect();
-    void serialUpdate();
-    bool isTimeToNextLayer=false;
-    int workState=0;
     float getWidth();
     void setSliceReady();
     void setSliceUnready();
-    const int stateModelPrepare=1;
-    const int stateModelReady=2;
-    const int statePrintReady=3;
-    const int statePrintPreparing=4;
-    const int statePrinting=5;
-    const int statePrintFinish=6;
-    const int statePrepare=7;
-    const int stateSleep=0;
-    float timerReset=0;
-    float timerToNextLayer=0;
-    
     bool outputdone=false;
-    bool timerResetTriger =false ;
-    bool timerToNextLayerTrigger= false ;
-    float exposeTime=0.0001;
-    ofSerial serial;
-    string teststring;// used for serial test
-    bool isConnect=false;
     float sliceMin=0.02;
     float sliceMax=1;
     int snapcount=1000;

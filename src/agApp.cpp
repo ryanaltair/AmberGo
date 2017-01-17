@@ -230,16 +230,18 @@ void agApp::loadModel(){
  */
 void agApp::drawFBO(){
     // now we try fbo
+    
     fbo.begin();
     ofClear(ofColor::black);
-    //ofBackground(0,0,0);
+//    ofBackground(0,0,0);
+
     layertest.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
     layertest.draw(1280/2,768/2);
     fbo.end();
 }
 void agApp::saveImage(string picname){
     fbo.readToPixels(pixelsbuffer);
-    if(1){
+    if(0){
         ofSaveImage(pixelsbuffer, picname);
         //cout<<"save image"<<endl;
         bSnapshot = false;
