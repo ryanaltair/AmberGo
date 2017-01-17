@@ -1,10 +1,10 @@
 #include "ofMain.h"
-#include "agApp.h"
+#include "ofApp.h"
 
 //========================================================================
 int main( ){
     ofSetupOpenGL(800,640, OF_WINDOW);			// <-------- setup the GL context
-    ofRunApp( new agApp());
+    ofRunApp( new ofApp());
 /**
     ofGLFWWindowSettings mainWindowSetting;
     ofGLFWWindowSettings sideWindowSetting;

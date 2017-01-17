@@ -1,14 +1,14 @@
-#include "agApp.h"
+#include "ofApp.h"
 
 //--------------------------------------------------------------
-void agApp::setup(){
+void ofApp::setup(){
     //for app looks like a app
     ofSetWindowTitle("Amber Go Demo");//
     ofSetEscapeQuitsApp(false);
     panel.setup();
     
-    // set framerate // PS: setVSYNC will failed in Windows but work well in Mac
-     ofSetVerticalSync(true);
+    // set framerate // PS: setVSYNC will failed in Windows but still work well in Mac
+//     ofSetVerticalSync(true);
     ofSetFrameRate(60);
     
     // init the modelpath
@@ -30,7 +30,7 @@ void agApp::setup(){
 }
 
 //--------------------------------------------------------------
-void agApp::update(){
+void ofApp::update(){
     apppreference.updatelayerout(panel.getWidth());
     panel.update();
     loadModel();
@@ -91,7 +91,7 @@ void agApp::update(){
 }
 
 //--------------------------------------------------------------
-void agApp::draw(){
+void ofApp::draw(){
     ofEnableDepthTest();
     ofBackground(ofColor::black);
     plate.drawincamera(apppreference.plateview);
@@ -103,7 +103,7 @@ void agApp::draw(){
 
 
 //--------------------------------------------------------------
-void agApp::keyPressed(int key){
+void ofApp::keyPressed(int key){
     switch(key){
         case OF_KEY_UP:
             panel.layertestZ++;
@@ -123,52 +123,52 @@ void agApp::keyPressed(int key){
 }
 
 //--------------------------------------------------------------
-void agApp::keyReleased(int key){
+void ofApp::keyReleased(int key){
     
 }
 
 //--------------------------------------------------------------
-void agApp::mouseMoved(int x, int y){
+void ofApp::mouseMoved(int x, int y){
     
 }
 
 //--------------------------------------------------------------
-void agApp::mouseDragged(int x, int y, int button){
+void ofApp::mouseDragged(int x, int y, int button){
     
 }
 
 //--------------------------------------------------------------
-void agApp::mousePressed(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button){
     
 }
 
 //--------------------------------------------------------------
-void agApp::mouseReleased(int x, int y, int button){
+void ofApp::mouseReleased(int x, int y, int button){
     
 }
 
 //--------------------------------------------------------------
-void agApp::mouseEntered(int x, int y){
+void ofApp::mouseEntered(int x, int y){
     
 }
 
 //--------------------------------------------------------------
-void agApp::mouseExited(int x, int y){
+void ofApp::mouseExited(int x, int y){
     
 }
 
 //--------------------------------------------------------------
-void agApp::windowResized(int w, int h){
+void ofApp::windowResized(int w, int h){
     
 }
 
 //--------------------------------------------------------------
-void agApp::gotMessage(ofMessage msg){
+void ofApp::gotMessage(ofMessage msg){
     
 }
 
 //--------------------------------------------------------------
-void agApp::dragEvent(ofDragInfo dragInfo){
+void ofApp::dragEvent(ofDragInfo dragInfo){
     if( dragInfo.files.size() > 0 ){
         //dragPt = dragInfo.position;
         apppreference.isModelChanged=true;
@@ -180,7 +180,7 @@ void agApp::dragEvent(ofDragInfo dragInfo){
 }
 //side window
 
-void agApp::drawSideWindow(ofEventArgs & args){
+void ofApp::drawSideWindow(ofEventArgs & args){
     fbo.draw(0,0);
     
     //savePic();
@@ -189,7 +189,7 @@ void agApp::drawSideWindow(ofEventArgs & args){
 
 //addons
 
-void agApp::loadModel(){
+void ofApp::loadModel(){
     if(apppreference.isModelChanged==false){
         return;
     }
@@ -228,7 +228,7 @@ void agApp::loadModel(){
 /**
  draw the fbo
  */
-void agApp::drawFBO(){
+void ofApp::drawFBO(){
     // now we try fbo
     
     fbo.begin();
@@ -239,7 +239,7 @@ void agApp::drawFBO(){
     layertest.draw(1280/2,768/2);
     fbo.end();
 }
-void agApp::saveImage(string picname){
+void ofApp::saveImage(string picname){
     fbo.readToPixels(pixelsbuffer);
     if(0){
         ofSaveImage(pixelsbuffer, picname);
@@ -251,7 +251,7 @@ void agApp::saveImage(string picname){
 /**
  output the slice use FBO as png file
  */
-void agApp::outputLayer(){
+void ofApp::outputLayer(){
     fbo.readToPixels(pixelsbuffer);
     
     

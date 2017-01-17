@@ -8,7 +8,7 @@
 #include "agAppPreference.h"
 
 
-class agApp : public ofBaseApp {
+class ofApp : public ofBaseApp {
 public:
     //gl loop
     void setup();
