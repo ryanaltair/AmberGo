@@ -30,20 +30,22 @@ public:
     ofBoxPrimitive outsideBox;    // box
     ofBoxPrimitive sliceLayPlane;    // slicelayer
     
-    float layertestZ=0;
+    
     ofVec3f modelSize;
     ofVec3f boxSize;// the box size
     ofVec3f pixelSize;
     float groundheight;
     int drawmode=0;//drawmode set 0 for meshes 1 for assimps
     
+       vector<of3dPrimitive> nodemodels;    //models
+    ofEasyCam cam;
+//    ofLight envlight;// environment light
+//    vector<ofLight> lights;
+private:
+    float slicelayerZ=0;
     // enables
     int outsideBoxEnable=0;
     int sliceLayPlaneEnable=1;
     
-    vector<of3dPrimitive> nodemodels;    //models
-    ofEasyCam cam;
-//    ofLight envlight;// environment light
-//    vector<ofLight> lights;
-    
+
 };

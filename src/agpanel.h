@@ -18,7 +18,7 @@ public:
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onTextInputEvent(ofxDatGuiTextInputEvent e);
-    
+    bool isSliceHeightChange();
     //componment
     ofxDatGuiSlider* sliceHeightSlider;
     ofxDatGuiSlider* sliceProgressPercentSlider;
@@ -30,12 +30,12 @@ public:
     ofxDatGuiToggle* showsliceToggle;
     ofxDatGuiSlider* layerthicknessSlider;
     ofxDatGuiSlider* exposedTimeSlider;
-    void outputDone(bool done);
-    void sliceHeightBind();
+    void setOutputDone(bool done);
+    void sliderBind();
     float getWidth();
     void setSliceReady();
     void setSliceUnready();
-    bool outputdone=false;
+    bool outputDone=false;
     float sliceMin=0.02;
     float sliceMax=1;
     int snapcount=1000;
@@ -52,5 +52,6 @@ public:
     ofIndexType iShowAllSliceLayerCount=0;
     float layertestZlast=0.1;
     float layertestZ=0.1;
+private:
     
 };

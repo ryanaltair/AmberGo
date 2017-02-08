@@ -43,7 +43,7 @@ private:
      it will load model with thread called merger
      */
     void loadModel();
-    agSliceManager threadMerge;// threaded object. Merger
+    agSliceManager threadSlice;// threaded object. Merger
     bool bModelLoaded=false;
     agplate plate;//palte
     agpanel panel;    //GUI

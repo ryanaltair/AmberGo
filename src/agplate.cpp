@@ -66,7 +66,7 @@ void agplate::update(){
 
 
 void agplate::sliceAt(float Z){
-    layertestZ=Z;
+    slicelayerZ=Z;
     
 }
 
@@ -90,7 +90,7 @@ void agplate::drawincamera(ofRectangle view){
     if(sliceLayPlaneEnable==1){
         
         ofSetColor(255,0,0,127);
-        sliceLayPlane.setPosition(0, 0, layertestZ);
+        sliceLayPlane.setPosition(0, 0, slicelayerZ);
         sliceLayPlane.draw();
         
     }

@@ -38,23 +38,20 @@ void agpanel::setup(){
     // GUI start
     // instantiate and position the gui //
        exposedTime=exposedTimeSlider->getValue();
-    sliceHeightBind();
+    sliderBind();
 }
 void agpanel::update(){
     
 }
-
-void agpanel::outputDone(bool done){
-    outputdone=done;
+bool agpanel::isSliceHeightChange(){
+    
+    return layertestZ!=layertestZlast;
+}
+void agpanel::setOutputDone(bool done){
+    outputDone=done;
 }
 void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 {
-    
-    if(e.target==exposedTimeSlider){
-        float i=e.value;
-        exposedTimeSlider->setValue(i);
-        exposedTime=e.value;
-    }
     
 }
 void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
@@ -98,11 +95,11 @@ void agpanel::onToggleEvent(ofxDatGuiToggleEvent e)
         
     }
 }
-void agpanel::sliceHeightBind(){
+void agpanel::sliderBind(){
     
     sliceHeightSlider->bind(layertestZ);
     layerthicknessSlider->bind(layerthickness);
-    
+    exposedTimeSlider->bind(exposedTime);
     
 }
 

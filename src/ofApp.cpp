@@ -8,7 +8,7 @@ void ofApp::setup(){
     panel.setup();
     
     // set framerate // PS: setVSYNC will failed in Windows but still work well in Mac
-//     ofSetVerticalSync(true);
+    //     ofSetVerticalSync(true);
     ofSetFrameRate(60);
     
     // init the modelpath
@@ -34,42 +34,43 @@ void ofApp::update(){
     apppreference.updatelayerout(panel.getWidth());
     panel.update();
     loadModel();
-    if(panel.layertestZ!=panel.layertestZlast){
+    if(panel.isSliceHeightChange()){
         panel.layertestZlast=panel.layertestZ;
         //cout<<"we slice at now "<<endl;
         plate.sliceAt(panel.layertestZ);
         plate.update();
     }
-    if(threadMerge.isThreadRunning()==false){
+    if(threadSlice.isThreadRunning()==false){
         if(apppreference.bHaveModelLoaded==false){return;}
         if(panel.bAllSlice==true){
-            if(threadMerge.isAllSliceDone==false){
-                threadMerge.allSlice(panel.layerthickness);
+            if(threadSlice.isAllSliceDone==false){
+                threadSlice.allSlice(panel.layerthickness);
             }
             panel.bAllSlice=false;
             
         }
-        if(threadMerge.layertestZ!=panel.layertestZ){
-            //threadMerge.sliceAt(panel.layertestZ);
+        if(threadSlice.layertestZ!=panel.layertestZ){
+            //threadSlice.sliceAt(panel.layertestZ);
         }
         
-        if(/* DISABLES CODE */ (0)&&threadMerge.isSliceChanged==true){
+        if(/* DISABLES CODE */ (0)&&threadSlice.isSliceChanged==true){
             // cout<<"B:we just got to here to try layertest"<<"\n";
-            layertest=threadMerge.layertest;
+            layertest=threadSlice.layertest;
             if(panel.bPrint==true){
                 bSnapshot=true;
                 panel.snapcount++;
             }
             drawFBO();
             outputLayer();
-            panel.outputDone(true);
-            threadMerge.isSliceChanged=false;
+            panel.setOutputDone(true);
+            threadSlice.isSliceChanged=false;
         }
-        if(threadMerge.isAllSliceDone==true&&panel.bShowAllSlice==true){
-            if(panel.iShowAllSliceLayerCount<threadMerge.alllayertests.size()){
+        if(threadSlice.isAllSliceDone==true&&panel.bShowAllSlice==true){
+            if(panel.iShowAllSliceLayerCount<threadSlice.alllayertests.size()){
                 panel.layertestZ=panel.layerthickness*panel.iShowAllSliceLayerCount;
-                layertest=threadMerge.alllayertests[panel.iShowAllSliceLayerCount];
+                layertest=threadSlice.alllayertests[panel.iShowAllSliceLayerCount];
                 panel.iShowAllSliceLayerCount++;
+                panel.layertestZ+=panel.layerthickness;
                 if(panel.bPrint==true){
                     bSnapshot=true;
                     panel.snapcount++;
@@ -80,7 +81,7 @@ void ofApp::update(){
                 drawFBO();
                 string pathname="output2/"+ofToString(panel.iShowAllSliceLayerCount)+".png";
                 saveImage(pathname);
-                if(panel.iShowAllSliceLayerCount==threadMerge.alllayertests.size()-1){
+                if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()-1){
                     
                     easyLogTimeTo("output");
                 }
@@ -196,13 +197,13 @@ void ofApp::loadModel(){
     //assimp model load
     if(modelpath.size()>0){
         panel.setSliceUnready();
-        threadMerge.loadModel(modelpath);
+        threadSlice.loadModel(modelpath);
         bModelLoaded=false;
         modelpath.clear();
     }
     
     // when loading
-    if(threadMerge.isThreadRunning()==true){
+    if(threadSlice.isThreadRunning()==true){
         return;
     }
     //when loaded
@@ -210,13 +211,13 @@ void ofApp::loadModel(){
         bModelLoaded=true;
         return;
     }
-    plate.addModel(threadMerge.mll.mergedMesh);
-    threadMerge.assimpmodel.clear();
+    plate.addModel(threadSlice.mll.mergedMesh);
+    threadSlice.assimpmodel.clear();
     panel.setSliceReady();
-    plate.modelSize=threadMerge.mll.getScale();
+    plate.modelSize=threadSlice.mll.getScale();
     ofVec3f newposti;
     
-    newposti=threadMerge.mll.meshMin;
+    newposti=threadSlice.mll.meshMin;
     newposti.x=0;//-plate.modelSize.x/2;
     newposti.y=0;//-plate.modelSize.y/2;
     plate.setPosition(newposti);
@@ -233,15 +234,24 @@ void ofApp::drawFBO(){
     
     fbo.begin();
     ofClear(ofColor::black);
-//    ofBackground(0,0,0);
-
+//        ofBackground(0,0,0);
+    
     layertest.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
     layertest.draw(1280/2,768/2);
+    vector<ofPolyline> outlines= layertest.getOutline();
+    ofSetColor(255, 0, 0);
+
+    outlines[0].draw();
+//    for (auto line:outlines) {
+//        //
+//        cout<<"line size:"<<line.size()<<endl;
+//    }
+//    outline[0].draw(1280/2,768/2);
     fbo.end();
 }
 void ofApp::saveImage(string picname){
     fbo.readToPixels(pixelsbuffer);
-    if(0){
+    if(panel.outputToggle->getChecked()==true){
         ofSaveImage(pixelsbuffer, picname);
         //cout<<"save image"<<endl;
         bSnapshot = false;
