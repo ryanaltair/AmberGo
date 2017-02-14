@@ -70,6 +70,5 @@ private:
         cout<<title<<"  to:"<<ofToString(timekeep) <<" senconds "<<endl;
         cout<<"------";
         cout<<title<<"take:"<<ofToString(timetake) <<" senconds "<<endl;
-    }
-    
+    } 
 };

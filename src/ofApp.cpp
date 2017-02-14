@@ -25,8 +25,7 @@ void ofApp::setup(){
     fbo.allocate(fbosettings);
     pixelsbuffer.allocate(1280, 768,3);
     pixelsbuffervoid.allocate(1280, 768, 3);
-    // fbo end
-    
+    // fbo end     
 }
 
 //--------------------------------------------------------------
@@ -93,10 +92,13 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    
     ofEnableDepthTest();
     ofBackground(ofColor::black);
     plate.drawincamera(apppreference.plateview);
     ofDisableDepthTest();
+
+    
     if(panel.ShowSlice==true){
         fbo.draw(apppreference.sliceview);
     }

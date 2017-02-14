@@ -9,13 +9,11 @@
  
  
  TODO:
- - 打印速度由多方面构成 主要由以下影响
- - 拔模高度 readygap的高度 fixed
- - 上升速度 unfixed
- - 停整时间 拔模完成后等待下降的时间 really small and fixed
- - 下降速度 fixed
- - 曝光时间 main option
- - 层厚（层数）main option
+ - print speed is influence by:
+ - lift opeteration, fixed
+ - axis speed  unfixed
+ - exposed time that work with cure main option
+ - layer count and layer thickness main option
  unit: mm second
  **/
 class agAppPreference{

@@ -39,13 +39,11 @@ public:
     
        vector<of3dPrimitive> nodemodels;    //models
     ofEasyCam cam;
-//    ofLight envlight;// environment light
-//    vector<ofLight> lights;
-private:
+ private:
     float slicelayerZ=0;
     // enables
     int outsideBoxEnable=0;
     int sliceLayPlaneEnable=1;
-    
+    vector<ofLight> aroundLight;
 
 };

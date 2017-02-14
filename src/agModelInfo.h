@@ -9,12 +9,13 @@
 
 
 class agmodelinfo{
+    
     ofVec3f scale;
     ofVec3f locate;
     float x;
     float y;
     float z;
-    float width;// the x
-    float length;// the y
-    float height;// the z
+    float width;// the x in mm
+    float length;// the y in mm
+    float height;// the z in mm
 }

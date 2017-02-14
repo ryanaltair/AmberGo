@@ -6,32 +6,7 @@ agplate::agplate(){
     boxSize.y=74.88; //800;//74.88mm
     boxSize.z=138;//1393;//138mm
     groundheight=2;
-    for(int i=0;i<4;i++){
-        
-        
-    }
-    if(1){
-        int i=0;
-        float z;
-        for (int x=-5; x<=5; x+=10) {
-            for (int y=-5; y<=5; y+=10) {
-                if(x==-5||y==-5||x==5||y==5){
-                    z=5;
-//                    lights.push_back(envlight);
-//                    lights[lights.size()-1].setPosition(x*20, y*20, z);
-//                    
-//                    lights[lights.size()-1].setup();
-                    i++;
-                }else{
-                    z=100;
-                    // lights[i].setDirectional();
-                }
-                
-                
-            }
-        }
-    }
-
+    
     
 }
 agplate::~agplate(){
@@ -43,11 +18,6 @@ agplate::~agplate(){
  init the playground and box , and cam
  */
 void agplate::setup(){
-        //    envlight.setPosition(0, 0, 100);
-    //    envlight.setAmbientColor(ofColor::darkCyan);
-    //    envlight.setAreaLight(100, 100);
-    //    envlight.setSpecularColor(ofColor::darkCyan);
-    //    envlight.setup();
     //cam.orbit(180, 0, cam.getDistance());
     cam.orbit(0, 40, cam.getDistance());
     playground.set(boxSize.x,boxSize.y,groundheight);
@@ -56,6 +26,29 @@ void agplate::setup(){
     outsideBox.setPosition(0,0,0);
     sliceLayPlane.set(boxSize.x,boxSize.y,0.4);
     cam.setDistance(200);
+    
+    for(int i=0;i<5;i++){
+        ofLight l;
+        ofNode c;
+        c.setPosition(0, 0, 0);
+        l.lookAt(c);
+        aroundLight.push_back(l);
+        aroundLight[i].setup();
+        
+    }
+    ofNode c;
+    c.setPosition(0, 0, 0);
+    if(1){
+        int x,y,z;
+        x=playground.getWidth()/2+10;
+        y=playground.getHeight()/2+10;
+        z=-10;
+    aroundLight[0].setPosition(x, y, z); 
+    aroundLight[1].setPosition(-x, -y, z);
+    aroundLight[2].setPosition(x, -y, z);
+    aroundLight[3].setPosition(-x, y, z);
+    aroundLight[4].setPosition(0, 0, 120);
+    }
     
 }
 
@@ -86,22 +79,32 @@ void agplate::addModel(ofMesh model){
 
 void agplate::drawincamera(ofRectangle view){
     cam.begin(view);
-    ofBackground(ofColor::lightBlue);
+    ofBackground(255,255,255);// a white with bit yellow
     if(sliceLayPlaneEnable==1){
         
         ofSetColor(255,0,0,127);
         sliceLayPlane.setPosition(0, 0, slicelayerZ);
-        sliceLayPlane.draw();
+        //        sliceLayPlane.draw();
         
     }
+    
+    if(1){
+        ofSetSmoothLighting(true);
+        for(auto &light:aroundLight){
+            light.draw();
+            light.enable();
+        }
+    }
+
     drawModels();
-    ofSetColor(ofColor::darkCyan);
+    ofSetColor(124, 121, 119);// 100,149,237, CornflowerBlue
     playground.draw();// the ground
     
     if(outsideBoxEnable==1){
         ofSetColor(20, 20, 20, 50);
         //  outsideBox.draw();  // the outsidebox
     }
+    ofDisableLighting();
     
     cam.end();
     //envlight.disable();
@@ -113,24 +116,10 @@ void agplate::drawModels(){
     if(drawmode==0){
         
     }
-    if(1){
-//        ofSetSmoothLighting(true);
-//        for(auto &light:lights){
-//            light.draw();
-//            light.enable();
-//        }
-        
-    }
-    //    envlight.enable();
-    //    envlight.draw();
     if(nodemodels.size()>0){
-        
-        ofSetColor(ofColor::darkCyan);
+        ofSetColor(123, 123, 123);//
         nodemodels[0].draw();
-        //        ofSetColor(ofColor::black);
-        //        nodemodels[0].drawWireframe();
     }
-//    ofDisableLighting();
     //envlight.disable();
     
 }
