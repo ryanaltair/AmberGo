@@ -116,3 +116,6 @@ void agpanel::setSliceUnready(){
     sliceReadyLabel->setLabel(sliceUnready);
     
 }
+void agpanel::setSliceDone(){
+    sliceReadyLabel->setLabel(sliceDone);
+}

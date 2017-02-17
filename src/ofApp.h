@@ -6,7 +6,7 @@
 #include "agpanel.h"
 #include "agSliceManager.h"
 #include "agAppPreference.h"
-
+#include "ofxImageSequenceRecorder.h"
 
 class ofApp : public ofBaseApp {
 public:
@@ -26,7 +26,7 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    
+    void exit();
     
 private:
     //side window
@@ -56,6 +56,7 @@ private:
     ofFbo fbo;
     ofPixels pixelsbuffer;
     ofPixels pixelsbuffervoid;
+    ofxImageSequenceRecorder threadImageSaver; // use for save image
    //timetest
     float timekeep;
     void easyLogTimeFrom(string title){

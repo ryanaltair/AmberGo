@@ -94,8 +94,7 @@ void agplate::drawincamera(ofRectangle view){
             light.draw();
             light.enable();
         }
-    }
-
+    } 
     drawModels();
     ofSetColor(124, 121, 119);// 100,149,237, CornflowerBlue
     playground.draw();// the ground

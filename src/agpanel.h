@@ -35,6 +35,8 @@ public:
     float getWidth();
     void setSliceReady();
     void setSliceUnready();
+    
+    void setSliceDone();
     bool outputDone=false;
     float sliceMin=0.02;
     float sliceMax=1;
@@ -42,6 +44,7 @@ public:
     float layerthickness=0.02;
     string sliceReady="Slice is ready";
     string sliceUnready="Slice is not ready";
+    string sliceDone="Slice is finish";
     
     bool isOutput=false;
     bool bPrint=false;

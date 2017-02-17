@@ -23,9 +23,16 @@ void ofApp::setup(){
     fbosettings.height =768;
     fbosettings.textureTarget = GL_TEXTURE_2D;
     fbo.allocate(fbosettings);
+    
+    threadImageSaver.setPrefix(ofToDataPath("output3/")); // this directory must already exist
+    threadImageSaver.setFormat("png"); // png is really slow but high res, bmp is fast but big, jpg is just right
+
+    
     pixelsbuffer.allocate(1280, 768,3);
     pixelsbuffervoid.allocate(1280, 768, 3);
-    // fbo end     
+    // fbo end
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -78,14 +85,23 @@ void ofApp::update(){
                     easyLogTimeFrom("output");
                 }
                 drawFBO();
-                string pathname="output2/"+ofToString(panel.iShowAllSliceLayerCount)+".png";
+                string pathname="output2/"+ofToString(panel.iShowAllSliceLayerCount)+".bmp";
                 saveImage(pathname);
+                
                 if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()-1){
                     
-                    easyLogTimeTo("output");
+                    if(threadImageSaver.isThreadRunning()==false){
+                        if(threadImageSaver.q.size()==0){
+                            panel.setSliceDone();
+                            easyLogTimeTo("output");
+                        }
+                        
+                    }
+                    
                 }
             }
         }
+        
         
     }
 }
@@ -157,7 +173,10 @@ void ofApp::mouseEntered(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y){
-    
+    threadImageSaver.waitForThread();
+}
+void ofApp::exit(){
+    threadImageSaver.waitForThread();
 }
 
 //--------------------------------------------------------------
@@ -254,7 +273,13 @@ void ofApp::drawFBO(){
 void ofApp::saveImage(string picname){
     fbo.readToPixels(pixelsbuffer);
     if(panel.outputToggle->getChecked()==true){
-        ofSaveImage(pixelsbuffer, picname);
+       // ofSaveImage(pixelsbuffer, picname);
+        threadImageSaver.addFrame(pixelsbuffer);
+        if(threadImageSaver.isThreadRunning()){
+            
+        } else {
+            threadImageSaver.startThread();
+        }
         //cout<<"save image"<<endl;
         bSnapshot = false;
     }

@@ -9,6 +9,47 @@
 		<string>46</string>
 		<key>objects</key>
 		<dict>
+			<key>964026486FAEDC6A7CCAF847</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>F7095C30AC932F9AF9DA8DE4</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>58E8E0D22B483B216158FC17</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>964026486FAEDC6A7CCAF847</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxImageSequenceRecorder</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>F7095C30AC932F9AF9DA8DE4</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxImageSequenceRecorder.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxImageSequenceRecorder/src/ofxImageSequenceRecorder.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
 			<key>21E1E3071CB7B11914428B62</key>
 			<dict>
 				<key>explicitFileType</key>
@@ -1545,6 +1586,7 @@
 				<array>
 					<string>2C8F245ACBE61E28646C17F2</string>
 					<string>D8DD1043C333F6F63C8685E6</string>
+					<string>58E8E0D22B483B216158FC17</string>
 				</array>
 				<key>isa</key>
 				<string>PBXGroup</string>
@@ -1720,6 +1762,7 @@
 						<string>../../../addons/ofxDatGui/src/libs</string>
 						<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont</string>
 						<string>../../../addons/ofxDatGui/src/themes</string>
+						<string>../../../addons/ofxImageSequenceRecorder/src</string>
 					</array>
 					<key>CONFIGURATION_BUILD_DIR</key>
 					<string>$(SRCROOT)/bin/</string>
@@ -1799,6 +1842,7 @@
 						<string>../../../addons/ofxDatGui/src/libs</string>
 						<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont</string>
 						<string>../../../addons/ofxDatGui/src/themes</string>
+						<string>../../../addons/ofxImageSequenceRecorder/src</string>
 					</array>
 					<key>CONFIGURATION_BUILD_DIR</key>
 					<string>$(SRCROOT)/bin/</string>
@@ -1970,6 +2014,7 @@
 						<string>../../../addons/ofxDatGui/src/libs</string>
 						<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont</string>
 						<string>../../../addons/ofxDatGui/src/themes</string>
+						<string>../../../addons/ofxImageSequenceRecorder/src</string>
 					</array>
 					<key>COMBINE_HIDPI_IMAGES</key>
 					<string>YES</string>
@@ -2039,6 +2084,7 @@
 						<string>../../../addons/ofxDatGui/src/libs</string>
 						<string>../../../addons/ofxDatGui/src/libs/ofxSmartFont</string>
 						<string>../../../addons/ofxDatGui/src/themes</string>
+						<string>../../../addons/ofxImageSequenceRecorder/src</string>
 					</array>
 					<key>COMBINE_HIDPI_IMAGES</key>
 					<string>YES</string>
