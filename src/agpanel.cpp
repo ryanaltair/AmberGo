@@ -87,7 +87,7 @@ void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
 void agpanel::onToggleEvent(ofxDatGuiToggleEvent e)
 {
     if(e.target==outputToggle){
-        isOutput=outputToggle->getChecked();
+        isOutput=outputToggle->getChecked(); 
         
     }
     if(e.target==showsliceToggle){

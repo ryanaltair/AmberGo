@@ -30,6 +30,7 @@ public:
     ofxDatGuiToggle* showsliceToggle;
     ofxDatGuiSlider* layerthicknessSlider;
     ofxDatGuiSlider* exposedTimeSlider;
+     
     void setOutputDone(bool done);
     void sliderBind();
     float getWidth();
@@ -39,13 +40,13 @@ public:
     void setSliceDone();
     bool outputDone=false;
     float sliceMin=0.02;
-    float sliceMax=1;
+    float sliceMax=0.30;
     int snapcount=1000;
     float layerthickness=0.02;
     string sliceReady="Slice is ready";
     string sliceUnready="Slice is not ready";
     string sliceDone="Slice is finish";
-    
+//    string slice
     bool isOutput=false;
     bool bPrint=false;
     bool bAllSlice=false;

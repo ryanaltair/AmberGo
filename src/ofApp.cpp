@@ -58,19 +58,6 @@ void ofApp::update(){
         if(threadSlice.layertestZ!=panel.layertestZ){
             //threadSlice.sliceAt(panel.layertestZ);
         }
-        
-        if(/* DISABLES CODE */ (0)&&threadSlice.isSliceChanged==true){
-            // cout<<"B:we just got to here to try layertest"<<"\n";
-            layertest=threadSlice.layertest;
-            if(panel.bPrint==true){
-                bSnapshot=true;
-                panel.snapcount++;
-            }
-            drawFBO();
-            outputLayer();
-            panel.setOutputDone(true);
-            threadSlice.isSliceChanged=false;
-        }
         if(threadSlice.isAllSliceDone==true&&panel.bShowAllSlice==true){
             if(panel.iShowAllSliceLayerCount<threadSlice.alllayertests.size()){
                 panel.layertestZ=panel.layerthickness*panel.iShowAllSliceLayerCount;
@@ -85,8 +72,8 @@ void ofApp::update(){
                     easyLogTimeFrom("output");
                 }
                 drawFBO();
-                string pathname="output2/"+ofToString(panel.iShowAllSliceLayerCount)+".bmp";
-                saveImage(pathname);
+                
+                saveImage(ofToString(panel.iShowAllSliceLayerCount));
                 
                 if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()-1){
                     
@@ -204,7 +191,6 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 void ofApp::drawSideWindow(ofEventArgs & args){
     fbo.draw(0,0);
-    
     //savePic();
 }
 
@@ -259,21 +245,12 @@ void ofApp::drawFBO(){
     
     layertest.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
     layertest.draw(1280/2,768/2);
-    vector<ofPolyline> outlines= layertest.getOutline();
-    ofSetColor(255, 0, 0);
-
-    outlines[0].draw();
-//    for (auto line:outlines) {
-//        //
-//        cout<<"line size:"<<line.size()<<endl;
-//    }
-//    outline[0].draw(1280/2,768/2);
     fbo.end();
 }
 void ofApp::saveImage(string picname){
     fbo.readToPixels(pixelsbuffer);
     if(panel.outputToggle->getChecked()==true){
-       // ofSaveImage(pixelsbuffer, picname);
+//        ofSaveImage(pixelsbuffer, picname);
         threadImageSaver.addFrame(pixelsbuffer);
         if(threadImageSaver.isThreadRunning()){
             
@@ -285,40 +262,7 @@ void ofApp::saveImage(string picname){
     }
     
 }
-/**
- output the slice use FBO as png file
- */
-void ofApp::outputLayer(){
-    fbo.readToPixels(pixelsbuffer);
-    
-    
-    // and save images with pixels
-    string annnn;
-    string emmmm;
-    annnn=ofToString(panel.snapcount);
-    int zinpulse;
-    float layertestZmm=panel.layertestZ;
-    float pulsepermm=50; //for 1204 the 1 round for 4 mm in z , 1 round means 4 mms head up and 200 steps for stepper
-    zinpulse=layertestZmm*pulsepermm+1000;// to easy the bits problem ,we just start from 1000
-    emmmm=ofToString(zinpulse);
-    // cout<<"|||| save start: "<<ofToString(ofGetElapsedTimef())<<endl;
-    string tickfileName = "output/fabfiles/A" +annnn+emmmm+ ".png";
-    panel.snapcount+=1;
-    annnn=ofToString(panel.snapcount);
-    emmmm=ofToString(panel.exposedTime);
-    string tockfileName ="output/fabfiles/A" +annnn+emmmm+ ".png";
-    if(bSnapshot==true){
-        ofSaveImage(pixelsbuffer, tickfileName);
-        ofSaveImage(pixelsbuffervoid, tockfileName);
-        cout<<"save image"<<endl;
-        bSnapshot = false;
-        
-        if(panel.snapcount>=9000||panel.layertestZ>plate.modelSize.z){
-            panel.bPrint=false;
-        }
-    }
-    
-}
+
 
 
 

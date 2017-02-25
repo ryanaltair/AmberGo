@@ -90,7 +90,7 @@ ofPath agmll::layertestat(float z) {
     returnpath.setStrokeWidth(10);
     if(1){
         returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
-        returnpath.setStrokeColor(ofColor::blue);
+        returnpath.setStrokeColor(ofColor::white);
         returnpath.setFillColor(ofColor::white);
         returnpath.setFilled(true);
         returnpath.setStrokeWidth(1);
