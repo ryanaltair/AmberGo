@@ -25,8 +25,8 @@ void agplate::setup(){
     outsideBox.set(boxSize.x,boxSize.y,boxSize.z);
     outsideBox.setPosition(0,0,0);
     sliceLayPlane.set(boxSize.x,boxSize.y,0.4);
-    cam.setDistance(200);
-    
+    cam.setDistance(140);
+    cam.move(0,0,40);// lift up the cam so we see clear
     for(int i=0;i<5;i++){
         ofLight l;
         ofNode c;
@@ -48,6 +48,7 @@ void agplate::setup(){
     aroundLight[2].setPosition(x, -y, z);
     aroundLight[3].setPosition(-x, y, z);
     aroundLight[4].setPosition(0, 0, 120);
+    
     }
     
 }
@@ -71,6 +72,7 @@ void agplate::addModel(ofMesh model){
         nodemodels[0]=nodemodel;
     }else{
         nodemodels.push_back(nodemodel);
+       
     }
     cout<<"add a model in plate"<<endl;
     
@@ -82,16 +84,16 @@ void agplate::drawincamera(ofRectangle view){
     ofBackground(255,255,255);// a white with bit yellow
     if(sliceLayPlaneEnable==1){
         
-        ofSetColor(255,0,0,127);
+        ofSetColor(96,185,287);
         sliceLayPlane.setPosition(0, 0, slicelayerZ);
-        //        sliceLayPlane.draw();
+                sliceLayPlane.draw();
         
     }
     
     if(1){
         ofSetSmoothLighting(true);
         for(auto &light:aroundLight){
-            light.draw();
+//            light.draw();
             light.enable();
         }
     } 
@@ -104,7 +106,6 @@ void agplate::drawincamera(ofRectangle view){
         //  outsideBox.draw();  // the outsidebox
     }
     ofDisableLighting();
-    
     cam.end();
     //envlight.disable();
 }

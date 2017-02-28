@@ -10,7 +10,7 @@
  calculate:
  1. get the point list
  2. use mesh data to output linelist
- 
+ 3. use linelist to get the polygon
  output data use sliceat
  
  **/

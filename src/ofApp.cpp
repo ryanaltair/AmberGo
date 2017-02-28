@@ -9,7 +9,7 @@ void ofApp::setup(){
     
     // set framerate // PS: setVSYNC will failed in Windows but still work well in Mac
     //     ofSetVerticalSync(true);
-    ofSetFrameRate(60);
+    ofSetFrameRate(30);
     
     // init the modelpath
     //    modelpath="testcube.stl";
