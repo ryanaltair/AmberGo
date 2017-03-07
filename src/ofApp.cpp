@@ -9,7 +9,7 @@ void ofApp::setup(){
     
     // set framerate // PS: setVSYNC will failed in Windows but still work well in Mac
     //     ofSetVerticalSync(true);
-    ofSetFrameRate(30);
+    ofSetFrameRate(60);
     
     // init the modelpath
     //    modelpath="testcube.stl";
@@ -22,11 +22,10 @@ void ofApp::setup(){
     fbosettings.width = 1280;
     fbosettings.height =768;
     fbosettings.textureTarget = GL_TEXTURE_2D;
+//    fbosettings.numSamples=4;
     fbo.allocate(fbosettings);
     
-    threadImageSaver.setPrefix(ofToDataPath("output3/")); // this directory must already exist
-    threadImageSaver.setFormat("png"); // png is really slow but high res, bmp is fast but big, jpg is just right
-
+    
     
     pixelsbuffer.allocate(1280, 768,3);
     pixelsbuffervoid.allocate(1280, 768, 3);
@@ -40,6 +39,7 @@ void ofApp::update(){
     apppreference.updatelayerout(panel.getWidth());
     panel.update();
     loadModel();
+    outputManager.check();
     if(panel.isSliceHeightChange()){
         panel.layertestZlast=panel.layertestZ;
         //cout<<"we slice at now "<<endl;
@@ -49,8 +49,11 @@ void ofApp::update(){
     if(threadSlice.isThreadRunning()==false){
         if(apppreference.bHaveModelLoaded==false){return;}
         if(panel.bAllSlice==true){
+            outputManager.init();
             if(threadSlice.isAllSliceDone==false){
-                threadSlice.allSlice(panel.layerthickness);
+//                threadSlice.allSlice(panel.layerthickness);r
+                
+                threadSlice.allSlice(0.05);
             }
             panel.bAllSlice=false;
             
@@ -60,28 +63,26 @@ void ofApp::update(){
         }
         if(threadSlice.isAllSliceDone==true&&panel.bShowAllSlice==true){
             if(panel.iShowAllSliceLayerCount<threadSlice.alllayertests.size()){
-                panel.layertestZ=panel.layerthickness*panel.iShowAllSliceLayerCount;
                 layertest=threadSlice.alllayertests[panel.iShowAllSliceLayerCount];
+                panel.layertestZ=threadSlice.alllayertesstsHeight[panel.iShowAllSliceLayerCount];
                 panel.iShowAllSliceLayerCount++;
-                panel.layertestZ+=panel.layerthickness;
-                if(panel.bPrint==true){
-                    bSnapshot=true;
-                    panel.snapcount++;
-                }
                 if(panel.iShowAllSliceLayerCount==1){
                     easyLogTimeFrom("output");
                 }
-                drawFBO();
+                drawFBO(layertest);
+                fbo.readToPixels(pixelsbuffer);
+                if(panel.outputToggle->getChecked()==true){
+                     if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()){
+                         outputManager.setLastPic();
+                     }
+                    outputManager.saveImage(pixelsbuffer,panel.layertestZ);
+                }
                 
-                saveImage(ofToString(panel.iShowAllSliceLayerCount));
                 
-                if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()-1){
-                    
-                    if(threadImageSaver.isThreadRunning()==false){
-                        if(threadImageSaver.q.size()==0){
-                            panel.setSliceDone();
-                            easyLogTimeTo("output");
-                        }
+                if( outputManager.check()){
+                    if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()-1){
+                        panel.setSliceDone();
+                        easyLogTimeTo("output");
                         
                     }
                     
@@ -100,7 +101,7 @@ void ofApp::draw(){
     ofBackground(ofColor::black);
     plate.drawincamera(apppreference.plateview);
     ofDisableDepthTest();
-
+    
     
     if(panel.ShowSlice==true){
         fbo.draw(apppreference.sliceview);
@@ -160,10 +161,10 @@ void ofApp::mouseEntered(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y){
-    threadImageSaver.waitForThread();
+    outputManager.end();
 }
 void ofApp::exit(){
-    threadImageSaver.waitForThread();
+    outputManager.end();
 }
 
 //--------------------------------------------------------------
@@ -236,31 +237,16 @@ void ofApp::loadModel(){
 /**
  draw the fbo
  */
-void ofApp::drawFBO(){
+void ofApp::drawFBO(ofPath pathdraw){
     // now we try fbo
     
     fbo.begin();
     ofClear(ofColor::black);
-//        ofBackground(0,0,0);
+    //        ofBackground(0,0,0);
     
-    layertest.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
-    layertest.draw(1280/2,768/2);
+    pathdraw.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
+    pathdraw.draw(1280/2,768/2);
     fbo.end();
-}
-void ofApp::saveImage(string picname){
-    fbo.readToPixels(pixelsbuffer);
-    if(panel.outputToggle->getChecked()==true){
-//        ofSaveImage(pixelsbuffer, picname);
-        threadImageSaver.addFrame(pixelsbuffer);
-        if(threadImageSaver.isThreadRunning()){
-            
-        } else {
-            threadImageSaver.startThread();
-        }
-        //cout<<"save image"<<endl;
-        bSnapshot = false;
-    }
-    
 }
 
 

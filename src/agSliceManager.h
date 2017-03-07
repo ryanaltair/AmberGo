@@ -11,12 +11,10 @@ public:
    
     agSliceManager(){
     }
-    
     /// which Start the thread.
     void loadModel(string path)
     {
         assimpmodel.clear();
-        
         cout<<"-----modelpath:"<<path<<endl;
         assimpmodel.loadModel(path);
         cout<<"the mesh count:"<<assimpmodel.getMeshCount()<<endl;
@@ -131,6 +129,7 @@ public:
     agmll mll;// the work slicer
     ofPath layertest; //the output layer path
     vector<ofPath> alllayertests;
+    vector<float> alllayertesstsHeight;
     //needing flag
     bool isThreadEnd=false;// true when everything is done
     
@@ -138,7 +137,7 @@ public:
     float needSliceAt=-1;// -1 means no need
     bool needAllSlice=false;
     bool isAllSliceDone=false;
-    float allthickness=0.02;
+    float allthickness=0.06;
     bool isSliceChanged=false;
     bool isModelReadySlice=false;
     // work in thread
@@ -160,9 +159,11 @@ protected:
     void stepAllSlice(){
         easyLogTimeFrom("all slice");
         vector<ofPath> layers;
+        
         float z;
-        for(z=0.002;z<mll.meshScale.z;z+=allthickness){
+        for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
             layers.push_back(mll.layertestat(z));
+            alllayertesstsHeight.push_back(z);
         }
         alllayertests=layers;
         isAllSliceDone=true;

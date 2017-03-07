@@ -6,8 +6,7 @@
 #include "agpanel.h"
 #include "agSliceManager.h"
 #include "agAppPreference.h"
-#include "ofxImageSequenceRecorder.h"
-
+#include "agOutputManager.h"
 class ofApp : public ofBaseApp {
 public:
     //gl loop
@@ -35,8 +34,7 @@ private:
     /**
      draw the fbo which hold the slicelayer
      */
-    void drawFBO();
-    void saveImage(string picname);
+    void drawFBO(ofPath pathdraw); 
     void outputLayer();
     /**
      when loadpath was changed,
@@ -48,15 +46,14 @@ private:
     agplate plate;//palte
     agpanel panel;    //GUI
     agAppPreference apppreference;// store the prefer
-    
     ofPath layertest;//output layer
+    agOutputManager outputManager;
     string modelpath;  //drag and drop info
     
     bool bSnapshot=false;
     ofFbo fbo;
     ofPixels pixelsbuffer;
     ofPixels pixelsbuffervoid;
-    ofxImageSequenceRecorder threadImageSaver; // use for save image
    //timetest
     float timekeep;
     void easyLogTimeFrom(string title){
