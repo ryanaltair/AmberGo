@@ -24,9 +24,6 @@ void ofApp::setup(){
     fbosettings.textureTarget = GL_TEXTURE_2D;
 //    fbosettings.numSamples=4;
     fbo.allocate(fbosettings);
-    
-    
-    
     pixelsbuffer.allocate(1280, 768,3);
     pixelsbuffervoid.allocate(1280, 768, 3);
     // fbo end
