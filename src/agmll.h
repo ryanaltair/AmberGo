@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "agline.h"
-
+#include "agmllhelper.h"
 /**
  work flow:
  get the mesh
@@ -33,17 +33,18 @@ public:
     ofMesh mergedMesh;//the mesh clone
     
 private:
-    // main data
-    vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
-    vector<ofIndexType> linelist;// hlod {ipL ipH} the index point to point list add with addnewline() and pL will be lower
+    // main data start
+//    vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
+//    vector<ofIndexType> linelist;// hlod {ipL ipH} the index point to point list add with addnewline() and pL will be lower
     map<agline,ofIndexType> linecopymap;// use for searchline , for great speed
-    vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
-    vector<ofIndexType> nearpointlist;//{ipa ipb} the index refer point list add with addnewline() and addoldline
-    vector<float> dXdYlist;// init with addFacet() work with adddXdY()
-    vector<int> linetypelist;//init with addFacet() work with adddXdY()
-    vector<float> touchedlist;//init with addFacet() work with adddXdY()
-    vector<float> horizonFacetHeightlist;// hold every height that get horizong facet/triangle
-    
+//    vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
+//    vector<ofIndexType> nearpointlist;//{ipa ipb} the index refer point list add with addnewline() and addoldline
+//    vector<float> dXdYlist;// init with addFacet() work with adddXdY()
+//    vector<int> linetypelist;//init with addFacet() work with adddXdY()
+//    vector<float> touchedlist;//init with addFacet() work with adddXdY()
+//    vector<float> horizonFacetHeightlist;// hold every height that get horizong facet/triangle
+    //main data end
+    agModel sliceModel;
     float divdH;// divdH=1/H
     //do in setup
     void addpointlist();
@@ -84,27 +85,27 @@ private:
     ofIndexType counter0=0;
     ofIndexType counter1=0;
     void printlineandpoint(){
-        cout<<"linelist "<<linelist.size()/2<<":"<<endl;
-        for(ofIndexType i=0;i<linelist.size();i+=2){
-            cout<<"line \t"<<i/2+1<<"\t"<<linelist[i]<<"\t"<<linelist[i+1];
-            if(pointlist[linelist[i]].z==pointlist[linelist[i+1]].z){
+        cout<<"sliceModel.linelist "<<sliceModel.linelist.size()/2<<":"<<endl;
+        for(ofIndexType i=0;i<sliceModel.linelist.size();i+=2){
+            cout<<"line \t"<<i/2+1<<"\t"<<sliceModel.linelist[i]<<"\t"<<sliceModel.linelist[i+1];
+            if(sliceModel.pointlist[sliceModel.linelist[i]].z==sliceModel.pointlist[sliceModel.linelist[i+1]].z){
                 cout<<"\t -"<<endl;
             }else{
                 cout<<endl;
             }
             
         }
-        cout<<"pointlist "<<pointlist.size()<<":"<<endl;
-        for(ofIndexType i=0;i<pointlist.size();i+=1){
-            cout<<"point \t "<<i<<"\t"<<pointlist[i]<<endl;
+        cout<<"sliceModel.pointlist "<<sliceModel.pointlist.size()<<":"<<endl;
+        for(ofIndexType i=0;i<sliceModel.pointlist.size();i+=1){
+            cout<<"point \t "<<i<<"\t"<<sliceModel.pointlist[i]<<endl;
         }
         
     }
     void printsize(){
-        ofIndexType linecount=linelist.size();
+        ofIndexType linecount=sliceModel.linelist.size();
         ofIndexType trianglecount=indexsize/3;
         cout<<"line count :"<<linecount<<endl;
-        cout<<"point count :"<<pointlist.size()<<endl;
+        cout<<"point count :"<<sliceModel.pointlist.size()<<endl;
         cout<<"indices size:"<<indexsize<<endl;
         if(linecount==indexsize){
             cout<<"it seems calc in right way "<<endl;
@@ -115,24 +116,24 @@ private:
     }
     void debuglinelist(ofIndexType index){
         cout<<"index0,index1:"<<index<<","<<index+1<<"   ";
-        if(index+1>linelist.size()){
-            cout<<"waring:ip>linelist.size"<<endl;
+        if(index+1>sliceModel.linelist.size()){
+            cout<<"waring:ip>sliceModel.linelist.size"<<endl;
             return;
         }else{
-            cout<<"linelist.size:"<<linelist.size()<<"   ";
+            cout<<"sliceModel.linelist.size:"<<sliceModel.linelist.size()<<"   ";
         }
-        ofIndexType ip0=linelist[index];
-        ofIndexType ip1=linelist[index+1];
+        ofIndexType ip0=sliceModel.linelist[index];
+        ofIndexType ip1=sliceModel.linelist[index+1];
         cout<<"point index is:"<<ip0<<":"<<ip1<<"   ";
-        if(ip0>pointlist.size()||ip1>pointlist.size()){
-            cout<<"waring:index of point > pointlist.size"<<endl;
+        if(ip0>sliceModel.pointlist.size()||ip1>sliceModel.pointlist.size()){
+            cout<<"waring:index of point > sliceModel.pointlist.size"<<endl;
             return;
         }else{
-            cout<<"pointlist.size:"<<pointlist.size()<<"   ";
+            cout<<"sliceModel.pointlist.size:"<<sliceModel.pointlist.size()<<"   ";
         }
         ofPoint point0,point1;
-        point0=pointlist[ip0];
-        point1=pointlist[ip1];
+        point0=sliceModel.pointlist[ip0];
+        point1=sliceModel.pointlist[ip1];
         cout<<"line from:"<<ofToString(point0)<<" to "<<ofToString(point1)<<"   ";
         if(point0.x==point1.x&&point0.y==point1.y&&point0.z==point1.z){
             cout<<"this is a singlepoint;"<<endl;
