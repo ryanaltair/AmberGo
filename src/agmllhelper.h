@@ -168,11 +168,13 @@ public:
         //  cout<<"we find nothing any more so we quit"<<endl;
         return multilinklinelist.size();
     }
+    ofVec3f getScale(){
+        return scaleMax-scaleMin;
+    }
     vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
     vector<agmultilinkline> multilinklinelist;// to replace linelist and nearpoint list
     map<agline,ofIndexType> mllcopymap;// use for searchline , for great speed
     vector<float> horizonFacetHeightlist;// hold every height that get horizong facet/triangle
-    ofVec3f scale;
     ofVec3f scaleMax;
     ofVec3f scaleMin;
     float dH=0.01;

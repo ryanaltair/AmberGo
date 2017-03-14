@@ -80,6 +80,7 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     ofIndexType ipUsed,ipNext0,ipNext1;
     ofVec3f oldpoint;
     int pointcount=1;
+    bool isNextLineuseNearA=false;
     // ready to go
     if(1){// get the first point
         i0=iBegin;
@@ -110,30 +111,17 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         if(ipNext0>sliceModel.pointlist.size()){
             cout<<"wrong!!!!!!!!"<<endl;
         }
-        bool nextLineUseUpperSide;
-        // a complicated work to find out use which line
-        float nextpointZ=sliceModel.pointlist[ipNext0].z;
-        if(nextpointZ>=sliceModel.pointlist[ipHigh].z){
-            nextLineUseUpperSide=false;
-        }else if(nextpointZ<=sliceModel.pointlist[ipLow].z){
-            nextLineUseUpperSide=true;
-        }else{
-            if(nextpointZ<=z){
-                nextLineUseUpperSide=true;
-            }else{
-                nextLineUseUpperSide=false;
-            }
-        }
-        // get the next line index
-        if(nextLineUseUpperSide==true){
-            ipUsed=ipLow;
-            ipNext1=ipHigh;
-        }else{
-            ipUsed=ipHigh;
-            ipNext1=ipLow;
-        }
-        
         if(1){// get the next line with ipNext0 and ipNext1
+            // a complicated work to find out use which line
+            bool nextLineUseUpperSide=sliceModel.multilinklinelist[i0].nextLineUsingUpperPoint(isNextLineuseNearA,z);
+            // get the next line index
+            if(nextLineUseUpperSide==true){
+                ipUsed=ipLow;
+                ipNext1=ipHigh;
+            }else{
+                ipUsed=ipHigh;
+                ipNext1=ipLow;
+            }
             // make sure ipNext1 is z higher than ipNext0
             agline nextline;
             nextline.set(ipNext0,ipNext1);
@@ -149,7 +137,7 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         if(true){ // get slice point and add it to the path
             if(ipHigh>=sliceModel.pointlist.size()){
                 //                debuglinelist(i0);
-                cout<<"EXC_BAD_ACESS"<<ipHigh<<":"<<sliceModel.pointlist.size()<<endl;
+                cout<<"BAD_ACESS"<<ipHigh<<":"<<sliceModel.pointlist.size()<<endl;
             }
             ofVec3f XYpoint = sliceModel.getXY(sliceModel.multilinklinelist[i0],  divdH, z);
             if(oldpoint!=XYpoint){
@@ -158,22 +146,23 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
             }
             oldpoint=XYpoint;
         }
-        
-        if (i0 == iStart0){//check if the last line
-//            cout<<"we end the loop path"<<endl;
-            break;
-        }
-        
         if(true){  // set pnext point
             if (ipUsed == ipNearA) {
+                isNextLineuseNearA=false;
                 ipNext0 = ipNearB;
             } else { //ipUsed==ipNearB
+                isNextLineuseNearA=true;
                 ipNext0 = ipNearA;
             }
         }
+        if (i0 == iStart0){//check if the last line
+            //cout<<"we end the loop path"<<endl;
+            break;
+        }
+        
     }
     layerisland.close();
-//    cout<<"iBegin:"<<iBegin<<"path get point :"<< pointcount<<endl;
+    //    cout<<"iBegin:"<<iBegin<<"path get point :"<< pointcount<<endl;
     return layerisland;
 }
 
@@ -295,17 +284,6 @@ void agmll::addpointlist(){
     sliceModel.pointlist.swap(mesh.getVertices());
 }
 
-// tools
-ofVec3f agmll::getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float divdH,float z){
-    ofVec3f returnpoint;
-    float h=z-pL.z;
-    float divdHxh=divdH*h;
-    returnpoint.x=pL.x+dX*divdHxh;
-    returnpoint.y=pL.y+dY*divdHxh;
-    returnpoint.z=z;
-    return returnpoint;
-}
-
 
 agline agmll::zsortline(agline line){
     ofIndexType ip0,ip1,ipa,ipb;
@@ -332,12 +310,4 @@ agline agmll::zsortline(agline line){
 
 
 
-
-bool agmll::isPointPlaneCross(ofVec3f pointLower, ofVec3f  pointHigher, float planeatz){
-    if(pointLower.z<planeatz&&pointHigher.z>planeatz){
-        // cout<<"get the cross line: "<<ofToString(pointHigher)<<","<<ofToString(pointLower)<<endl;
-        return true;
-    }
-    return false;
-}
 

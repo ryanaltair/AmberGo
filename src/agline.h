@@ -85,7 +85,7 @@ public:
         isTouch=true;
     }
     void untouch(){
-    isTouch=false;
+        isTouch=false;
     }
     bool addNearPoint(ofIndexType ip,float nearZ){
         if(isVoid ==true){
@@ -148,6 +148,31 @@ public:
             return true;
         }
         return false;
+    }
+    bool nextLineUsingUpperPoint(bool isSideNearA,float z){
+        ofIndexType inear;// near point that next line use
+        ofIndexType iline;// line point that next line use
+        bool nextLineUseUpperSide;
+        float nextpointZ;
+        if(isSideNearA==true){
+        nextpointZ=za;
+            inear=ipa;
+        }else{
+        nextpointZ=zb;
+            inear=ipb;
+        }
+        if(nextpointZ>=zmax){
+            nextLineUseUpperSide=false;
+        }else if(nextpointZ<=zmin){
+            nextLineUseUpperSide=true;
+        }else{
+            if(nextpointZ<=z){
+                nextLineUseUpperSide=true;
+            }else{
+                nextLineUseUpperSide=false;
+            }
+        }
+        return nextLineUseUpperSide;
     }
 protected:
     void setdXdY(float dX,float dY){
