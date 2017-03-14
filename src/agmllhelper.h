@@ -18,18 +18,10 @@ public:
      */
     void cleanmermory(){
         // let us do the clean
-        vector<ofIndexType>().swap(linelist);// use for really clean memory
         vector<ofVec3f>().swap(pointlist);
-        vector<bool>().swap(linehorizonlist);// use for really clean memory
-        vector<ofIndexType>().swap(nearpointlist);
-        vector<float>().swap(dXdYlist);
         horizonFacetHeightlist.clear();
-        linelist.clear();
         pointlist.clear();
-        linehorizonlist.clear();// is this line horizon true horizon // add with addnewline work with adddXdY
-        linehorizonlist.clear();//{pa pb} the index point to point list
-        dXdYlist.clear();// add with addnewline work with adddXdY
-        linecopymap.clear();
+        
         //
     }
     bool addLine(agline sortline,ofIndexType ipnear){
@@ -49,11 +41,11 @@ public:
             }
         }
         if(isFind){
-            multilinklinelist[findindex].addNearPoint(ipnear);
+            multilinklinelist[findindex].addNearPoint(ipnear,pointlist[ipnear].z);
             return false;
         }else{
             agmultilinkline newmultiline(sortline);
-            newmultiline.addNearPoint(ipnear);
+            newmultiline.addNearPoint(ipnear,pointlist[ipnear].z);
             mllcopymap[sortline]=multilinklinelist.size();
             ofVec3f p0=pointlist[newmultiline.ip0];
             ofVec3f p1=pointlist[newmultiline.ip1];
@@ -93,6 +85,12 @@ public:
             //found
             return it->second;
         }
+    }
+    void alluntouched(){
+        for(ofIndexType i=0;i<multilinklinelist.size();i=i+1){
+            multilinklinelist[i].untouch();
+        }
+    
     }
     float getNoHorizonHappenZ(float z){
         float zNew;
@@ -153,21 +151,18 @@ public:
     }
     ofIndexType findcrosspointat(ofIndexType startflag,float z){
         // find a cross point
-        for(int i=startflag;i<multilinklinelist.size();i+=1){
+        for(int i=startflag;i<multilinklinelist.size();++i){
             // we don't touch anything that already touched
             if(multilinklinelist[i].isTouched()){
-                // cout<<"it was touched"<<endl;
-                continue;
+                continue;// cout<<"it was touched"<<endl;
             }else{
-                // cout<<"it untouched "<<ip0<<endl;
+                multilinklinelist[i].touch();// cout<<"it's not touched so we touch it "<<ip0<<endl;
             }
-            multilinklinelist[i].touch();
-            // we don't touch when z>zmax
-            if(z>multilinklinelist[i].getZmax()){
-                continue;
-            }
-            if( isPointPlaneCross(pointlist[multilinklinelist[i].ip0], pointlist[multilinklinelist[i].ip1], z)==true){
+            // we will skip when z not in zmax and zmin
+            if(multilinklinelist[i].isCross(z)){
                 return i;
+            }else{
+                continue;
             }
         }
         //  cout<<"we find nothing any more so we quit"<<endl;
@@ -176,25 +171,12 @@ public:
     vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
     vector<agmultilinkline> multilinklinelist;// to replace linelist and nearpoint list
     map<agline,ofIndexType> mllcopymap;// use for searchline , for great speed
-    vector<ofIndexType> linelist;// hlod {ipL ipH} the index point to point list add with addnewline() and pL will be lower
-    map<agline,ofIndexType> linecopymap;// use for searchline , for great speed
-    vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
-    vector<ofIndexType> nearpointlist;//{ipa ipb} the index refer point list add with addnewline() and addoldline
-    vector<float> dXdYlist;// init with addFacet() work with adddXdY()
-    vector<int> linetypelist;//init with addFacet() work with adddXdY()
-    vector<float> touchedlist;//init with addFacet() work with adddXdY()
     vector<float> horizonFacetHeightlist;// hold every height that get horizong facet/triangle
     ofVec3f scale;
     ofVec3f scaleMax;
     ofVec3f scaleMin;
     float dH=0.01;
 protected:
-    bool isPointPlaneCross(ofVec3f pointLower, ofVec3f  pointHigher, float planeatz){
-        if(pointLower.z<planeatz&&pointHigher.z>planeatz){
-            // cout<<"get the cross line: "<<ofToString(pointHigher)<<","<<ofToString(pointLower)<<endl;
-            return true;
-        }
-        return false;
-    }
+    
     int zero=0;
 };
