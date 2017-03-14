@@ -48,16 +48,16 @@ public:
         }
         markZSortTrue();
     }
-    void set(ofIndexType ip0Value,ofIndexType ip1Value,ofIndexType ipaValue){
+    void set(ofIndexType ip0Value,ofIndexType ip1Value,ofIndexType ipaValue,float znear){
         ip0=ip0Value;
         ip1=ip1Value;
-        addNearPoint(ipaValue);
+        addNearPoint(ipaValue,znear);
     }
-    void set(ofIndexType ip0Value,ofIndexType ip1Value,ofIndexType ipaValue,ofIndexType ipbValue){
+    void set(ofIndexType ip0Value,ofIndexType ip1Value,ofIndexType ipaValue,ofIndexType ipbValue,float znearA,float znearB){
         ip0=ip0Value;
         ip1=ip1Value;
-        addNearPoint(ipaValue);
-        addNearPoint(ipbValue);
+        addNearPoint(ipaValue,znearA);
+        addNearPoint(ipbValue,znearB);
     }
     ofIndexType ipa,ipb;
     float dx,dy;
@@ -70,8 +70,13 @@ public:
     void setZmax(float z){
         zmax=z;
     }
+    void setZmin(float z){
+        zmin=z;
+    }
     float getZmax(){
         return zmax;
+    }
+    float getZmin(){
     }
     bool isTouched(){
         return isTouch;
@@ -79,15 +84,21 @@ public:
     void touch(){
         isTouch=true;
     }
-    bool addNearPoint(ofIndexType ip){
+    void untouch(){
+        isTouch=false;
+    }
+    bool addNearPoint(ofIndexType ip,float nearZ){
         if(isVoid ==true){
             ipa=ip;
             ipb=ip;
+            za=nearZ;
+            zb=nearZ;
             isVoid=false;
             return true;//
         }else{
             if(ipa==ipb&&ipb!=ip){
                 ipb=ip;
+                zb=nearZ;
                 return true;
             }else{
                 return false;
@@ -103,6 +114,7 @@ public:
      */
     bool adddXdY(ofVec3f p0,ofVec3f p1,float dH){
         setZmax(p1.z);//p1 always higherso set zmax first
+        setZmin(p0.z);
         // for horizon
         if(p0.z==p1.z){
             setHorizon();
@@ -130,6 +142,38 @@ public:
         return true;
         
     }
+    bool isCross( float planeatz){
+        if(zmin<planeatz&&zmax>planeatz){
+            // cout<<"get the cross line: "<<ofToString(pointHigher)<<","<<ofToString(pointLower)<<endl;
+            return true;
+        }
+        return false;
+    }
+    bool nextLineUsingUpperPoint(bool isSideNearA,float z){
+        ofIndexType inear;// near point that next line use
+        ofIndexType iline;// line point that next line use
+        bool nextLineUseUpperSide;
+        float nextpointZ;
+        if(isSideNearA==true){
+        nextpointZ=za;
+            inear=ipa;
+        }else{
+        nextpointZ=zb;
+            inear=ipb;
+        }
+        if(nextpointZ>=zmax){
+            nextLineUseUpperSide=false;
+        }else if(nextpointZ<=zmin){
+            nextLineUseUpperSide=true;
+        }else{
+            if(nextpointZ<=z){
+                nextLineUseUpperSide=true;
+            }else{
+                nextLineUseUpperSide=false;
+            }
+        }
+        return nextLineUseUpperSide;
+    }
 protected:
     void setdXdY(float dX,float dY){
         dx=dX;
@@ -140,5 +184,6 @@ protected:
     bool isHorizon=false;
     bool isVertical=false;
     float zmax;
-    
+    float zmin;
+    float za,zb;
 };
