@@ -25,7 +25,9 @@ public:
     float dH=0.01;
     
    ofPath layertestat(float z);// return a whole layer path
+    ofPath layerAt(float z);// [new]
     ofPath layertestcloseloop(float z,ofIndexType iBegin);// return a single closed loop path
+    ofPath layerCloseLoop(float z,ofIndexType iBegin);
     ofPath layertest;// store the output path
     ofVec3f meshScale;
     ofVec3f meshMax;
@@ -33,17 +35,6 @@ public:
     ofMesh mergedMesh;//the mesh clone
     
 private:
-    // main data start
-//    vector<ofVec3f> pointlist;// get the real point p=pointlist[ip]
-//    vector<ofIndexType> linelist;// hlod {ipL ipH} the index point to point list add with addnewline() and pL will be lower
-    map<agline,ofIndexType> linecopymap;// use for searchline , for great speed
-//    vector<bool> linehorizonlist;// is this line horizon true horizon // add with addnewline() work with adddXdY
-//    vector<ofIndexType> nearpointlist;//{ipa ipb} the index refer point list add with addnewline() and addoldline
-//    vector<float> dXdYlist;// init with addFacet() work with adddXdY()
-//    vector<int> linetypelist;//init with addFacet() work with adddXdY()
-//    vector<float> touchedlist;//init with addFacet() work with adddXdY()
-//    vector<float> horizonFacetHeightlist;// hold every height that get horizong facet/triangle
-    //main data end
     agModel sliceModel;
     float divdH;// divdH=1/H
     //do in setup
@@ -62,9 +53,9 @@ private:
    bool isPointPlaneCross(ofVec3f pointHigher,ofVec3f pointLower,float planeatz);
     
     
-    int horizonline=1;
-    int verticalline=2;
-    int bevelline=3;
+    const int horizonline=1;
+    const int verticalline=2;
+    const int bevelline=3;
     int riseline=1;
     int fallline=2;
     int evenline=3;//just even z1=z2
@@ -93,7 +84,6 @@ private:
             }else{
                 cout<<endl;
             }
-            
         }
         cout<<"sliceModel.pointlist "<<sliceModel.pointlist.size()<<":"<<endl;
         for(ofIndexType i=0;i<sliceModel.pointlist.size();i+=1){

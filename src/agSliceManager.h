@@ -153,6 +153,7 @@ protected:
      use mll slice at testlayeratZ
      */
     void stepSliceAt(){
+//        layertest=mll.layerAt(needSliceAt);
         layertest=mll.layertestat(needSliceAt);
         isSliceChanged=true;
     }
@@ -162,6 +163,8 @@ protected:
         
         float z;
         for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
+            
+//            layers.push_back(mll.layerAt(z));
             layers.push_back(mll.layertestat(z));
             alllayertesstsHeight.push_back(z);
         }
