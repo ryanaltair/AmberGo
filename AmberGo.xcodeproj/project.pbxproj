@@ -82,6 +82,7 @@
 		60E0B54EA2BC9C5E7C8DCC49 /* agpanel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = agpanel.h; path = src/agpanel.h; sourceTree = SOURCE_ROOT; };
 		64C563B8158C37E9D07AE29D /* ofxDatGuiFRM.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiFRM.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiFRM.h; sourceTree = SOURCE_ROOT; };
 		6A0E743407465957DB764ED3 /* mesh.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = mesh.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/mesh.h; sourceTree = SOURCE_ROOT; };
+		6C1E21281E7877D7002216D7 /* agfacet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agfacet.h; sourceTree = "<group>"; };
 		6C251B7A1E6D453C00B33FC7 /* agOutputManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = agOutputManager.h; sourceTree = "<group>"; };
 		6E069CE4C58E970E3429DBE5 /* Importer.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Importer.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Importer.hpp; sourceTree = SOURCE_ROOT; };
 		744031A3E8F8DAF9FE6F3EA8 /* ofxDatGuiGroups.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiGroups.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGuiGroups.h; sourceTree = SOURCE_ROOT; };
@@ -376,6 +377,7 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				AEF784708F3D44078AB8A604 /* agAppPreference.h */,
 				1F1B8A27BB0751ED0FE32F4A /* agline.h */,
+				6C1E21281E7877D7002216D7 /* agfacet.h */,
 				0AF7E81DC2681E62FCAA64F3 /* agmll.cpp */,
 				7992666836E156FC0505CACF /* agmll.h */,
 				0624A1E15CCAAB0799D995C0 /* agmllhelper.h */,

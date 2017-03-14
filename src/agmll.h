@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "agline.h"
 #include "agmllhelper.h"
+#include "agfacet.h"
 /**
  work flow:
  get the mesh
@@ -18,45 +19,45 @@ class agmll{
 public:
     agmll();
     ~agmll();
-    void setup(ofMesh mesh);
-    void calcaulateModel();
+    void load(ofMesh mesh);
+    void prepareModel();
     void cleanmermory();
     ofVec3f getScale();
     float dH=0.01;
     ofPath layerAt(float z);// [new]
-    ofPath layerCloseLoop(float z,ofIndexType iBegin);
-    ofPath layertest;// store the output path
     ofVec3f meshScale;
     ofVec3f meshMax;
     ofVec3f meshMin;
     ofMesh mergedMesh;//the mesh clone
     
+    ofPath supportPolygon;
 private:
+    void addSupport();
+    ofPath layerCloseLoop(float z,ofIndexType iBegin);
     agModel sliceModel;
     float divdH;// divdH=1/H
     //do in setup
     void addpointlist();
-    // calcaulateModel job
+    // prepareModel job
     void addFacet();
+    //tools
     agline zsortline(agline line);
 
     //debug only
     ofIndexType indexsize;
     ofIndexType counter0=0;
     ofIndexType counter1=0;
-  
     void printsize(){
         ofIndexType linecount=sliceModel.multilinklinelist.size();
-        
         ofIndexType trianglecount=indexsize/3;
         cout<<"indices size:"<<indexsize<<endl;
         cout<<"line count :"<<linecount<<endl;
         cout<<"point count :"<<sliceModel.pointlist.size()<<endl;
+        cout<<"triganel count :"<<trianglecount<<endl;
         if(linecount*2==indexsize){
             cout<<"it seems calc in right way "<<endl;
         }else{
             cout<<"it seems calc in wrong way "<<endl;
-            
         }
     }
     void debuglinelist(ofIndexType index){

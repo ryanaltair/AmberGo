@@ -117,6 +117,7 @@ void agplate::drawModels(){
         
     }
     if(nodemodels.size()>0){
+        
         ofSetColor(123, 123, 123);//
         nodemodels[0].draw();
     }

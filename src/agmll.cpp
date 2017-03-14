@@ -8,10 +8,11 @@ agmll::~agmll(){
     mergedMesh.clear();
     
 }
-void agmll::setup(ofMesh mesh){
+void agmll::load(ofMesh mesh){
     mergedMesh.clear();
     mergedMesh=mesh;
     indexsize=mesh.getNumIndices();
+    supportPolygon.clear();
 }
 /**
  use swap to clean the vector
@@ -21,16 +22,15 @@ void agmll::cleanmermory(){
     sliceModel.cleanmermory();
     //
 }
-void agmll::calcaulateModel(){
+void agmll::prepareModel(){
     cleanmermory();
     //calc work here
     mergedMesh.mergeDuplicateVertices();// step 1: merge mesh points
+    cout<<"Normals count is "<<mergedMesh.getNumNormals()<<endl;
+    addSupport();
     addpointlist();//
     getScale();
     addFacet();  // step 2: add line list
-    //printsize();
-    return;
-    
 }
 
 
@@ -204,7 +204,27 @@ ofVec3f agmll::getScale(){
     return scale;
     
 }
+void agmll::addSupport(){
+    vector<ofMeshFace> facets;
+    facets=mergedMesh.getUniqueFaces();
+    size_t facesize= facets.size();
+    for(int i=0;i<facesize;i++){
+        agfacet facet;
+        facet.setFromTri(facets[i].getVertex(0),facets[i].getVertex(1),facets[i].getVertex(2));
+        facet.setNormal(facets[i].getNormal(0), facets[i].getNormal(1), facets[i].getNormal(2));
+        
+        if(facet.getZmin()>3){
+            cout<<i<<" get gradiant:"<<facet.getGradientX()<<" "<<facet.getGradientY()<<endl;
+        supportPolygon.append(facet.getPath());
+        }
 
+    }
+    supportPolygon.setPolyWindingMode(OF_POLY_WINDING_ODD);
+    supportPolygon.setStrokeColor(ofColor::white);
+    supportPolygon.setFillColor(ofColor::blue);
+    supportPolygon.setFilled(true);
+    supportPolygon.setStrokeWidth(2);
+}
 /**
  add sliceModel.linelist and sliceModel.nearpointlist
  */

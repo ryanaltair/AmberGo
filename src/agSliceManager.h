@@ -29,7 +29,7 @@ public:
         for(int i=0;i<assimpmodel.getMeshCount();i++){
             meshbuffer.append(assimpmodel.getMesh(i));
         }
-         mll.setup(meshbuffer);
+         mll.load(meshbuffer);
         isAllSliceDone=false;
         easyLogTime("load model end");
         startThread();
@@ -103,7 +103,6 @@ public:
                     stepLoad();
                     needLoad=false;
                 }
-                //easyLogTime("need we Slice?");
                 if(needSliceAt>=0){
                     if(isModelReadySlice==true){
                         stepSliceAt();
@@ -116,7 +115,6 @@ public:
                         needAllSlice=false;
                     }
                 }
-                //easyLogTime("all we done ?");
                 isThreadEnd=true;
                 unlock();
             }
@@ -145,7 +143,7 @@ protected:
     //mll load
     void stepLoad(){
         easyLogTimeFrom("load model");
-        mll.calcaulateModel();
+        mll.prepareModel();
         isModelReadySlice=true;
         easyLogTimeTo("load model");
     }
@@ -162,8 +160,10 @@ protected:
         
         float z;
         for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
-            layers.push_back(mll.layerAt(z)); 
+            layers.push_back(mll.supportPolygon);
+//            layers.push_back(mll.layerAt(z)); 
             alllayertesstsHeight.push_back(z);
+            break;
         }
         alllayertests=layers;
         isAllSliceDone=true;

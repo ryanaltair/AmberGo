@@ -108,4 +108,5 @@ private:
     bool isFinish=false;
     int Annnn=1;
     ofxImageSequenceRecorder threadImageSaver; // use for save image
+
 };
