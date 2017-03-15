@@ -1,6 +1,6 @@
 #pragma once
 #include "ofMain.h"
-
+#include "agSliceMesh.h" //for quick test
 /**
  use for AmberGo
  as plate
@@ -45,5 +45,6 @@ public:
     int outsideBoxEnable=0;
     int sliceLayPlaneEnable=1;
     vector<ofLight> aroundLight;
-
+    agSliceShell sliceShell;
+    bool btest=false;
 };

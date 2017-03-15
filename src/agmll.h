@@ -4,6 +4,7 @@
 #include "agline.h"
 #include "agmllhelper.h"
 #include "agfacet.h"
+#include "agSliceShell.h"
 /**
  work flow:
  get the mesh
@@ -32,6 +33,7 @@ public:
     
     ofPath supportPolygon;
 private:
+    ofMesh getSliceShell();
     void addSupport();
     ofPath layerCloseLoop(float z,ofIndexType iBegin);
     agModel sliceModel;

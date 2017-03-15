@@ -40,6 +40,15 @@ public:
         normalM=nM;
         normalH=nH;
     }
+    ofVec3f getFaceNormal(){
+        return normalF;
+    }
+    float getGradiant(){
+        return normalF.z;
+    }
+    void setFaceNormal(ofVec3f nf){
+        normalF=nf;
+    }
     float getGradientX(){
         ofVec3f p=(normalL+normalM+normalH)/3;
         return p.x;
@@ -75,5 +84,5 @@ public:
     
 protected:
     
-    ofVec3f normalL,normalM,normalH;
+    ofVec3f normalL,normalM,normalH,normalF;
 };
