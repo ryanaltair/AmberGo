@@ -21,7 +21,10 @@ public:
         vector<ofVec3f>().swap(pointlist);
         horizonFacetHeightlist.clear();
         pointlist.clear();
-        
+        multilinklinelist.clear();
+        mllcopymap.clear();
+        scaleMax.set(0,0,0);
+        scaleMin.set(0,0,0);
         //
     }
     bool addLine(agline sortline,ofIndexType ipnear){
@@ -122,7 +125,13 @@ public:
         float h=z-pL.z;
         float divdHxh=divdH*h;
         returnpoint.x=pL.x+mlline.dx*divdHxh;
+        returnpoint.x*=10;
+        
+        returnpoint.x+=640;
         returnpoint.y=pL.y+mlline.dy*divdHxh;
+        returnpoint.y*=10;
+        
+        returnpoint.y+=320;
         returnpoint.z=z;
         return returnpoint;
     }
