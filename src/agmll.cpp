@@ -28,7 +28,6 @@ void agmll::prepareModel(){
     mergedMesh.mergeDuplicateVertices();// step 1: merge mesh points
     cout<<"Normals count is "<<mergedMesh.getNumNormals()<<endl;
     addSupport();
-    addpointlist();//
     getScale();
     addFacet();  // step 2: add line list
 }
@@ -216,10 +215,10 @@ void agmll::addSupport(){
     for(int i=0;i<facesize;i++){
         agfacet facet;
         facet.setFromTri(facets[i].getVertex(0),facets[i].getVertex(1),facets[i].getVertex(2));
-        facet.setNormal(facets[i].getNormal(0), facets[i].getNormal(1), facets[i].getNormal(2));
+//        facet.setNormal(facets[i].getNormal(0), facets[i].getNormal(1), facets[i].getNormal(2));
         facet.setFaceNormal(facets[i].getFaceNormal());
         if(facet.getGradiant()>0){
-            cout<<i<<" get gradiant:"<<facet.getGradiant()<<endl;
+//        cout<<i<<" get gradiant:"<<facet.getGradiant()<<endl;
         supportPolygon.append(facet.getPath());
         }
     }
@@ -227,19 +226,17 @@ void agmll::addSupport(){
     supportPolygon.setStrokeColor(ofColor::white);
     supportPolygon.setFillColor(ofColor::blue);
     supportPolygon.setFilled(true);
-    supportPolygon.setStrokeWidth(2);
+    supportPolygon.setStrokeWidth(1);
 }
 /**
  add sliceModel.linelist and sliceModel.nearpointlist
  */
 void agmll::addFacet(){
+    addpointlist();//
     // get the point first
     ofIndexType ipA;
     ofIndexType ipB;
     ofIndexType ipC;
-    ofVec3f pa;
-    ofVec3f pb;
-    ofVec3f pc;
     ofIndexType ifacet;
     counter0=0;
     counter1=0;
@@ -259,7 +256,6 @@ void agmll::addFacet(){
         //        lines[0].set(ipA,ipB,ipC);
         lines[0].set(ipA,ipB);
         sidepoint[0]=ipC;
-        
         //        lines[1].set(ipA,ipC,ipB);
         lines[1].set(ipA,ipC);
         sidepoint[1]=ipB;
@@ -278,7 +274,6 @@ void agmll::addFacet(){
         }
         
         ofSort(sliceModel.horizonFacetHeightlist);// sort the map will help search
-        
         //add lines to the sliceModel.linelist
         for(int i=0;i<3;i++){
             agline newline=zsortline(lines[i]);
@@ -292,9 +287,6 @@ void agmll::addFacet(){
             
         }
     }
-    
-    
-    
     //check out
     cout<<"horizong facet:"<<facetcount<<":"<<(counter0+counter1)/3<<", "<<(counter0+counter1)<<"?="<<mergedMesh.getNumIndices()<<endl;
     cout<<"add new"<<counter1<<":"<<counter0<<endl;

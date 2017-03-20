@@ -11,6 +11,7 @@ public:
     }
     
     ofMesh getShell(ofMesh mesh){
+        ofxClipper clipper;
     //get every meshface first
         vector<ofMeshFace> faces;
         vector<ofMeshFace> newfaces;
@@ -31,5 +32,5 @@ protected:
     ofMesh shell;
     ofPath supportPolygon;
     vector<int> grades;
-    ofxClipper clipper;
+    
 };

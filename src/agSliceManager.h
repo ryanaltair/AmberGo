@@ -160,10 +160,10 @@ protected:
         
         float z;
         for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
-            layers.push_back(mll.supportPolygon);
-//            layers.push_back(mll.layerAt(z)); 
+//            layers.push_back(mll.supportPolygon);
+            layers.push_back(mll.layerAt(z));
             alllayertesstsHeight.push_back(z);
-            break;
+//            break;
         }
         alllayertests=layers;
         isAllSliceDone=true;

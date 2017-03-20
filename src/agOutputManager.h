@@ -13,6 +13,7 @@ public:
          isBegin=true;
          isFinish=false;
           baseCount=4;
+        outputCount=0;
     }
     void saveSetup(ofPixels pixels){
         string se="SE1300";// for 13s
@@ -103,6 +104,7 @@ private:
         strWaiting.swap(strWaitingVoid);// clear mem
         threadImageSaver.startThread();
     }
+    int outputCount=0;
     int baseCount=4;
     bool isBegin=true;
     bool isFinish=false;

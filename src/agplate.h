@@ -1,6 +1,6 @@
 #pragma once
 #include "ofMain.h"
-#include "agSliceMesh.h" //for quick test
+#include "agSliceShell.h" //for quick test
 /**
  use for AmberGo
  as plate
