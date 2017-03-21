@@ -50,7 +50,8 @@ void ofApp::update(){
             if(threadSlice.isAllSliceDone==false){
 //                threadSlice.allSlice(panel.layerthickness);r
                 
-                threadSlice.allSlice(0.05);
+                threadSlice.allSlice(panel.layerthickness);
+                outputManager.setPrint(panel.exposedTime, 6, 6, panel.baseExposedTime, 4, 3000, 4);
             }
             panel.bAllSlice=false;
             

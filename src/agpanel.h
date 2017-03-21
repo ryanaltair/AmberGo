@@ -30,23 +30,25 @@ public:
     ofxDatGuiToggle* showsliceToggle;
     ofxDatGuiSlider* layerthicknessSlider;
     ofxDatGuiSlider* exposedTimeSlider;
-     
+    
+    ofxDatGuiSlider* baseExposedTimeSlider;
     void setOutputDone(bool done);
     void sliderBind();
     float getWidth();
     void setSliceReady();
     void setSliceUnready();
-    void setSliceDone();
+    void setSliceDone(); 
     bool outputDone=false;
     float sliceMin=0.02;
     float sliceMax=0.30;
     int snapcount=1000;
-    float layerthickness=0.02;
+    float layerthickness=0.05;
    //    string slice
     bool isOutput=false;
     bool bPrint=false;
     bool bAllSlice=false;
-    int exposedTime=1000;
+    int exposedTime=1000;//ms
+    int baseExposedTime=60000;//ms
     bool ShowSlice=true;
     bool bShowAllSlice=false;
     ofIndexType iShowAllSliceLayerCount=0;

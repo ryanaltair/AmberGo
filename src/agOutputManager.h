@@ -47,9 +47,11 @@ public:
         addPicSetupToWaiting(path,'D',downspeed);
         //SB
         int basemulti=baseExposedSeconds/exposedSeconds;
+        cout<<"basemulti"<<basemulti<<"="<<baseExposedSeconds<<":"<<exposedSeconds<<endl;
         addPicSetupToWaiting(path,'B',basemulti);
         //SL
-        addPicSetupToWaiting(path,'L',outputCount);
+//        addPicSetupToWaiting(path,'L',outputCount);
+        addPicSetupToWaiting(path,'L',3000);
         //SV
         int ql=quickLiftHeight*100;
         addPicSetupToWaiting(path,'V',ql);

@@ -18,12 +18,14 @@ agpanel::agpanel(){
     showsliceToggle=gui->addToggle("slice Preview");
     showsliceToggle->setChecked(true);
     layerthicknessSlider=gui->addSlider("layer thickness", 0.02, 0.50, 0.16);
-    exposedTimeSlider=gui->addSlider("exposed time:second", 0, 12,3);
+    exposedTimeSlider=gui->addSlider("exposed time:second", 0, 20,10);
+    baseExposedTimeSlider=gui->addSlider("baseExposed time:second", 20, 120,80);
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     layerthicknessSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     exposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    baseExposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     printPauseButton->onButtonEvent(this,&agpanel::onButtonEvent);
     allSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
     showAllSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
@@ -38,6 +40,8 @@ void agpanel::setup(){
     // GUI start
     // instantiate and position the gui //
        exposedTime=exposedTimeSlider->getValue();
+    
+    baseExposedTime=baseExposedTimeSlider->getValue();
     sliderBind();
 }
 void agpanel::update(){
@@ -100,7 +104,7 @@ void agpanel::sliderBind(){
     sliceHeightSlider->bind(layertestZ);
     layerthicknessSlider->bind(layerthickness);
     exposedTimeSlider->bind(exposedTime);
-    
+    baseExposedTimeSlider->bind(baseExposedTime);
 }
 
 float agpanel::getWidth(){
