@@ -5,6 +5,7 @@
 #include "agmllhelper.h"
 #include "agfacet.h"
 #include "agSliceShell.h"
+#include "ofxEditableSVG.h"
 /**
  work flow:
  get the mesh
@@ -65,7 +66,8 @@ private:
     void debuglinelist(ofIndexType index){
         
     }
-
+    
+    int layerCount=0;
     
 };
 

@@ -21,10 +21,8 @@ public:
     bool operator < ( const agline& other) const
     {
         if ( ip0 == other.ip0 ) {
-            
             return ip1 < other.ip1;
         }
-        
         return ip0 < other.ip0;
     }
     

@@ -40,6 +40,9 @@ ofPath  agmll::layerAt(float z){
     ofPath returnpath;
     sliceModel.alluntouched();
     ofIndexType continueflag = 0;
+    
+
+    
     for (ofIndexType loopcount = 0; loopcount < sliceModel.multilinklinelist.size(); loopcount ++) {// every loop build a closed path
         ofIndexType iCross = sliceModel.findcrosspointat(continueflag,z);//find a cross point
         continueflag=iCross+1;
@@ -55,11 +58,12 @@ ofPath  agmll::layerAt(float z){
     returnpath.setStrokeWidth(10);
     if(1){
         returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
-        returnpath.setStrokeColor(ofColor::white);
+        returnpath.setStrokeColor(ofColor::blue);
         returnpath.setFillColor(ofColor::white);
         returnpath.setFilled(true);
         returnpath.setStrokeWidth(1);
     }
+    
     return returnpath;
 }
 /**
@@ -94,6 +98,7 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         //get the XY and move to
         ofVec3f XYpoint=sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z);
         oldpoint=XYpoint;
+//        cout<<"XY:"<<ofToString(XYpoint)<<endl;
         layerisland.moveTo(XYpoint.x,XYpoint.y);
         // set pstart and pnext
         iStart0=i0;// when we meet iStart0 again,we end

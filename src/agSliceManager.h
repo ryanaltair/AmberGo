@@ -159,10 +159,15 @@ protected:
         vector<ofPath> layers;
         
         float z;
+        int an=0;
         for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
 //            layers.push_back(mll.supportPolygon);
-            layers.push_back(mll.layerAt(z));
+            ofPath p=mll.layerAt(z);
+            
+            layers.push_back(p);
             alllayertesstsHeight.push_back(z);
+//            save(p,makePicName(an,'0',z));
+            an++;
 //            break;
         }
         alllayertests=layers;
@@ -192,6 +197,6 @@ protected:
         cout<<"progress:"<<ofToString(percent) <<"% |" <<ofToString(ofGetElapsedTimef())<<" second"<<endl;
         
     }
-    float timekeep;
+     float timekeep;
     
 };
