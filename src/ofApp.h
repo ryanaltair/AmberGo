@@ -26,7 +26,6 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     void exit();
-    
 private:
     //side window
     void drawSideWindow(ofEventArgs & args);
@@ -62,7 +61,7 @@ private:
         svg.setViewbox(0, 0, 1280, 720);
         svg.setFilled(true);
         svg.addPath(path);
-//        svg.save(str);
+        svg.save(str);
     }
 
     

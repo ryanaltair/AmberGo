@@ -66,16 +66,18 @@ void ofApp::update(){
                 if(panel.iShowAllSliceLayerCount==1){
                     easyLogTimeFrom("output");
                 }
-                cout<<"hellow"<<endl;
-                savesvg(layertest,makePicName(panel.iShowAllSliceLayerCount,'0',panel.layertestZ));
-                 cout<<"hellowend"<<endl;
+//                cout<<"hellow"<<endl;
+//                savesvg(layertest,makePicName(panel.iShowAllSliceLayerCount,'0',panel.layertestZ));
+//                 cout<<"hellowend"<<endl;
                 drawFBO(layertest);
                 fbo.readToPixels(pixelsbuffer);
                 if(panel.outputToggle->getChecked()==true){
                      if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()){
                          outputManager.setLastPic();
                      }
-                    outputManager.saveImage(pixelsbuffer,panel.layertestZ);
+                                        outputManager.saveImage(layertest,panel.layertestZ);
+
+                    //                    outputManager.saveImage(pixelsbuffer,panel.layertestZ);
                 }
                 
                 

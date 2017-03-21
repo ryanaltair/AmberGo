@@ -14,8 +14,12 @@ class agOutputManager{
 public:
     agOutputManager(){
         threadImageSaver.setPrefix(ofToDataPath("fabfiles/A")); // this directory must already exist
-        threadImageSaver.setFormat("png"); // png is really slow but high res, bmp is fast but big, jpg is just right
         
+        if(usingSVG==true){
+            threadImageSaver.setFormat("svg"); // svg is so fast 
+        }else{
+        threadImageSaver.setFormat("png"); // png is really slow but high res, bmp is fast but big, jpg is just right
+        }
     }
     void init(){
         Annnn=1;
@@ -69,13 +73,14 @@ public:
     }
     void saveImage(ofPath path,float z){
         cout<<"save image"<<endl;
-        int intz=z*100;
-        string strz=ofToString(intz, 5, '0');
-        string picname;
         if(isBegin==true){
             isBegin=false;
             saveSetup(path);
         }
+        int intz=z*100;
+        string strz=ofToString(intz, 5, '0');
+        string picname;
+        
         if(baseCount>0){
             baseCount--;
             picname="B"+strz;
@@ -90,13 +95,14 @@ public:
     }
     void saveImage(ofPixels pixels,float z){
         cout<<"save image"<<endl;
-        int intz=z*100;
-        string strz=ofToString(intz, 5, '0');
-        string picname;
         if(isBegin==true){
             isBegin=false;
             saveSetup(pixels);
         }
+        int intz=z*100;
+        string strz=ofToString(intz, 5, '0');
+        string picname;
+        
         if(baseCount>0){
             baseCount--;
             picname="B"+strz;
@@ -148,11 +154,13 @@ private:
         }
         if(usingSVG==true){
             for(int i=0; i<pathWaiting.size();i++){
+                cout<<"try add frame as svg"<<endl;
                 threadImageSaver.addFrame(pathWaiting[i].path,Annnn,pathWaiting[i].fileName);
                 Annnn++;
             }
         }else{
             for(int i=0; i<pixelsWaiting.size();i++){
+                cout<<"try add frame as png"<<endl;
                 threadImageSaver.addFrame(pixelsWaiting[i].image,Annnn,pixelsWaiting[i].fileName);
                 Annnn++;
             }
@@ -186,7 +194,8 @@ private:
     }
     string makeSetupFileName(char cmdType,int setup){
         string setupString;
-        setupString='S'+cmdType;
+        setupString="S";
+        setupString+=cmdType;
         setupString+=ofToString(setup,4,'0');
         return setupString;
     }
@@ -197,13 +206,13 @@ private:
     int Annnn=1;
     
     ofxImageSequenceRecorder threadImageSaver; // use for save image
-    bool usingSVG=false;
+    bool usingSVG=true;
     
-    float exposedSeconds;
-    int upspeed;
-    int downspeed;
-    float baseExposedSeconds;
+    float exposedSeconds=12;
+    int upspeed=6;
+    int downspeed=6;
+    float baseExposedSeconds=78;
     int baseCount=4;
-    float quickLiftHeight;
+    float quickLiftHeight=4;
     
 };
