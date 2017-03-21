@@ -1,6 +1,15 @@
 #pragma once
 #include "ofxImageSequenceRecorder.h"
 #include "ofMain.h"
+typedef struct {
+    string fileName;
+    ofPixels image;
+} ImageFiles;
+typedef struct {
+    string fileName;
+    ofPath path;
+} SVGFiles;
+
 class agOutputManager{
 public:
     agOutputManager(){
@@ -15,63 +24,48 @@ public:
         baseCount=4;
         outputCount=0;
     }
+    void setPrint(float _exposedSeconds,int _upspeed,int _downspeed,float _baseExposedSeconds,int _baseCount,int _outputCount,float _quickLiftHeight ){
+        exposedSeconds=_exposedSeconds;
+        upspeed=_upspeed;
+        downspeed=_downspeed;
+        baseExposedSeconds=_baseExposedSeconds;
+        baseCount=_baseCount;
+        outputCount=_outputCount;
+        quickLiftHeight=_quickLiftHeight;
+    }
     void saveSetup(ofPath path){
-        string se="SE1300";// for 13s
-        pathWaiting.push_back(path);
-        strWaiting.push_back(se);
-        
-        string su="SU0006";
-        pathWaiting.push_back(path);
-        strWaiting.push_back(su);
-        
-        string sd="SD0008";
-        pathWaiting.push_back(path);
-        strWaiting.push_back(sd);
-        
-        string sb="SB0008";
-        pathWaiting.push_back(path);
-        strWaiting.push_back(sb);
-        
-        string sl="SL1000";
-        pathWaiting.push_back(path);
-        strWaiting.push_back(sl);
-        
-        string sf="SF0056";
-        pathWaiting.push_back(path);
-        strWaiting.push_back(sf);
-        
-        string sv="SV0400";//04.00mm
-        pathWaiting.push_back(path);
-        strWaiting.push_back(sv);
+        //SE
+        int ise=exposedSeconds*100;
+        addPicSetupToWaiting(path,'E',ise);
+        //SU
+        addPicSetupToWaiting(path,'U',upspeed);
+        //SD
+        addPicSetupToWaiting(path,'D',downspeed);
+        //SB
+        int basemulti=baseExposedSeconds/exposedSeconds;
+        addPicSetupToWaiting(path,'B',basemulti);
+        //SL
+        addPicSetupToWaiting(path,'L',outputCount);
+        //SV
+        int ql=quickLiftHeight*100;
+        addPicSetupToWaiting(path,'V',ql);
     }
     void saveSetup(ofPixels pixels){
-        string se="SE1300";// for 13s
-        pixelsWaiting.push_back(pixels);
-        strWaiting.push_back(se);
-        
-        string su="SU0006";
-        pixelsWaiting.push_back(pixels);
-        strWaiting.push_back(su);
-        
-        string sd="SD0008";
-        pixelsWaiting.push_back(pixels);
-        strWaiting.push_back(sd);
-        
-        string sb="SB0008";
-        pixelsWaiting.push_back(pixels);
-        strWaiting.push_back(sb);
-        
-        string sl="SL1000";
-        pixelsWaiting.push_back(pixels);
-        strWaiting.push_back(sl);
-        
-        string sf="SF0056";
-        pixelsWaiting.push_back(pixels);
-        strWaiting.push_back(sf);
-        
-        string sv="SV0400";//04.00mm
-        pixelsWaiting.push_back(pixels);
-        strWaiting.push_back(sv);
+        //SE
+        int ise=exposedSeconds*100;
+        addPicSetupToWaiting(pixels,'E',ise);
+        //SU
+        addPicSetupToWaiting(pixels,'U',upspeed);
+        //SD
+        addPicSetupToWaiting(pixels,'D',downspeed);
+        //SB
+        int basemulti=baseExposedSeconds/exposedSeconds;
+        addPicSetupToWaiting(pixels,'B',basemulti);
+        //SL
+        addPicSetupToWaiting(pixels,'L',outputCount);
+        //SV
+        int ql=quickLiftHeight*100;
+        addPicSetupToWaiting(pixels,'V',ql);
     }
     void saveImage(ofPath path,float z){
         cout<<"save image"<<endl;
@@ -90,9 +84,8 @@ public:
         }else{
             picname="0"+strz;
         }
-        pathWaiting.push_back(path);
-        strWaiting.push_back(picname);
-        addFrameToThread();
+        addPicToWaiting(path,picname);
+        tryAddFrameToThread();
         
     }
     void saveImage(ofPixels pixels,float z){
@@ -112,9 +105,8 @@ public:
         }else{
             picname="0"+strz;
         }
-        pixelsWaiting.push_back(pixels);
-        strWaiting.push_back(picname);
-        addFrameToThread();
+        addPicToWaiting(pixels,picname);
+        tryAddFrameToThread();
         
     }
     
@@ -125,15 +117,15 @@ public:
         }
         if(usingSVG==true){
             if(pathWaiting.size()>0){
-                addFrameToThread();
+                tryAddFrameToThread();
                 return false;
             }
-        
+            
         }else{
-        if(pixelsWaiting.size()>0){
-            addFrameToThread();
-            return false;
-        }
+            if(pixelsWaiting.size()>0){
+                tryAddFrameToThread();
+                return false;
+            }
         }
         return true;
     }
@@ -147,41 +139,71 @@ public:
         isFinish=true;
     }
 private:
-    vector<ofPixels> pixelsWaiting;
-    vector<ofPath> pathWaiting;
-    vector<string> strWaiting;
+    vector<ImageFiles> pixelsWaiting;
+    vector<SVGFiles> pathWaiting;
     
-    void addFrameToThread(){
+    bool tryAddFrameToThread(){
         if(threadImageSaver.isThreadRunning()){
-            return;
+            return false;
         }
         if(usingSVG==true){
             for(int i=0; i<pathWaiting.size();i++){
-                threadImageSaver.addFrame(pathWaiting[i],Annnn,strWaiting[i]);
+                threadImageSaver.addFrame(pathWaiting[i].path,Annnn,pathWaiting[i].fileName);
                 Annnn++;
             }
         }else{
             for(int i=0; i<pixelsWaiting.size();i++){
-                threadImageSaver.addFrame(pixelsWaiting[i],Annnn,strWaiting[i]);
+                threadImageSaver.addFrame(pixelsWaiting[i].image,Annnn,pixelsWaiting[i].fileName);
                 Annnn++;
             }
         }
-        vector<ofPixels> pixelsWaitingVoid;
-        
-        vector<ofPath> pathWaitingVoid;
-        vector<string> strWaitingVoid;
+        vector<ImageFiles> pixelsWaitingVoid;
+        vector<SVGFiles> pathWaitingVoid;
         pixelsWaiting.swap(pixelsWaitingVoid); // clear mem
-        
         pathWaiting.swap(pathWaitingVoid); // clear mem
-        strWaiting.swap(strWaitingVoid);// clear mem
         threadImageSaver.startThread();
+        return true;
+    }
+    
+    
+    void addPicSetupToWaiting(ofPath path,char cmdType,int cmdSetup){
+        addPicToWaiting(path,makeSetupFileName(cmdType,cmdSetup));
+    }
+    void addPicSetupToWaiting(ofPixels pixels,char cmdType,int cmdSetup){
+        addPicToWaiting(pixels,makeSetupFileName(cmdType,cmdSetup));
+    }
+    void addPicToWaiting(ofPixels pixels,string filename){
+        ImageFiles q;
+        q.image=pixels;
+        q.fileName=filename;
+        pixelsWaiting.push_back(q);
+    }
+    void addPicToWaiting(ofPath _path,string _filename){
+        SVGFiles q;
+        q.path=_path;
+        q.fileName=_filename;
+        pathWaiting.push_back(q);
+    }
+    string makeSetupFileName(char cmdType,int setup){
+        string setupString;
+        setupString='S'+cmdType;
+        setupString+=ofToString(setup,4,'0');
+        return setupString;
     }
     int outputCount=0;
-    int baseCount=4;
+    
     bool isBegin=true;
     bool isFinish=false;
     int Annnn=1;
+    
     ofxImageSequenceRecorder threadImageSaver; // use for save image
     bool usingSVG=false;
+    
+    float exposedSeconds;
+    int upspeed;
+    int downspeed;
+    float baseExposedSeconds;
+    int baseCount=4;
+    float quickLiftHeight;
     
 };

@@ -66,6 +66,9 @@ void ofApp::update(){
                 if(panel.iShowAllSliceLayerCount==1){
                     easyLogTimeFrom("output");
                 }
+                cout<<"hellow"<<endl;
+                savesvg(layertest,makePicName(panel.iShowAllSliceLayerCount,'0',panel.layertestZ));
+                 cout<<"hellowend"<<endl;
                 drawFBO(layertest);
                 fbo.readToPixels(pixelsbuffer);
                 if(panel.outputToggle->getChecked()==true){
@@ -241,9 +244,12 @@ void ofApp::drawFBO(ofPath pathdraw){
     ofClear(ofColor::black);
     //        ofBackground(0,0,0);
     
-    pathdraw.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
-    pathdraw.draw(1280/2,768/2);
+//    pathdraw.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
+//    pathdraw.draw(1280/2,768/2);
+     pathdraw.draw(0,0);
     fbo.end();
+    
+    
 }
 
 

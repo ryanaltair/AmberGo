@@ -59,19 +59,11 @@ ofPath  agmll::layerAt(float z){
     if(1){
         returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
         returnpath.setStrokeColor(ofColor::blue);
-        returnpath.setFillColor(ofColor::red);
+        returnpath.setFillColor(ofColor::white);
         returnpath.setFilled(true);
         returnpath.setStrokeWidth(1);
     }
-        ofxEditableSVG svg;
-    svg.setSize(1280, 720,"px");
-    svg.setViewbox(0, 0, 1280, 720);
-    svg.setFilled(true);
-    svg.addPath(returnpath);
-    layerCount++;
-    string svgname="A"+ofToString(layerCount,4,'0')+ofToString(layerCount,6,'0')+".svg";
     
-    svg.save(svgname);
     return returnpath;
 }
 /**
@@ -106,7 +98,7 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         //get the XY and move to
         ofVec3f XYpoint=sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z);
         oldpoint=XYpoint;
-        cout<<"XY:"<<ofToString(XYpoint)<<endl;
+//        cout<<"XY:"<<ofToString(XYpoint)<<endl;
         layerisland.moveTo(XYpoint.x,XYpoint.y);
         // set pstart and pnext
         iStart0=i0;// when we meet iStart0 again,we end
