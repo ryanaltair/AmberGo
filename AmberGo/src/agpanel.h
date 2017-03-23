@@ -35,14 +35,9 @@ public:
     void setOutputDone(bool done);
     void sliderBind();
     float getWidth();
-    // set slice state
     void setSliceReady();
     void setSliceUnready();
-    void setSliceDone();
-    void setSliceOutputDone();
-    
-    bool getSaveDirectoryChanged();
-    string getSaveDirectory();
+    void setSliceDone(); 
     bool outputDone=false;
     float sliceMin=0.02;
     float sliceMax=0.30;
@@ -60,9 +55,9 @@ public:
     float layertestZlast=0.1;
     float layertestZ=0.1;
 private:
-    bool isSaveDirectoryChanged=false;
-    string saveDirectory;
-
+    string sliceReady="Slice is ready";
+    string sliceUnready="Slice is not ready";
+    string sliceDone="Slice is finish";
 
     
 };

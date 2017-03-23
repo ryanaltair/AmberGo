@@ -7,8 +7,6 @@
 #include "agSliceManager.h"
 #include "agAppPreference.h"
 #include "agOutputManager.h"
-#include "agEasyTimeLog.h"
-
 class ofApp : public ofBaseApp {
 public:
     //gl loop
@@ -42,7 +40,6 @@ private:
      it will load model with thread called merger
      */
     void loadModel();
-    void sliceModel();
     agSliceManager threadSlice;// threaded object. Merger
     bool bModelLoaded=false;
     agplate plate;//palte
@@ -60,8 +57,8 @@ private:
     void savesvg(ofPath path,string str){
         cout<<"now we save svg at "<<str<<endl;
         ofxEditableSVG svg;
-        svg.setSize(1280, 768,"px");
-        svg.setViewbox(0, 0, 1280, 768);
+        svg.setSize(1280, 720,"px");
+        svg.setViewbox(0, 0, 1280, 720);
         svg.setFilled(true);
         svg.addPath(path);
         svg.save(str);
@@ -73,5 +70,18 @@ private:
     ofPixels pixelsbuffer;
     ofPixels pixelsbuffervoid;
    //timetest
-    easyLogTimer easyLogTime;
+    float timekeep;
+    void easyLogTimeFrom(string title){
+        cout<<"------";
+        timekeep=ofGetElapsedTimef();
+        cout<<title<<" from:"<<ofToString(timekeep) <<" senconds "<<endl;
+    }
+    void easyLogTimeTo(string title){
+        cout<<"------";
+        float timetake=ofGetElapsedTimef()-timekeep;
+        timekeep=ofGetElapsedTimef();
+        cout<<title<<"  to:"<<ofToString(timekeep) <<" senconds "<<endl;
+        cout<<"------";
+        cout<<title<<"take:"<<ofToString(timetake) <<" senconds "<<endl;
+    } 
 };

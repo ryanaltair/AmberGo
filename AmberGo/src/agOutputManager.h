@@ -16,21 +16,10 @@ public:
         threadImageSaver.setPrefix(ofToDataPath("fabfiles/A")); // this directory must already exist
         
         if(usingSVG==true){
-            threadImageSaver.setFormat("svg"); // svg is so fast
+            threadImageSaver.setFormat("svg"); // svg is so fast 
         }else{
-            threadImageSaver.setFormat("png"); // png is really slow but high res, bmp is fast but big, jpg is just right
+        threadImageSaver.setFormat("png"); // png is really slow but high res, bmp is fast but big, jpg is just right
         }
-    }
-    const bool usingSVG=true;
-    void setPrefix(string saveplace){
-        cout<<"now we get fisaveplace :"<<saveplace<<endl;
-        string p=saveplace+"fabfiles/";
-        //        if( ofDirectory::doesDirectoryExist(saveplace)==false){
-        cout<<"now we create file directory:"<<p<<endl;
-        ofDirectory::createDirectory(p,false);
-        //        }
-        p+="A";
-        threadImageSaver.setPrefix(p); // this directory must already exist
     }
     void init(){
         Annnn=1;
@@ -60,11 +49,8 @@ public:
         int basemulti=baseExposedSeconds/exposedSeconds;
         cout<<"basemulti"<<basemulti<<"="<<baseExposedSeconds<<":"<<exposedSeconds<<endl;
         addPicSetupToWaiting(path,'B',basemulti);
-        //SF
-        //        addPicSetupToWaiting(path,'L',outputCount);
-        addPicSetupToWaiting(path,'F',3000);
         //SL
-        //        addPicSetupToWaiting(path,'L',outputCount);
+//        addPicSetupToWaiting(path,'L',outputCount);
         addPicSetupToWaiting(path,'L',3000);
         //SV
         int ql=quickLiftHeight*100;
@@ -141,17 +127,12 @@ public:
             if(pathWaiting.size()>0){
                 tryAddFrameToThread();
                 return false;
-            }else{
-                
-                return true;
             }
             
         }else{
             if(pixelsWaiting.size()>0){
                 tryAddFrameToThread();
                 return false;
-            }else{
-                return true;
             }
         }
         return true;
@@ -191,7 +172,6 @@ private:
         pixelsWaiting.swap(pixelsWaitingVoid); // clear mem
         pathWaiting.swap(pathWaitingVoid); // clear mem
         threadImageSaver.startThread();
-        cout<<"start output thread"<<endl;
         return true;
     }
     
@@ -228,7 +208,7 @@ private:
     int Annnn=1;
     
     ofxImageSequenceRecorder threadImageSaver; // use for save image
-    
+    bool usingSVG=false;
     
     float exposedSeconds=12;
     int upspeed=6;

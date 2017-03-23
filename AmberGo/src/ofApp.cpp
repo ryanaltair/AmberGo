@@ -22,7 +22,7 @@ void ofApp::setup(){
     fbosettings.width = 1280;
     fbosettings.height =768;
     fbosettings.textureTarget = GL_TEXTURE_2D;
-    //    fbosettings.numSamples=4;
+//    fbosettings.numSamples=4;
     fbo.allocate(fbosettings);
     pixelsbuffer.allocate(1280, 768,3);
     pixelsbuffervoid.allocate(1280, 768, 3);
@@ -43,8 +43,58 @@ void ofApp::update(){
         plate.sliceAt(panel.layertestZ);
         plate.update();
     }
-    sliceModel();
-    
+    if(threadSlice.isThreadRunning()==false){
+        if(apppreference.bHaveModelLoaded==false){return;}
+        if(panel.bAllSlice==true){
+            outputManager.init();
+            if(threadSlice.isAllSliceDone==false){
+//                threadSlice.allSlice(panel.layerthickness);r
+                
+                threadSlice.allSlice(panel.layerthickness);
+                outputManager.setPrint(panel.exposedTime, 6, 6, panel.baseExposedTime, 4, 3000, 4);
+            }
+            panel.bAllSlice=false;
+            
+        }
+        if(threadSlice.layertestZ!=panel.layertestZ){
+            //threadSlice.sliceAt(panel.layertestZ);
+        }
+        if(threadSlice.isAllSliceDone==true&&panel.bShowAllSlice==true){
+            if(panel.iShowAllSliceLayerCount<threadSlice.alllayertests.size()){
+                layertest=threadSlice.alllayertests[panel.iShowAllSliceLayerCount];
+                panel.layertestZ=threadSlice.alllayertesstsHeight[panel.iShowAllSliceLayerCount];
+                panel.iShowAllSliceLayerCount++;
+                if(panel.iShowAllSliceLayerCount==1){
+                    easyLogTimeFrom("output");
+                }
+//                cout<<"hellow"<<endl;
+//                savesvg(layertest,makePicName(panel.iShowAllSliceLayerCount,'0',panel.layertestZ));
+//                 cout<<"hellowend"<<endl;
+                drawFBO(layertest);
+                fbo.readToPixels(pixelsbuffer);
+                if(panel.outputToggle->getChecked()==true){
+                     if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()){
+                         outputManager.setLastPic();
+                     }
+//                                        outputManager.saveImage(layertest,panel.layertestZ);
+
+                                        outputManager.saveImage(pixelsbuffer,panel.layertestZ);
+                }
+                
+                
+                if( outputManager.check()){
+                    if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()-1){
+                        panel.setSliceDone();
+                        easyLogTimeTo("output");
+                        
+                    }
+                    
+                }
+            }
+        }
+        
+        
+    }
 }
 
 //--------------------------------------------------------------
@@ -187,59 +237,6 @@ void ofApp::loadModel(){
     apppreference.isModelChanged=false;
     apppreference.bHaveModelLoaded=true;
 }
-void ofApp::sliceModel(){
-    if(threadSlice.isThreadRunning()==false){
-        if(apppreference.bHaveModelLoaded==false){return;}
-        if(panel.bAllSlice==true){
-            outputManager.init();
-            if(threadSlice.isAllSliceDone==false){
-                threadSlice.allSlice(panel.layerthickness);
-                outputManager.setPrint(panel.exposedTime, 6, 6, panel.baseExposedTime, 4, 3000, 4);
-            }
-            panel.bAllSlice=false;
-        }
-        if(threadSlice.layertestZ!=panel.layertestZ){
-            //threadSlice.sliceAt(panel.layertestZ);
-        }
-        if(threadSlice.isAllSliceDone==true&&panel.bShowAllSlice==true){
-            if(panel.iShowAllSliceLayerCount<threadSlice.alllayertests.size()){
-                if(panel.getSaveDirectoryChanged()==true){
-                    cout<<"now we have new save dir"<<endl;
-                    outputManager.setPrefix(panel.getSaveDirectory());
-                }
-                if(panel.iShowAllSliceLayerCount==0){
-                    
-                    easyLogTime.from("output");
-                }
-                layertest=threadSlice.alllayertests[panel.iShowAllSliceLayerCount];
-                panel.layertestZ=threadSlice.alllayertesstsHeight[panel.iShowAllSliceLayerCount];
-                panel.iShowAllSliceLayerCount++;
-                drawFBO(layertest);
-                fbo.readToPixels(pixelsbuffer);
-                if(panel.outputToggle->getChecked()==true){// need output?
-                    if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()){
-                        outputManager.setLastPic();
-                    }
-                    if(outputManager.usingSVG==true){
-                        outputManager.saveImage(layertest,panel.layertestZ);
-                    }else{
-                        outputManager.saveImage(pixelsbuffer,panel.layertestZ);
-                    }
-                }
-                if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()-1){
-                    panel.setSliceDone();
-                    easyLogTime.to("output");
-                    
-                }
-                
-                
-            }
-        }
-        
-        
-    }
-
-}
 /**
  draw the fbo
  */
@@ -250,9 +247,9 @@ void ofApp::drawFBO(ofPath pathdraw){
     ofClear(ofColor::black);
     //        ofBackground(0,0,0);
     
-    //    pathdraw.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
-    //    pathdraw.draw(1280/2,768/2);
-    pathdraw.draw(0,0);
+//    pathdraw.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
+//    pathdraw.draw(1280/2,768/2);
+     pathdraw.draw(0,0);
     fbo.end();
     
     

@@ -9,7 +9,7 @@ agpanel::agpanel(){
     sliceProgressPercentSlider=gui->addSlider("progress", 0, 100, 0);
     sliceProgressPercentSlider->setVisible(false);
     sliceReadyLabel=gui->addLabel("slice is ready");
-    sliceReadyLabel->setLabel("ready to add model");
+    sliceReadyLabel->setLabel(sliceUnready);
     allSliceButton=gui->addButton("all slice!!");
     showAllSliceButton=gui->addButton("show all");
     printPauseButton=gui->addButton("Pause");
@@ -78,31 +78,10 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
         bAllSlice=true;
     }
     if(e.target==showAllSliceButton){
-        if(outputToggle->getChecked()==true){
-        ofFileDialogResult result = ofSystemSaveDialog("fabfiles.toSave", "Please set up where to output");
-        if(result.bSuccess) {
-            string path = result.getPath();
-              saveDirectory = ofFilePath::getEnclosingDirectory(path,false);
-            cout<<"we will save file at"<<saveDirectory<<endl;
-            // save your file to `path`
-            isSaveDirectoryChanged=true;
-            bShowAllSlice=true;
-            iShowAllSliceLayerCount=0;
-        }
-        }else{
-            bShowAllSlice=true;
-            iShowAllSliceLayerCount=0;
         
-        }
-       
+        bShowAllSlice=true;
+        iShowAllSliceLayerCount=0;
     }
-}
-bool agpanel::getSaveDirectoryChanged(){
-    return isSaveDirectoryChanged;
-}
-string agpanel::getSaveDirectory(){
-    isSaveDirectoryChanged=false;
-    return saveDirectory;
 }
 void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
 {
@@ -134,16 +113,13 @@ float agpanel::getWidth(){
     
 }
 void agpanel::setSliceReady(){
-    sliceReadyLabel->setLabel("Slice is ready");
+    sliceReadyLabel->setLabel(sliceReady);
     
 }
 void agpanel::setSliceUnready(){
-    sliceReadyLabel->setLabel("Slice is not ready");
+    sliceReadyLabel->setLabel(sliceUnready);
     
 }
 void agpanel::setSliceDone(){
-    sliceReadyLabel->setLabel("Ready to show");
-}
-void agpanel::setSliceOutputDone(){
-    sliceReadyLabel->setLabel("output done now");
+    sliceReadyLabel->setLabel(sliceDone);
 }
