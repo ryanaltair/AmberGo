@@ -1,5 +1,5 @@
 #pragma once
-#include "ofxImageSequenceRecorder.h"
+#include "agImageSequenceRecorder.h"
 #include "ofMain.h"
 typedef struct {
     string fileName;
@@ -227,7 +227,7 @@ private:
     bool isFinish=false;
     int Annnn=1;
     
-    ofxImageSequenceRecorder threadImageSaver; // use for save image
+    agImageSequenceRecorder threadImageSaver; // use for save image
     
     
     float exposedSeconds=12;
