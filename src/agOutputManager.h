@@ -21,16 +21,10 @@ public:
             threadImageSaver.setFormat("png"); // png is really slow but high res, bmp is fast but big, jpg is just right
         }
     }
-    const bool usingSVG=true;
-    void setPrefix(string saveplace){
-        cout<<"now we get fisaveplace :"<<saveplace<<endl;
-        string p=saveplace+"fabfiles/";
-        //        if( ofDirectory::doesDirectoryExist(saveplace)==false){
-        cout<<"now we create file directory:"<<p<<endl;
-        ofDirectory::createDirectory(p,false);
-        //        }
-        p+="A";
-        threadImageSaver.setPrefix(p); // this directory must already exist
+    const bool usingSVG=false;
+    void startOutput(string _saveplace){
+        setPrefix(_saveplace);
+        uploadEnd=false;
     }
     void init(){
         Annnn=1;
@@ -88,7 +82,9 @@ public:
         addPicSetupToWaiting(pixels,'V',ql);
     }
     void saveImage(ofPath path,float z){
-        cout<<"save image"<<endl;
+        
+        cout<<"save image layer at :"<<z<<endl;
+        
         if(isBegin==true){
             isBegin=false;
             saveSetup(path);
@@ -110,7 +106,7 @@ public:
         
     }
     void saveImage(ofPixels pixels,float z){
-        cout<<"save image"<<endl;
+        cout<<"save image layer at :"<<z<<endl;
         if(isBegin==true){
             isBegin=false;
             saveSetup(pixels);
@@ -133,28 +129,20 @@ public:
     }
     
     
-    bool check(){
+    bool checkEnd(){
         if(threadImageSaver.isThreadRunning()){
             return false;
         }
-        if(usingSVG==true){
-            if(pathWaiting.size()>0){
-                tryAddFrameToThread();
-                return false;
-            }else{
-                
+        
+        if(checkWaitingVoid()){
+            if(isFinish==true){
                 return true;
             }
-            
         }else{
-            if(pixelsWaiting.size()>0){
-                tryAddFrameToThread();
-                return false;
-            }else{
-                return true;
-            }
+            tryAddFrameToThread();
         }
-        return true;
+        return false;
+        
     }
     
     void end(){
@@ -168,6 +156,29 @@ public:
 private:
     vector<ImageFiles> pixelsWaiting;
     vector<SVGFiles> pathWaiting;
+    bool checkWaitingVoid(){
+        if(usingSVG==true){
+            if(pathWaiting.size()>0){
+                return false;
+            }
+        }else{
+            if(pixelsWaiting.size()>0){
+                return false;
+            }
+            
+        }
+        return true;
+    }
+    
+    
+    void setPrefix(string saveplace){
+        cout<<"now we get fisaveplace :"<<saveplace<<endl;
+        string p=saveplace+"fabfiles/";
+        cout<<"now we create file directory:"<<p<<endl;
+        ofDirectory::createDirectory(p,false);
+        p+="A";
+        threadImageSaver.setPrefix(p); // this directory must already exist
+    }
     
     bool tryAddFrameToThread(){
         if(threadImageSaver.isThreadRunning()){
@@ -236,5 +247,5 @@ private:
     float baseExposedSeconds=78;
     int baseCount=4;
     float quickLiftHeight=4;
-    
+    bool uploadEnd=false;
 };

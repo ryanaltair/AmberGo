@@ -66,16 +66,16 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
         if(isOutput==true){
             bPrint=false;
         }
-        if(bShowAllSlice!=false){
-            bShowAllSlice=false;
+        if(ShowingAllSlice!=false){
+            ShowingAllSlice=false;
         }else{
-            bShowAllSlice=true;
+            ShowingAllSlice=true;
         }
         
     }
     
     if(e.target==allSliceButton){
-        bAllSlice=true;
+        needAllSlice=true;
     }
     if(e.target==showAllSliceButton){
         if(outputToggle->getChecked()==true){
@@ -86,11 +86,11 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
                 cout<<"we will save file at"<<saveDirectory<<endl;
                 // save your file to `path`
                 isSaveDirectoryChanged=true;
-                bShowAllSlice=true;
+                ShowingAllSlice=true;
                 iShowAllSliceLayerCount=0;
             }
         }else{
-            bShowAllSlice=true;
+            ShowingAllSlice=true;
             iShowAllSliceLayerCount=0;
             
         }
@@ -146,4 +146,7 @@ void agpanel::setSliceDone(){
 }
 void agpanel::setSliceOutputDone(){
     sliceReadyLabel->setLabel("output done now");
+}
+void agpanel::setSlicing(){
+ sliceReadyLabel->setLabel("slicing,please wait");
 }

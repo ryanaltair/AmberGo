@@ -43,6 +43,7 @@ private:
      */
     void loadModel();
     void sliceModel();
+    void checkNeedSlice();
     agSliceManager threadSlice;// threaded object. Merger
     bool bModelLoaded=false;
     agplate plate;//palte

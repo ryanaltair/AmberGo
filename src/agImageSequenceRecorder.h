@@ -43,6 +43,12 @@ public:
     
     void setFormat(string fmt){
         format = fmt;
+        if(fmt=="svg"){
+            cout<<"now we using svg"<<endl;
+            usingSVG=true;
+        }else{
+        usingSVG=false;
+        }
     }
     
     void setCounter(int count){
@@ -126,5 +132,5 @@ public:
         quenedSVG.path = pathToSave;
         qSVG.push(quenedSVG);
     }
-    const bool usingSVG=true;
+     bool usingSVG=true;
 };

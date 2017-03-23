@@ -32,6 +32,9 @@ public:
     ofVec3f meshMin;
     ofMesh mergedMesh;//the mesh clone
     ofPath supportPolygon;
+    ofMesh getMergedMesh(){
+        return mergedMesh;
+    }
 private:
     ofMesh getSliceShell();
     void addSupport();

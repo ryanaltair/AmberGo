@@ -40,9 +40,18 @@ public:
     void setSliceUnready();
     void setSliceDone();
     void setSliceOutputDone();
-    
+    void setSlicing();
     bool getSaveDirectoryChanged();
     string getSaveDirectory();
+    bool needAllToSlice(){
+        if(needAllSlice){
+            needAllSlice=false;
+            return true;
+        }
+        // else
+        return false;
+        
+    }
     bool outputDone=false;
     float sliceMin=0.02;
     float sliceMax=0.30;
@@ -51,18 +60,18 @@ public:
    //    string slice
     bool isOutput=false;
     bool bPrint=false;
-    bool bAllSlice=false;
     int exposedTime=1000;//ms
     int baseExposedTime=60000;//ms
     bool ShowSlice=true;
-    bool bShowAllSlice=false;
+    bool ShowingAllSlice=false;
     ofIndexType iShowAllSliceLayerCount=0;
     float layertestZlast=0.1;
     float layertestZ=0.1;
 private:
     bool isSaveDirectoryChanged=false;
     string saveDirectory;
-
+    
+    bool needAllSlice=false;
 
     
 };
