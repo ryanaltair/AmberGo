@@ -31,7 +31,7 @@ agpanel::agpanel(){
     showAllSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
     outputToggle->onToggleEvent(this,&agpanel::onToggleEvent);
     showsliceToggle->onToggleEvent(this,&agpanel::onToggleEvent);
-
+    
 }
 
 
@@ -39,7 +39,7 @@ void agpanel::setup(){
     
     // GUI start
     // instantiate and position the gui //
-       exposedTime=exposedTimeSlider->getValue();
+    exposedTime=exposedTimeSlider->getValue();
     
     baseExposedTime=baseExposedTimeSlider->getValue();
     sliderBind();
@@ -79,22 +79,22 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
     }
     if(e.target==showAllSliceButton){
         if(outputToggle->getChecked()==true){
-        ofFileDialogResult result = ofSystemSaveDialog("fabfiles.toSave", "Please set up where to output");
-        if(result.bSuccess) {
-            string path = result.getPath();
-              saveDirectory = ofFilePath::getEnclosingDirectory(path,false);
-            cout<<"we will save file at"<<saveDirectory<<endl;
-            // save your file to `path`
-            isSaveDirectoryChanged=true;
-            bShowAllSlice=true;
-            iShowAllSliceLayerCount=0;
-        }
+            ofFileDialogResult result = ofSystemLoadDialog("fabfiles to Save", true);
+            if(result.bSuccess) {
+                saveDirectory = result.getPath();
+                saveDirectory+="/";
+                cout<<"we will save file at"<<saveDirectory<<endl;
+                // save your file to `path`
+                isSaveDirectoryChanged=true;
+                bShowAllSlice=true;
+                iShowAllSliceLayerCount=0;
+            }
         }else{
             bShowAllSlice=true;
             iShowAllSliceLayerCount=0;
-        
+            
         }
-       
+        
     }
 }
 bool agpanel::getSaveDirectoryChanged(){
@@ -112,7 +112,7 @@ void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
 void agpanel::onToggleEvent(ofxDatGuiToggleEvent e)
 {
     if(e.target==outputToggle){
-        isOutput=outputToggle->getChecked(); 
+        isOutput=outputToggle->getChecked();
         
     }
     if(e.target==showsliceToggle){

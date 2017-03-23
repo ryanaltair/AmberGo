@@ -115,9 +115,12 @@ public:
         return zNew;
     }
     
-    ofVec3f getXY(agmultilinkline mlline,float divdH,float z){
+    ofVec3f getXY(agmultilinkline mlline,float divdH,float z,float xstart,float ystart){
+        //TO DO:
         ofVec3f pH;
         ofVec3f pL;
+        const float xm=1280/126.72;
+        const float ym=768/74.88;
         pL= pointlist[mlline.ip0];
         pH= pointlist[mlline.ip1];
         
@@ -125,13 +128,13 @@ public:
         float h=z-pL.z;
         float divdHxh=divdH*h;
         returnpoint.x=pL.x+mlline.dx*divdHxh;
-        returnpoint.x*=10;
+        returnpoint.x*=xm;
         
-        returnpoint.x+=640;
+        returnpoint.x+=xstart;
         returnpoint.y=pL.y+mlline.dy*divdHxh;
-        returnpoint.y*=10;
+        returnpoint.y*=ym;
         
-        returnpoint.y+=384;
+        returnpoint.y+=ystart;
         returnpoint.z=z;
         return returnpoint;
     }

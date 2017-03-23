@@ -58,7 +58,7 @@ ofPath  agmll::layerAt(float z){
     returnpath.setStrokeWidth(10);
     if(1){
         returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
-        returnpath.setStrokeColor(ofColor::blue);
+        returnpath.setStrokeColor(ofColor::gray);
         returnpath.setFillColor(ofColor::white);
         returnpath.setFilled(true);
         returnpath.setStrokeWidth(1);
@@ -96,7 +96,7 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         ipLow=sliceModel.multilinklinelist[i0].ip0;
         ipHigh=sliceModel.multilinklinelist[i0].ip1;
         //get the XY and move to
-        ofVec3f XYpoint=sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z);
+        ofVec3f XYpoint=sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z,640,384);
         oldpoint=XYpoint;
 //        cout<<"XY:"<<ofToString(XYpoint)<<endl;
         layerisland.moveTo(XYpoint.x,XYpoint.y);
@@ -143,7 +143,7 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
                 //                debuglinelist(i0);
                 cout<<"BAD_ACESS"<<ipHigh<<":"<<sliceModel.pointlist.size()<<endl;
             }
-            ofVec3f XYpoint = sliceModel.getXY(sliceModel.multilinklinelist[i0],  divdH, z);
+            ofVec3f XYpoint = sliceModel.getXY(sliceModel.multilinklinelist[i0],divdH,z,640,384);
             if(oldpoint!=XYpoint){
                 layerisland.lineTo(XYpoint.x,XYpoint.y);
                 pointcount++;

@@ -31,7 +31,6 @@ public:
     ofVec3f meshMax;
     ofVec3f meshMin;
     ofMesh mergedMesh;//the mesh clone
-    
     ofPath supportPolygon;
 private:
     ofMesh getSliceShell();
@@ -66,7 +65,6 @@ private:
     void debuglinelist(ofIndexType index){
         
     }
-    
     int layerCount=0;
     
 };
