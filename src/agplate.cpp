@@ -120,6 +120,8 @@ void agplate::drawModels(){
         
         ofSetColor(123, 123, 123);//
         nodemodels[0].draw();
+        ofSetColor(ofColor::black);
+        nodemodels[0].drawWireframe();
     }
     //envlight.disable();
     
