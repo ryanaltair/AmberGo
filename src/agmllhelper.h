@@ -226,6 +226,28 @@ public:
     ofVec3f scaleMax;
     ofVec3f scaleMin;
     float dH=0.01;
+    agline zsortline(agline line){
+        ofIndexType ip0,ip1,ipa,ipb;
+        ip0=line.ip0;
+        ip1=line.ip1;
+        if(ip0>pointlist.size()||ip1>pointlist.size()){
+            cout<<"we get a bigggggg ip "<<ip0<<"\t"<<ip1<<"\t"<<pointlist.size()<<endl;
+        }
+        agline newline;
+        if(pointlist[ip0].z<pointlist[ip1].z){
+            newline.set(ip0,ip1);
+        }else if(pointlist[ip0].z>pointlist[ip1].z){// ip1<ip0
+            newline.set(ip1,ip0);
+        }else{   // if they the same      // make sure ip0<ip1
+            if(ip0<=ip1){
+                newline.set(ip0,ip1);
+            }else{
+                newline.set(ip1,ip0);
+            }
+        }
+        newline.markZSortTrue();// mark zsort that we can use it to search or add to linelist correctly
+        return newline;
+    }
 protected:
     
     int zero=0;
