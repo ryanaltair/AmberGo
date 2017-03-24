@@ -136,6 +136,10 @@ public:
         
         if(checkWaitingVoid()){
             if(isFinish==true){
+                if(needAlert==true){
+                    needAlert=false;
+                    ofSystemAlertDialog("output end");
+                }
                 return true;
             }
         }else{
@@ -151,6 +155,7 @@ public:
     
     
     void setLastPic(){
+        needAlert=true;
         isFinish=true;
     }
 private:
@@ -237,7 +242,7 @@ private:
     bool isBegin=true;
     bool isFinish=false;
     int Annnn=1;
-    
+    bool needAlert=false;
     agImageSequenceRecorder threadImageSaver; // use for save image
     
     
