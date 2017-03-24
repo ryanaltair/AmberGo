@@ -299,6 +299,7 @@ void agmll::addFacet(){
         cout<<"!!!!add face get problem!!!!!"<<endl;
     }
     printsize();
+    sliceModel.printAllWrongLine();
 }
 void agmll::addpointlist(){
     ofMesh mesh=mergedMesh;

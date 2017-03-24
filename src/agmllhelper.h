@@ -27,6 +27,25 @@ public:
         scaleMin.set(0,0,0);
         //
     }
+    void printAllWrongLine(){
+        for(auto &linkline:multilinklinelist){
+        
+            linkline.isFilled();
+        }
+    
+    
+    }
+    void tryFix(){
+     vector<agmultilinkline> bufferlist;// to replace linelist and nearpoint list
+        for(auto &linkline:multilinklinelist){
+            
+            if(linkline.isFilled()==false){
+            
+                bufferlist.push_back(linkline);
+            }
+        }
+    
+    }
     bool addLine(agline sortline,ofIndexType ipnear){
         bool isFind=false;
         ofIndexType findindex;

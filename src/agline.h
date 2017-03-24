@@ -103,7 +103,15 @@ public:
             }
         }
     }
+    bool isFilled(){
+        if(ipa==ipb){
+            cout<<"[WRONG LINE]ip0,ip1: "<<ip0<<":"<<ip1<<"ipa,ipb:"<<ipa<<","<<ipb<<" zmax,min"<<zmax<<":"<<zmin<<" za:zb"<<za<<":"<<zb<<endl;
+            return false;
+        }else{
+            return true;
+        }
     
+    }
     /**
      add dx dy thru sorted vec3f point always notice p0.z <= p1.z
      @param p0 lower vec3f point
