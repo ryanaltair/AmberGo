@@ -50,6 +50,7 @@ private:
     agpanel panel;    //GUI
     agAppPreference apppreference;// store the prefer
     ofPath layertest;//output layer
+    ofPath layertestDraw;//output layer use to display
     agOutputManager outputManager;
     string modelpath;  //drag and drop info
     
@@ -73,6 +74,7 @@ private:
     ofFbo fbo;
     ofPixels pixelsbuffer;
     ofPixels pixelsbuffervoid;
+    
    //timetest
     easyLogTimer easyLogTime;
 };

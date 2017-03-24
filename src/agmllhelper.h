@@ -27,15 +27,22 @@ public:
         scaleMin.set(0,0,0);
         //
     }
-    void printAllWrongLine(){
+    bool printAllWrongLine(){
+        bool r=true;
         for(auto &linkline:multilinklinelist){
         
-            linkline.isFilled();
+            if(linkline.isFilled()==false){
+                r=false;
+            }
         }
-    
+        if(r){
+            cout<<"it gets all right"<<endl;
+        }
+        return r;
     
     }
     void tryFix(){
+        cout<<"now we try fix"<<endl;
         vector<ofIndexType> wronglinelist;
      vector<agmultilinkline> bufferlist;// to replace linelist and nearpoint list
         for(int i=0;i<multilinklinelist.size();i++){
@@ -52,15 +59,21 @@ public:
             ofIndexType ip0,ip1;
             ip0=line.ip0;
             ip1=line.ip1;
+            agline oldline;
+            oldline.set(ip0,ip1);
             for(int j=0;j<bufferlist.size();j++){
                 agmultilinkline compareLine=bufferlist[j];
-                if(compareLine.ip0==ip0&&compareLine.ip1==ip1){
-                    
+                if(ip0==compareLine.ip0||ip1==compareLine.ip0){
+                    agline newline=zsortline(oldline);
+                    addLine(newline,compareLine.ip1);//add line with dxdy
+                    break;
+                }
+                if(ip0==compareLine.ip1||ip1==compareLine.ip1){
+                    agline newline=zsortline(oldline);
+                    addLine(newline,compareLine.ip0);//add line with dxdy
                     break;
                 }
             }
-        
-        
         }
     }
     bool addLine(agline sortline,ofIndexType ipnear){
@@ -80,7 +93,13 @@ public:
             }
         }
         if(isFind){
+            if(multilinklinelist[findindex].isFilled()==true){
+                cout<<"[WRONG]"<<endl;
+                wrongIndexList.push_back(findindex);
+            }else{
+            
             multilinklinelist[findindex].addNearPoint(ipnear,pointlist[ipnear].z);
+            }
             return false;
         }else{
             agmultilinkline newmultiline(sortline);
@@ -223,6 +242,7 @@ public:
     vector<agmultilinkline> multilinklinelist;// to replace linelist and nearpoint list
     map<agline,ofIndexType> mllcopymap;// use for searchline , for great speed
     vector<float> horizonFacetHeightlist;// hold every height that get horizong facet/triangle
+    vector<ofIndexType> wrongIndexList;
     ofVec3f scaleMax;
     ofVec3f scaleMin;
     float dH=0.01;

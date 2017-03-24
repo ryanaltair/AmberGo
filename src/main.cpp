@@ -7,7 +7,7 @@
 
 //========================================================================
 int main( ){
-    ofSetupOpenGL(800,600-22, OF_WINDOW);			// <-------- setup the GL context
+    ofSetupOpenGL(800,800/16*9-22, OF_WINDOW);			// <-------- setup the GL context
     ofRunApp( new ofApp());
 /**
     ofGLFWWindowSettings mainWindowSetting;

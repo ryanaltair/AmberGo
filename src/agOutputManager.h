@@ -21,7 +21,7 @@ public:
             threadImageSaver.setFormat("png"); // png is really slow but high res, bmp is fast but big, jpg is just right
         }
     }
-    const bool usingSVG=false;
+    const bool usingSVG=true;
     void startOutput(string _saveplace){
         setPrefix(_saveplace);
         uploadEnd=false;

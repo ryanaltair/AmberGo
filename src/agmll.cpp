@@ -74,6 +74,7 @@ ofPath  agmll::layerAt(float z){
  @return whole slice layer as ofPath
  */
 ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
+    
     ofPath layerisland;
     ofIndexType i0;//multilinklinelist[i0]
     ofIndexType iStart0;//multilinklinelist[iStart0]
@@ -87,14 +88,6 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     // ready to go
     if(1){// get the first point
         i0=iBegin;
-        sliceModel.multilinklinelist[i0].touch();
-        ipNearA=sliceModel.multilinklinelist[i0].ipa;
-        ipNearB=sliceModel.multilinklinelist[i0].ipb;
-        ////cout<<"we find the cross point done"<<"\n";
-        // get the first point XY
-        // get the ph pl
-        ipLow=sliceModel.multilinklinelist[i0].ip0;
-        ipHigh=sliceModel.multilinklinelist[i0].ip1;
         //get the XY and move to
         ofVec3f XYpoint=sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z,640,384);
         oldpoint=XYpoint;
@@ -102,6 +95,11 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         layerisland.moveTo(XYpoint.x,XYpoint.y);
         // set pstart and pnext
         iStart0=i0;// when we meet iStart0 again,we end
+        sliceModel.multilinklinelist[i0].touch();
+        ipNearA=sliceModel.multilinklinelist[i0].ipa;
+        ipNearB=sliceModel.multilinklinelist[i0].ipb;
+        ipLow=sliceModel.multilinklinelist[i0].ip0;
+        ipHigh=sliceModel.multilinklinelist[i0].ip1;
         ipStartA=ipNearA;
         ipNext0=ipNearB;
     }
@@ -111,10 +109,10 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     unsigned long i ;
     for ( i = 0; i < sliceModel.multilinklinelist.size() + 1; i++) {
         //checkpnextZ, figure out use which side as next line
-        float nextZ=z;
         if(ipNext0>sliceModel.pointlist.size()){
             cout<<"wrong!!!!!!!!"<<endl;
         }
+        //check wrong index here
         if(1){// get the next line with ipNext0 and ipNext1
             // a complicated work to find out use which line
             bool nextLineUseUpperSide=sliceModel.multilinklinelist[i0].nextLineUsingUpperPoint(isNextLineuseNearA,z);
@@ -299,7 +297,14 @@ void agmll::addFacet(){
         cout<<"!!!!add face get problem!!!!!"<<endl;
     }
     printsize();
-    sliceModel.printAllWrongLine();
+    if(sliceModel.printAllWrongLine()==false){
+        sliceModel.tryFix();
+        cout<<"now we get fixed"<<endl;
+        sliceModel.printAllWrongLine();
+    }else{
+        cout<<"now we never fixed "<<endl;
+
+    }
 }
 void agmll::addpointlist(){
     ofMesh mesh=mergedMesh;

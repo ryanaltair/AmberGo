@@ -58,6 +58,8 @@ void ofApp::draw(){
     
     
     if(panel.ShowSlice==true){
+//        layertestDraw.setFillColor(ofColor::black);
+//        layertestDraw.draw(apppreference.sliceview.x,apppreference.sliceview.y);
         fbo.draw(apppreference.sliceview);
     }
 }
@@ -219,15 +221,38 @@ void ofApp::sliceModel(){
                     easyLogTime.from("output to thread");
                 }
                 layertest=threadSlice.alllayertests[currentSliceLayer];
-                panel.layertestZ=threadSlice.alllayertesstsHeight[currentSliceLayer];
-                drawFBO(layertest);
+                 panel.layertestZ=threadSlice.alllayertesstsHeight[currentSliceLayer];
+                if(  panel.layertestZ<1.55|| panel.layertestZ>1.85){
+                    layertestDraw=layertest;
+                    layertestDraw.scale(0.1, 0.1);
+                }else{
+                
+                }
+                if(layertest.getCommands().size()>10000){
+                cout<<"now z:"<<panel.layertestZ<<":"<<layertest.getOutline().size()<<":"<<layertest.getCommands().size()<<endl;
+                    for(int i=0;i<layertest.getOutline().size();i++){
+                    cout<<"now "<<i<<":"<<layertest.getOutline()[i].size()<<endl;
+                        if(layertest.getOutline()[i].size()>10000){
+                            cout<<"now we print the line"<<endl;
+                            for(int j=0;j<layertest.getOutline()[i].getVertices().size();j++){
+                                cout<<":"<<layertest.getOutline()[i].getVertices()[j]<<endl;
+                            
+                            }
+                            cout<<"now we end print the line"<<endl;
+                        }
+                    }
+                }
+                
+ drawFBO(layertest);
                 if(panel.outputToggle->getChecked()==true){// need output?
                     if(currentSliceLayer==allSliceLayerCount){
                         outputManager.setLastPic();
                     }
                     if(outputManager.usingSVG==true){
+                        
                         outputManager.saveImage(layertest,panel.layertestZ);
                     }else{
+                        drawFBO(layertest);
                         fbo.readToPixels(pixelsbuffer);
                         outputManager.saveImage(pixelsbuffer,panel.layertestZ);
                     }

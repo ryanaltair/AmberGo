@@ -454,6 +454,9 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
+				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				AEF784708F3D44078AB8A604 /* agAppPreference.h */,
 				392700149468DD472744B8B5 /* agEasyTimeLog.h */,
 				7290CD63C4D0A23011FD5370 /* agfacet.h */,
@@ -470,9 +473,6 @@
 				781F2F9F6B618CA32DD9EEDD /* agplate.h */,
 				DB731077A0B2BBD4CD225C77 /* agSliceManager.h */,
 				8C0DEF69039FAD0929993484 /* agSliceShell.h */,
-				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
-				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
-				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;

@@ -163,7 +163,7 @@ protected:
         float z;
         int an=0;
         for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
-            cout<<"z"<<z<<endl;//use to check z
+//            cout<<"z"<<z<<endl;//use to check z
             ofPath p=mll.layerAt(z);
             layers.push_back(p);
             alllayertesstsHeight.push_back(z);
