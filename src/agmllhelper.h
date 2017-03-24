@@ -36,15 +36,32 @@ public:
     
     }
     void tryFix(){
+        vector<ofIndexType> wronglinelist;
      vector<agmultilinkline> bufferlist;// to replace linelist and nearpoint list
-        for(auto &linkline:multilinklinelist){
-            
+        for(int i=0;i<multilinklinelist.size();i++){
+            agmultilinkline linkline=multilinklinelist[i];
             if(linkline.isFilled()==false){
-            
                 bufferlist.push_back(linkline);
+                wronglinelist.push_back(i);
             }
+            
         }
     
+        for(int i=0;i<wronglinelist.size();i++){
+            agmultilinkline line=multilinklinelist[wronglinelist[i]];
+            ofIndexType ip0,ip1;
+            ip0=line.ip0;
+            ip1=line.ip1;
+            for(int j=0;j<bufferlist.size();j++){
+                agmultilinkline compareLine=bufferlist[j];
+                if(compareLine.ip0==ip0&&compareLine.ip1==ip1){
+                    
+                    break;
+                }
+            }
+        
+        
+        }
     }
     bool addLine(agline sortline,ofIndexType ipnear){
         bool isFind=false;
