@@ -96,8 +96,8 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         // set pstart and pnext
         iStart0=i0;// when we meet iStart0 again,we end
         sliceModel.multilinklinelist[i0].touch();
-        ipNearA=sliceModel.multilinklinelist[i0].ipa;
-        ipNearB=sliceModel.multilinklinelist[i0].ipb;
+        ipNearA=sliceModel.multilinklinelist[i0].getIndexNearPointA();
+        ipNearB=sliceModel.multilinklinelist[i0].getIndexNearPointB();
         ipLow=sliceModel.multilinklinelist[i0].ip0;
         ipHigh=sliceModel.multilinklinelist[i0].ip1;
         ipStartA=ipNearA;
@@ -130,8 +130,8 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
             agline sortnewline=sliceModel.zsortline(nextline);
             i0=sliceModel.searchLine(sortnewline);
             sliceModel.multilinklinelist[i0].touch();
-            ipNearA=sliceModel.multilinklinelist[i0].ipa;
-            ipNearB=sliceModel.multilinklinelist[i0].ipb;
+            ipNearA=sliceModel.multilinklinelist[i0].getIndexNearPointA();
+            ipNearB=sliceModel.multilinklinelist[i0].getIndexNearPointB();
             ipLow=sliceModel.multilinklinelist[i0].ip0;
             ipHigh=sliceModel.multilinklinelist[i0].ip1;
         }
