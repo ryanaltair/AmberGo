@@ -34,6 +34,7 @@ class nearPointPair{
 public:
     nearPointPair(){
     }
+    
     void setPointA(ofIndexType index){
         a=index;
     }

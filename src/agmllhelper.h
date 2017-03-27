@@ -30,7 +30,6 @@ public:
     bool printAllWrongLine(){
         bool r=true;
         for(auto &linkline:multilinklinelist){
-        
             if(linkline.isFilled()==false){
                 r=false;
             }
