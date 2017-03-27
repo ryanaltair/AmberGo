@@ -149,6 +149,15 @@ public:
         }
     
     }
+    void refresh(){
+        for(ofIndexType i=0;i<multilinklinelist.size();i=i+1){
+            multilinklinelist[i].refresh();
+        }
+    
+    }
+    
+    
+    
     float getNoHorizonHappenZ(float z){
         float zNew;
         size_t findzhorizon=ofFind(horizonFacetHeightlist, z);

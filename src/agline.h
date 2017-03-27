@@ -30,35 +30,45 @@ protected:
     bool zsort=false;
     
 };
-class nearPointPair{
+class nearPointLink{
 public:
-    nearPointPair(){
+    nearPointLink(){
+    }
+
+//    ipLow is ip0;
+//    ipHigh is ip1;
+    nearPointLink(ofIndexType pointIndex,float _z){
+        setLink(pointIndex);
+        setZ(_z);
+    }
+    void setLink(ofIndexType pointIndex){
+        link=pointIndex;
     }
     
-    void setPointA(ofIndexType index){
-        a=index;
+    ofIndexType getLink(){
+        return link;
     }
-    void setPointB(ofIndexType index){
-        b=index;
+    void setZ(float _z){
+        z=_z;
     }
-    ofIndexType getPointA(){
-        return a;
+    float getZ(){
+        return z;
     }
-    ofIndexType getPointB(){
-        return b;
-    }
-      bool isTouched(){
+    //touch
+    bool isTouched(){
         return touched;
     }
+    
     void touch(){
         touched=true;
     }
-    void untouched(){
+    void untouch(){
         touched=false;
     }
 protected:
     bool touched=false;
-    ofIndexType a,b;
+    ofIndexType link;
+    float z;
 };
 
 class agmultilinkline : public agline{
@@ -116,31 +126,25 @@ public:
         isTouch=false;
     }
     bool addNearPoint(ofIndexType ip,float nearZ){
-        if(isVoid ==true){
-            nearPointPairs.setPointA(ip);
-            nearPointPairs.setPointB(ip);
-            za=nearZ;
-            zb=nearZ;
-            isVoid=false;
-            return true;//
-        }else{
-            if(nearPointPairs.getPointA()==nearPointPairs.getPointB()&&nearPointPairs.getPointB()!=ip){
-                 nearPointPairs.setPointB(ip);
-                zb=nearZ;
-                return true;
-            }else{
-                return false;
-            }
-        }
-    }
-    bool isFilled(){
-        if(nearPointPairs.getPointA()==nearPointPairs.getPointB()){
-//            cout<<"[WRONG LINE]ip0,ip1: "<<ip0<<":"<<ip1<<"ipa,ipb:"<<ipa<<","<<ipb<<" zmax,min"<<zmax<<":"<<zmin<<" za:zb"<<za<<":"<<zb<<endl;
-            return false;
-        }else{
+        if(nearPointLinks.size()==0||(nearPointLinks.size() &1 )){// 0 or odd
+            nearPointLink pointlink(ip,nearZ);
+            nearPointLinks.push_back(pointlink);
             return true;
+        }else{
+            return false;
         }
-    
+        
+        
+        
+    }
+    bool isFilled(){//-1 for not filled
+        if( nearPointLinks.size()==2 ){
+            //            cout<<"[WRONG LINE]ip0,ip1: "<<ip0<<":"<<ip1<<"ipa,ipb:"<<ipa<<","<<ipb<<" zmax,min"<<zmax<<":"<<zmin<<" za:zb"<<za<<":"<<zb<<endl;
+            return true;
+        }else{
+            return false;
+        }
+        
     }
     /**
      add dx dy thru sorted vec3f point always notice p0.z <= p1.z
@@ -185,25 +189,29 @@ public:
         }
         return false;
     }
-    ofIndexType getIndexNearPointA(){
-        return nearPointPairs.getPointA();
+    ofIndexType getNextLink(){
+        for(auto &npl:nearPointLinks){
+            if(npl.isTouched()==false){
+                usingLinkZ=npl.getZ();
+                npl.touch();
+                return npl.getLink();
+            }
+        }
     }
-    ofIndexType getIndexNearPointB(){
-        
-        return nearPointPairs.getPointB();
+    void refresh(){
+        for(auto &npl:nearPointLinks){
+            if(npl.isTouched()){
+
+                npl.untouch();
+             
+            }
+        }
     }
-    bool nextLineUsingUpperPoint(bool isSideNearA,float z){
+    ofIndexType nextLineUsingIndex(float z){
         ofIndexType inear;// near point that next line use
         ofIndexType iline;// line point that next line use
         bool nextLineUseUpperSide;
-        float nextpointZ;
-        if(isSideNearA==true){
-        nextpointZ=za;
-            inear=nearPointPairs.getPointA();
-        }else{
-        nextpointZ=zb;
-            inear=nearPointPairs.getPointB();
-        }
+        float nextpointZ=usingLinkZ;
         if(nextpointZ>=zmax){
             nextLineUseUpperSide=false;
         }else if(nextpointZ<=zmin){
@@ -215,19 +223,20 @@ public:
                 nextLineUseUpperSide=false;
             }
         }
-        return nextLineUseUpperSide;
-    }
-    void setNearPoint(int i,ofIndexType){
-    
+        if(nextLineUseUpperSide){
+            return ip1;
+        }else{
+            return ip0;
+        }
     }
 protected:
     void setdXdY(float dX,float dY){
         dx=dX;
         dy=dY;
     }
-    nearPointPair nearPointPairs;
-//    vector<nearPointPair> nearPointPairs;
-    bool isVoid=true;
+    vector<nearPointLink> nearPointLinks;
+    //    vector<nearPointPair> nearPointPairs;
+    float usingLinkZ;
     bool isTouch=false;
     bool isHorizon=false;
     bool isVertical=false;

@@ -41,7 +41,7 @@ ofPath  agmll::layerAt(float z){
     sliceModel.alluntouched();
     ofIndexType continueflag = 0;
     
-
+    
     
     for (ofIndexType loopcount = 0; loopcount < sliceModel.multilinklinelist.size(); loopcount ++) {// every loop build a closed path
         ofIndexType iCross = sliceModel.findcrosspointat(continueflag,z);//find a cross point
@@ -79,29 +79,23 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     ofIndexType i0;//multilinklinelist[i0]
     ofIndexType iStart0;//multilinklinelist[iStart0]
     ofIndexType ipStartA;//pointlist[ipStartA]
-    ofIndexType ipHigh,ipLow;
-    ofIndexType ipNearA,ipNearB;//pointlist[ipNearA]
+    
     ofIndexType ipUsed,ipNext0,ipNext1;
     ofVec3f oldpoint;
+    sliceModel.refresh();
     int pointcount=1;
     bool isNextLineuseNearA=false;
     // ready to go
-    if(1){// get the first point
+    if(1){// set the first point
         i0=iBegin;
         //get the XY and move to
         ofVec3f XYpoint=sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z,640,384);
         oldpoint=XYpoint;
-//        cout<<"XY:"<<ofToString(XYpoint)<<endl;
+        //        cout<<"XY:"<<ofToString(XYpoint)<<endl;
         layerisland.moveTo(XYpoint.x,XYpoint.y);
+        sliceModel.multilinklinelist[i0].touch();
         // set pstart and pnext
         iStart0=i0;// when we meet iStart0 again,we end
-        sliceModel.multilinklinelist[i0].touch();
-        ipNearA=sliceModel.multilinklinelist[i0].getIndexNearPointA();
-        ipNearB=sliceModel.multilinklinelist[i0].getIndexNearPointB();
-        ipLow=sliceModel.multilinklinelist[i0].ip0;
-        ipHigh=sliceModel.multilinklinelist[i0].ip1;
-        ipStartA=ipNearA;
-        ipNext0=ipNearB;
     }
     //step loop
     int loopcount = 0;
@@ -112,51 +106,26 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         if(ipNext0>sliceModel.pointlist.size()){
             cout<<"wrong!!!!!!!!"<<endl;
         }
-        //check wrong index here
-        if(1){// get the next line with ipNext0 and ipNext1
-            // a complicated work to find out use which line
-            bool nextLineUseUpperSide=sliceModel.multilinklinelist[i0].nextLineUsingUpperPoint(isNextLineuseNearA,z);
-            // get the next line index
-            if(nextLineUseUpperSide==true){
-                ipUsed=ipLow;
-                ipNext1=ipHigh;
-            }else{
-                ipUsed=ipHigh;
-                ipNext1=ipLow;
-            }
-            // make sure ipNext1 is z higher than ipNext0
-            agline nextline;
-            nextline.set(ipNext0,ipNext1);
-            agline sortnewline=sliceModel.zsortline(nextline);
-            i0=sliceModel.searchLine(sortnewline);
-            sliceModel.multilinklinelist[i0].touch();
-            ipNearA=sliceModel.multilinklinelist[i0].getIndexNearPointA();
-            ipNearB=sliceModel.multilinklinelist[i0].getIndexNearPointB();
-            ipLow=sliceModel.multilinklinelist[i0].ip0;
-            ipHigh=sliceModel.multilinklinelist[i0].ip1;
-        }
         
-        if(true){ // get slice point and add it to the path
-            if(ipHigh>=sliceModel.pointlist.size()){
-                //                debuglinelist(i0);
-                cout<<"BAD_ACESS"<<ipHigh<<":"<<sliceModel.pointlist.size()<<endl;
-            }
-            ofVec3f XYpoint = sliceModel.getXY(sliceModel.multilinklinelist[i0],divdH,z,640,384);
-            if(oldpoint!=XYpoint){
-                layerisland.lineTo(XYpoint.x,XYpoint.y);
-                pointcount++;
-            }
-            oldpoint=XYpoint;
+        // make next line
+        // get the next line with ipNext0 and ipNext1
+        ipNext0 = sliceModel.multilinklinelist[i0].getNextLink();
+        // a complicated work to find out use which line
+        ipNext1=sliceModel.multilinklinelist[i0].nextLineUsingIndex(z);
+        // make sure ipNext1 is z higher than ipNext0
+        agline nextline;
+        nextline.set(ipNext0,ipNext1);
+        agline sortnewline=sliceModel.zsortline(nextline);
+        i0=sliceModel.searchLine(sortnewline);
+        sliceModel.multilinklinelist[i0].touch();
+        ofVec3f XYpoint = sliceModel.getXY(sliceModel.multilinklinelist[i0],divdH,z,640,384);
+        if(oldpoint!=XYpoint){
+            layerisland.lineTo(XYpoint.x,XYpoint.y);
+            pointcount++;
         }
-        if(true){  // set pnext point
-            if (ipUsed == ipNearA) {
-                isNextLineuseNearA=false;
-                ipNext0 = ipNearB;
-            } else { //ipUsed==ipNearB
-                isNextLineuseNearA=true;
-                ipNext0 = ipNearA;
-            }
-        }
+        oldpoint=XYpoint;
+        
+        
         if (i0 == iStart0){//check if the last line
             //cout<<"we end the loop path"<<endl;
             break;
@@ -207,9 +176,9 @@ ofVec3f agmll::getScale(){
     
 }
 ofMesh agmll::getSliceShell(){
-
-
-
+    
+    
+    
 }
 void agmll::addSupport(){
     vector<ofMeshFace> facets;
@@ -218,11 +187,11 @@ void agmll::addSupport(){
     for(int i=0;i<facesize;i++){
         agfacet facet;
         facet.setFromTri(facets[i].getVertex(0),facets[i].getVertex(1),facets[i].getVertex(2));
-//        facet.setNormal(facets[i].getNormal(0), facets[i].getNormal(1), facets[i].getNormal(2));
+        //        facet.setNormal(facets[i].getNormal(0), facets[i].getNormal(1), facets[i].getNormal(2));
         facet.setFaceNormal(facets[i].getFaceNormal());
         if(facet.getGradiant()>0){
-//        cout<<i<<" get gradiant:"<<facet.getGradiant()<<endl;
-        supportPolygon.append(facet.getPath());
+            //        cout<<i<<" get gradiant:"<<facet.getGradiant()<<endl;
+            supportPolygon.append(facet.getPath());
         }
     }
     supportPolygon.setPolyWindingMode(OF_POLY_WINDING_ODD);
@@ -303,7 +272,7 @@ void agmll::addFacet(){
         sliceModel.printAllWrongLine();
     }else{
         cout<<"now we never fixed "<<endl;
-
+        
     }
 }
 void agmll::addpointlist(){
