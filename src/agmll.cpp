@@ -79,20 +79,18 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     
     vector<ofIndexType> pathindexs;
     vector<ofVec3f> pathpoints;
-    pathindexs.push_back(i0);
+
     // set the first point
     ofIndexType i0=iBegin;//multilinklinelist[i0]
+    pathindexs.push_back(i0);
     //get the XY and move to
     ofVec3f XYpoint=sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z,640,384);
     ofVec3f oldpoint=XYpoint;
-    ofVec3f middlepoint;
     pathpoints.push_back(XYpoint);
     //        cout<<"XY:"<<ofToString(XYpoint)<<endl;
     sliceModel.multilinklinelist[i0].touch();
     
     //step loop
-    int loopcount = 0;
-    bool isMeetStart0 = false;
     agline nextline;
     for ( unsigned long i = 0; i < sliceModel.multilinklinelist.size() ; i++) {
         //checkpnextZ, figure out use which side as next line
@@ -126,7 +124,6 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
             i0=sliceModel.searchLine(sortnextline);
         }
         if (i0 == iBegin){//check if the last line
-            
             //cout<<"we end the loop path"<<endl;
             break;
         }
@@ -136,9 +133,13 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     ofPath layerisland;
     //now make the layer island
     layerisland.moveTo(pathpoints[0].x,pathpoints[0].y);
-    for(int p=1;p<pathpoints.size();p++){
+    ofIndexType p0,p1,p2;
+    p0=0;
+    for(ofIndexType p=1;p<pathpoints.size();p++){
+        //TO DO: add stragiht line check out
+
         layerisland.lineTo(pathpoints[p].x,pathpoints[p].y);
-        //         cout<<"path "<<p<<":"<< pathindexs[p]<<":"<<pathpoints[p]<<endl;
+        //cout<<"path "<<p<<":"<< pathindexs[p]<<":"<<pathpoints[p]<<endl;
     }
     layerisland.close();
     return layerisland;
