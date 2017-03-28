@@ -32,10 +32,11 @@ public:
         for(auto &linkline:multilinklinelist){
             if(linkline.isFilled()==false){
                 r=false;
+                 cout<<"[printAllWrongLine] line not filled"<<endl;
             }
         }
         if(r){
-            cout<<"it gets all right"<<endl;
+            cout<<"[printAllWrongLine] it gets all right"<<endl;
         }
         return r;
     
@@ -125,14 +126,14 @@ public:
             multilinklinelist.push_back(newmultiline);
             return true;
         }
-//        printZero();
+        printZero();
     }
     
     void printZero(){
         if(zero==0){
-            cout<<"is add ok"<<endl;
+            cout<<"now we check add facet ok"<<endl;
         }else{
-            cout<<"is add failed "<<endl;
+            cout<<"now we check add facet failed "<<endl;
             
         }
     }
@@ -157,13 +158,13 @@ public:
         }
     }
     void alluntouched(){
-        for(ofIndexType i=0;i<multilinklinelist.size();i=i+1){
+        for(ofIndexType i=0;i<multilinklinelist.size();i++){
             multilinklinelist[i].untouch();
         }
     
     }
     void refresh(){
-        for(ofIndexType i=0;i<multilinklinelist.size();i=i+1){
+        for(ofIndexType i=0;i<multilinklinelist.size();i++){
             multilinklinelist[i].refresh();
         }
     
