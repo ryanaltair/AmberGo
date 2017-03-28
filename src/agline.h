@@ -6,8 +6,7 @@ class agline{
 public:
     agline(){
     }
-    ofIndexType ip0,ip1;
-    
+    ofIndexType ip0,ip1;//    ipLow is ip0 after sorted  ipHigh is ip1 after sorted
     void set(ofIndexType ip0Value,ofIndexType ip1Value){
         ip0=ip0Value;
         ip1=ip1Value;
@@ -35,8 +34,6 @@ public:
     nearPointLink(){
     }
 
-//    ipLow is ip0;
-//    ipHigh is ip1;
     nearPointLink(ofIndexType pointIndex,float _z){
         setLink(pointIndex);
         setZ(_z);
@@ -80,37 +77,16 @@ public:
         if(line.getzsort()){
             ip0=line.ip0;
             ip1=line.ip1;
+            markZSortTrue();
         }else{
             ip0=line.ip1;
             ip1=line.ip0;
         }
-        markZSortTrue();
-    }
-    void set(ofIndexType ip0Value,ofIndexType ip1Value,ofIndexType ipaValue,float znear){
-        ip0=ip0Value;
-        ip1=ip1Value;
-        addNearPoint(ipaValue,znear);
-    }
-    void set(ofIndexType ip0Value,ofIndexType ip1Value,ofIndexType ipaValue,ofIndexType ipbValue,float znearA,float znearB){
-        ip0=ip0Value;
-        ip1=ip1Value;
-        addNearPoint(ipaValue,znearA);
-        addNearPoint(ipbValue,znearB);
+   
     }
     
     float dx,dy;
-    void setHorizon(){
-        isHorizon=true;
-    }
-    void setVertical(){
-        isVertical=true;
-    }
-    void setZmax(float z){
-        zmax=z;
-    }
-    void setZmin(float z){
-        zmin=z;
-    }
+   
     float getZmax(){
         return zmax;
     }
@@ -126,7 +102,9 @@ public:
         isTouch=false;
     }
     bool addNearPoint(ofIndexType ip,float nearZ){
-        if(nearPointLinks.size()==0||(nearPointLinks.size() &1 )){// 0 or odd
+        if(nearPointLinks.size()==0||(nearPointLinks.size()%2==1 )){// 0 or odd
+            
+//        if(nearPointLinks.size()==0||(nearPointLinks.size() &1 )){// 0 or odd
             nearPointLink pointlink(ip,nearZ);
             nearPointLinks.push_back(pointlink);
             return true;
@@ -139,10 +117,11 @@ public:
     }
     bool isFilled(){//-1 for not filled
         if( nearPointLinks.size()==2 ){
-            //            cout<<"[WRONG LINE]ip0,ip1: "<<ip0<<":"<<ip1<<"ipa,ipb:"<<ipa<<","<<ipb<<" zmax,min"<<zmax<<":"<<zmin<<" za:zb"<<za<<":"<<zb<<endl;
+           
             return true;
         }else{
             return false;
+             //            cout<<"[WRONG LINE]ip0,ip1: "<<ip0<<":"<<ip1<<"ipa,ipb:"<<ipa<<","<<ipb<<" zmax,min"<<zmax<<":"<<zmin<<" za:zb"<<za<<":"<<zb<<endl;
         }
         
     }
@@ -189,16 +168,18 @@ public:
         }
         return false;
     }
-    ofIndexType getNextLink(){
-        for(auto &npl:nearPointLinks){
-            if(npl.isTouched()==false){
-                usingLinkZ=npl.getZ();
-                npl.touch();
-                return npl.getLink();
-            }
+    agline getNextLine(float z){
+        agline nextline;
+        if(nextLineUsingUpperSide(z)){
+            nextline.ip0= ip1;// use upper point to make next line
+            nextline.ip1=getNextLink(ip0);
+        }else{
+            nextline.ip0= ip0;// use down side point to make next line
+            nextline.ip1=getNextLink(ip1);
         }
+        return nextline;
     }
-    void refresh(){
+        void refresh(){
         for(auto &npl:nearPointLinks){
             if(npl.isTouched()){
 
@@ -207,7 +188,21 @@ public:
             }
         }
     }
-    ofIndexType nextLineUsingIndex(float z){
+   protected:
+    void setHorizon(){
+        isHorizon=true;
+    }
+    void setVertical(){
+        isVertical=true;
+    }
+    
+    void setZmax(float z){
+        zmax=z;
+    }
+    void setZmin(float z){
+        zmin=z;
+    }
+    bool nextLineUsingUpperSide(float z){
         ofIndexType inear;// near point that next line use
         ofIndexType iline;// line point that next line use
         bool nextLineUseUpperSide;
@@ -223,13 +218,33 @@ public:
                 nextLineUseUpperSide=false;
             }
         }
-        if(nextLineUseUpperSide){
-            return ip1;
-        }else{
-            return ip0;
+        return nextLineUseUpperSide;
+    }
+
+    ofIndexType getNextLink(ofIndexType _linkFrom){
+        touchUsedLink(_linkFrom);
+        return getUntouchedLink();
+    }
+    ofIndexType getUntouchedLink(){
+        for(auto &npl:nearPointLinks){
+            if(npl.isTouched()==false){
+                usingLinkZ=npl.getZ();
+                npl.touch();
+                return npl.getLink();
+            }
         }
     }
-protected:
+    void touchUsedLink(ofIndexType linkFrom){
+        for(auto &npl:nearPointLinks){
+            if(npl.isTouched()==false){
+                if(npl.getLink()==linkFrom);
+                npl.touch();
+                return;
+            }
+        }
+        
+    }
+
     void setdXdY(float dX,float dY){
         dx=dX;
         dy=dY;

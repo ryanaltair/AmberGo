@@ -168,6 +168,7 @@ protected:
             layers.push_back(p);
             alllayertesstsHeight.push_back(z);
             an++;
+            break;
         }
         alllayertests=layers;
         isAllSliceDone=true;

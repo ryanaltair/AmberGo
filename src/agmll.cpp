@@ -75,24 +75,25 @@ ofPath  agmll::layerAt(float z){
  */
 ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     
-    ofPath layerisland;
     ofIndexType i0;//multilinklinelist[i0]
     ofIndexType iStart0;//multilinklinelist[iStart0]
     ofIndexType ipStartA;//pointlist[ipStartA]
-    
     ofIndexType ipUsed,ipNext0,ipNext1;
+    ofVec3f startpoint;
     ofVec3f oldpoint;
-    sliceModel.refresh();
+    vector<ofVec3f> pathpoints;
     int pointcount=1;
-    bool isNextLineuseNearA=false;
+    
     // ready to go
     if(1){// set the first point
         i0=iBegin;
         //get the XY and move to
         ofVec3f XYpoint=sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z,640,384);
+        startpoint=XYpoint;
         oldpoint=XYpoint;
         //        cout<<"XY:"<<ofToString(XYpoint)<<endl;
-        layerisland.moveTo(XYpoint.x,XYpoint.y);
+//        layerisland.moveTo(XYpoint.x,XYpoint.y);
+        pathpoints.push_back(XYpoint);
         sliceModel.multilinklinelist[i0].touch();
         // set pstart and pnext
         iStart0=i0;// when we meet iStart0 again,we end
@@ -101,37 +102,47 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     int loopcount = 0;
     bool isMeetStart0 = false;
     unsigned long i ;
-    for ( i = 0; i < sliceModel.multilinklinelist.size() + 1; i++) {
+    for ( i = 0; i < sliceModel.multilinklinelist.size() ; i++) {
         //checkpnextZ, figure out use which side as next line
-        if(ipNext0>sliceModel.pointlist.size()){
-            cout<<"wrong!!!!!!!!"<<endl;
-        }
+        
         
         // make next line
-        // get the next line with ipNext0 and ipNext1
-        ipNext0 = sliceModel.multilinklinelist[i0].getNextLink();
         // a complicated work to find out use which line
-        ipNext1=sliceModel.multilinklinelist[i0].nextLineUsingIndex(z);
         // make sure ipNext1 is z higher than ipNext0
-        agline nextline;
-        nextline.set(ipNext0,ipNext1);
-        agline sortnewline=sliceModel.zsortline(nextline);
-        i0=sliceModel.searchLine(sortnewline);
+        agline nextline=sliceModel.multilinklinelist[i0].getNextLine(z);;
+        if(nextline.ip1>sliceModel.pointlist.size()){
+            cout<<"wrong!!!!!!!!"<<endl;
+        }
+        agline sortnextline=sliceModel.zsortline(nextline);
+        i0=sliceModel.searchLine(sortnextline);
         sliceModel.multilinklinelist[i0].touch();
         ofVec3f XYpoint = sliceModel.getXY(sliceModel.multilinklinelist[i0],divdH,z,640,384);
         if(oldpoint!=XYpoint){
-            layerisland.lineTo(XYpoint.x,XYpoint.y);
+//            layerisland.lineTo(XYpoint.x,XYpoint.y);
+             pathpoints.push_back(XYpoint);
             pointcount++;
         }
         oldpoint=XYpoint;
         
         
         if (i0 == iStart0){//check if the last line
+            cout<<"end point count:"<<pointcount<<endl;
+            
+            sliceModel.refresh();
             //cout<<"we end the loop path"<<endl;
             break;
         }
         
     }
+    
+    ofPath layerisland;
+    //now make the layer island
+    layerisland.moveTo(pathpoints[0].x,pathpoints[0].y);
+    for(int p=1;p<pathpoints.size();p++){
+        layerisland.lineTo(pathpoints[p].x,pathpoints[p].y);
+        cout<<"path "<<p<<":"<<pathpoints[p]<<endl;
+    }
+//     layerisland.lineTo(startpoint.x,startpoint.y);
     layerisland.close();
     //    cout<<"iBegin:"<<iBegin<<"path get point :"<< pointcount<<endl;
     return layerisland;
@@ -248,12 +259,15 @@ void agmll::addFacet(){
         ofSort(sliceModel.horizonFacetHeightlist);// sort the map will help search
         //add lines to the sliceModel.linelist
         for(int i=0;i<3;i++){
-            agline newline=sliceModel.zsortline(lines[i]);
+            agline newline=sliceModel.zsortline(lines[i]);// sort the line
             //[new]
             
             
             if( sliceModel.addLine(newline,sidepoint[i])){//add line with dxdy
-                //
+           
+            }else{
+            
+            cout<<"add facet line failed"<<endl;
             }
             //[new end]
             

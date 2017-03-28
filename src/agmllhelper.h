@@ -64,18 +64,31 @@ public:
                 agmultilinkline compareLine=bufferlist[j];
                 if(ip0==compareLine.ip0||ip1==compareLine.ip0){
                     agline newline=zsortline(oldline);
-                    addLine(newline,compareLine.ip1);//add line with dxdy
+                    if(addLine(newline,compareLine.ip1)){
+                        cout<<"add wrong line success"<<endl;
+                       }
                     break;
                 }
                 if(ip0==compareLine.ip1||ip1==compareLine.ip1){
                     agline newline=zsortline(oldline);
-                    addLine(newline,compareLine.ip0);//add line with dxdy
+                    if(addLine(newline,compareLine.ip0)){
+                        
+                         cout<<"add wrong line success"<<endl;
+                    }
                     break;
                 }
             }
         }
     }
+    /**
+     add new line or fill the old with sidepoint index aka nearpointlinks
+
+     @param sortline <#sortline description#>
+     @param ipnear <#ipnear description#>
+     @return true when add success 
+     */
     bool addLine(agline sortline,ofIndexType ipnear){
+        //TO DO: add sort check
         bool isFind=false;
         ofIndexType findindex;
         if(1){
@@ -93,13 +106,13 @@ public:
         }
         if(isFind){
             if(multilinklinelist[findindex].isFilled()==true){
-                cout<<"[WRONG]"<<endl;
+                cout<<"[WRONG]:line is overdose"<<endl;
                 wrongIndexList.push_back(findindex);
+                  return false;
             }else{
-            
             multilinklinelist[findindex].addNearPoint(ipnear,pointlist[ipnear].z);
+                  return true;
             }
-            return false;
         }else{
             agmultilinkline newmultiline(sortline);
             newmultiline.addNearPoint(ipnear,pointlist[ipnear].z);
