@@ -139,7 +139,7 @@ public:
             
         }else{
             if(nearPointLinks.size()>2){
-                         cout<<"[OVER USED LINE]"<<endl;
+//                         cout<<"[OVER USED LINE]"<<endl;
             }
             return true;
         }
@@ -204,12 +204,7 @@ public:
         return lastPoint;
     }
     agline getNextLine(float z){
-        if(isFilled()){
-//            cout<<"line filled"<<endl;
-        }else{
-//            cout<<"line not filled"<<endl;
-        }
-        agline nextline;
+              agline nextline;
         int l= getUntouchedLinksIndex();;
         nextline.ip0=nearPointLinks[l].getLink();
         float nextpointZ=nearPointLinks[l].getZ();

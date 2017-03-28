@@ -32,19 +32,19 @@ public:
         for(auto &linkline:multilinklinelist){
             if(linkline.isFilled()==false){
                 r=false;
-                 cout<<"[printAllWrongLine] line not filled"<<endl;
+                cout<<"[printAllWrongLine] line not filled"<<endl;
             }
         }
         if(r){
             cout<<"[printAllWrongLine] it gets all right"<<endl;
         }
         return r;
-    
+        
     }
     void tryFix(){
         cout<<"now we try fix"<<endl;
         vector<ofIndexType> wronglinelist;
-     vector<agmultilinkline> bufferlist;// to replace linelist and nearpoint list
+        vector<agmultilinkline> bufferlist;// to replace linelist and nearpoint list
         for(int i=0;i<multilinklinelist.size();i++){
             agmultilinkline linkline=multilinklinelist[i];
             if(linkline.isFilled()==false){
@@ -53,7 +53,7 @@ public:
             }
             
         }
-    
+        
         for(int i=0;i<wronglinelist.size();i++){
             agmultilinkline line=multilinklinelist[wronglinelist[i]];
             ofIndexType ip0,ip1;
@@ -67,14 +67,14 @@ public:
                     agline newline=zsortline(oldline);
                     if(addLine(newline,compareLine.ip1)){
                         cout<<"add wrong line success"<<endl;
-                       }
+                    }
                     break;
                 }
                 if(ip0==compareLine.ip1||ip1==compareLine.ip1){
                     agline newline=zsortline(oldline);
                     if(addLine(newline,compareLine.ip0)){
                         
-                         cout<<"add wrong line success"<<endl;
+                        cout<<"add wrong line success"<<endl;
                     }
                     break;
                 }
@@ -83,10 +83,10 @@ public:
     }
     /**
      add new line or fill the old with sidepoint index aka nearpointlinks
-
+     
      @param sortline <#sortline description#>
      @param ipnear <#ipnear description#>
-     @return true when add success 
+     @return true when add success
      */
     bool addLine(agline sortline,ofIndexType ipnear){
         //TO DO: add sort check
@@ -110,10 +110,10 @@ public:
                 cout<<"[WRONG]:line is over used"<<endl;
                 wrongIndexList.push_back(findindex);
                 multilinklinelist[findindex].addNearPoint(ipnear,pointlist[ipnear].z);
-                  return false;
+                return false;
             }else{
-            multilinklinelist[findindex].addNearPoint(ipnear,pointlist[ipnear].z);
-                  return true;
+                multilinklinelist[findindex].addNearPoint(ipnear,pointlist[ipnear].z);
+                return true;
             }
         }else{
             agmultilinkline newmultiline(sortline);
@@ -162,13 +162,13 @@ public:
         for(ofIndexType i=0;i<multilinklinelist.size();i++){
             multilinklinelist[i].untouch();
         }
-    
+        
     }
     void refresh(){
         for(ofIndexType i=0;i<multilinklinelist.size();i++){
             multilinklinelist[i].refresh();
         }
-    
+        
     }
     
     
@@ -269,14 +269,35 @@ public:
     ofVec3f scaleMax;
     ofVec3f scaleMin;
     float dH=0.01;
+    bool checkLineError(agline line){
+        
+        if(  line.ip0<pointlist.size()){
+            return false;
+        }
+        if(  line.ip1<pointlist.size()){
+            return false;
+        }
+        
+        return true;
+        
+    }
+    bool checkMultiLinkedLine(agmultilinkline mline){
+        if(checkLineError(mline)==false){
+            return false;
+        }
+        if(mline.isFilled()==false){
+            return false;
+        }
+        return true;
+    }
     agline zsortline(agline line){
-      
+        
         if(line.ip0>pointlist.size()||line.ip1>pointlist.size()){
             cout<<"we get a bigggggg ip "<<line.ip0<<"\t"<<line.ip1<<"\t"<<pointlist.size()<<endl;
         }
         
         if(pointlist[line.ip0].z<pointlist[line.ip1].z){
-              // line not swap;
+            // line not swap;
         }else if(pointlist[line.ip0].z>pointlist[line.ip1].z){// ip1<ip0
             line.swap();
         }else{   // if they the same      // make sure ip0<ip1

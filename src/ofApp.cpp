@@ -229,10 +229,11 @@ void ofApp::sliceModel(){
                 
                 }
                 if(layertest.getCommands().size()>10000){
-                cout<<"now z:"<<panel.layertestZ<<":"<<layertest.getOutline().size()<<":"<<layertest.getCommands().size()<<endl;
+                cout<<"now z:"<<panel.layertestZ<<" outline count:"<<layertest.getOutline().size()<<" commands count:"<<layertest.getCommands().size()<<endl;
                     for(int i=0;i<layertest.getOutline().size();i++){
-                    cout<<"now "<<i<<":"<<layertest.getOutline()[i].size()<<endl;
                         if(layertest.getOutline()[i].size()>10000){
+                            
+                            cout<<"now "<<i<<":"<<layertest.getOutline()[i].size()<<endl;
                             cout<<"now we print the line"<<endl;
                             for(int j=0;j<layertest.getOutline()[i].getVertices().size();j++){
                                 cout<<":"<<layertest.getOutline()[i].getVertices()[j]<<endl;
