@@ -107,7 +107,9 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     for ( unsigned long i = 0; i < sliceModel.multilinklinelist.size() ; i++) {
         //checkpnextZ, figure out use which side as next line
         if(i>0){
-        sliceModel.multilinklinelist[i0].touchUsedLink(nextline.getLastpoint());
+            if(sliceModel.multilinklinelist[i0].touchUsedLink(nextline.getLastpoint())==false){
+                break;
+            }
         }
         sliceModel.multilinklinelist[i0].touch();
         pathindexs.push_back(i0);
@@ -118,35 +120,33 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
             pointcount++;
         }
         oldpoint=XYpoint;
-        
-        
-        
-
-        
         // make next line
         // a complicated work to find out use which line
         // make sure ipNext1 is z higher than ipNext0
+        if(sliceModel.multilinklinelist[i0].isFilled()==false){
+            cout<<"quick break"<<endl;
+          break;
+        }
           nextline=sliceModel.multilinklinelist[i0].getNextLine(z);;
         if(nextline.ip1>sliceModel.pointlist.size()){
             cout<<"wrong!!!!!!!!"<<endl;
         }
+        sliceModel.zsortline(nextline);
         agline sortnextline=sliceModel.zsortline(nextline);
         i0=sliceModel.searchLine(sortnextline);
         if (i0 == iStart0){//check if the last line
-            cout<<"end point count:"<<pointcount<<endl;
-            
-            
+//            cout<<"end point count:"<<pointcount<<endl;
             //cout<<"we end the loop path"<<endl;
             break;
         }
     }
-     cout<<"path point count:"<<pathpoints.size()<<endl;
+//     cout<<"path point count:"<<pathpoints.size()<<endl;
     ofPath layerisland;
     //now make the layer island
     layerisland.moveTo(pathpoints[0].x,pathpoints[0].y);
     for(int p=1;p<pathpoints.size();p++){
         layerisland.lineTo(pathpoints[p].x,pathpoints[p].y);
-        cout<<"path "<<p<<":"<< pathindexs[p]<<":"<<pathpoints[p]<<endl;
+//         cout<<"path "<<p<<":"<< pathindexs[p]<<":"<<pathpoints[p]<<endl;
     }
 //     layerisland.lineTo(startpoint.x,startpoint.y);
     layerisland.close();

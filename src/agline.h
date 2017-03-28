@@ -7,7 +7,11 @@ public:
     agline(){
     }
     ofIndexType ip0,ip1;//    ipLow is ip0 after sorted  ipHigh is ip1 after sorted
-    
+    void swap(){
+        ofIndexType iswap=ip0;
+        ip0=ip1;
+        ip1=iswap;
+    }
     void set(ofIndexType ip0Value,ofIndexType ip1Value){
         ip0=ip0Value;
         ip1=ip1Value;
@@ -117,7 +121,11 @@ public:
             nearPointLinks.push_back(pointlink);
             return true;
         }else{
-            cout<<"add near point failed"<<endl;
+            
+            
+            cout<<"add more near point"<<endl;
+            nearPointLink pointlink(ip,nearZ);
+            nearPointLinks.push_back(pointlink);
             return false;
         }
         
@@ -125,12 +133,15 @@ public:
         
     }
     bool isFilled(){//-1 for not filled
-        if( nearPointLinks.size()==2 ){
-            
-            return true;
-        }else{
+        if(nearPointLinks.size()==0||(nearPointLinks.size()%2==1 )){
             return false;
             //            cout<<"[WRONG LINE]ip0,ip1: "<<ip0<<":"<<ip1<<"ipa,ipb:"<<ipa<<","<<ipb<<" zmax,min"<<zmax<<":"<<zmin<<" za:zb"<<za<<":"<<zb<<endl;
+            
+        }else{
+            if(nearPointLinks.size()>2){
+                         cout<<"[OVER USED LINE]"<<endl;
+            }
+            return true;
         }
         
     }
@@ -177,15 +188,16 @@ public:
         }
         return false;
     }
-    void touchUsedLink(ofIndexType linkFrom){
+    bool touchUsedLink(ofIndexType linkFrom){
         for(auto &npl:nearPointLinks){
             if(npl.isTouched()==false){
                 if(npl.getLink()==linkFrom){
                     npl.touch();
-                    return;
+                    return true;
                 }
             }
         }
+        return false;
         cout<<"[error]we failed to touch the used link"<<endl;
     }
     ofIndexType getLastPoint(){//only used when get nextLine
@@ -193,9 +205,9 @@ public:
     }
     agline getNextLine(float z){
         if(isFilled()){
-            cout<<"line filled"<<endl;
+//            cout<<"line filled"<<endl;
         }else{
-            cout<<"line not filled"<<endl;
+//            cout<<"line not filled"<<endl;
         }
         agline nextline;
         int l= getUntouchedLinksIndex();;
