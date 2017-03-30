@@ -195,7 +195,7 @@ public:
         return zNew;
     }
     
-    ofVec3f getXY(agmultilinkline mlline,float divdH,float z,float xstart,float ystart){
+    ofVec3f getXYZ(agmultilinkline mlline,float divdH,float z,float xstart,float ystart){
         //TO DO:
         ofVec3f pH;
         ofVec3f pL;
@@ -218,6 +218,11 @@ public:
         returnpoint.z=z;
         return returnpoint;
     }
+    ofVec2f getXY(agmultilinkline _mlline,float _divdH,float _z,float _xstart,float _ystart){
+       ofVec2f p= ofVec2f(getXYZ(  _mlline,  _divdH,  _z,  _xstart,  _ystart));
+        return p;
+    }
+
     
     void checkScale(ofVec3f p){
         if(p.x>=scaleMax.x){
