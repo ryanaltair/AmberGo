@@ -1,70 +1,66 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxAssimpModelLoader.h"
 #include "agmll.h"
-#include "ofxDatGui.h"
 #include "agplate.h"
 #include "agpanel.h"
 #include "agSliceManager.h"
-
-
+#include "agAppPreference.h"
+#include "agOutputManager.h"
+#include "agEasyTimeLog.h"
 
 class ofApp : public ofBaseApp {
-	public:
+public:
     //gl loop
-		void setup();
-		void update();
-		void draw();
+    void setup();
+    void update();
+    void draw();
     // events
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y);
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-    //add on
+    void keyPressed(int key);
+    void keyReleased(int key);
+    void mouseMoved(int x, int y);
+    void mouseDragged(int x, int y, int button);
+    void mousePressed(int x, int y, int button);
+    void mouseReleased(int x, int y, int button);
+    void mouseEntered(int x, int y);
+    void mouseExited(int x, int y);
+    void windowResized(int w, int h);
+    void dragEvent(ofDragInfo dragInfo);
+    void gotMessage(ofMessage msg);
+    void exit();
+private:
+    //side window
+    void drawSideWindow(ofEventArgs & args);
+    ///snap
+    /**
+     draw the fbo which hold the slicelayer
+     */
+    void drawFBO(ofPath pathdraw); 
+    void outputLayer();
+    /**
+     when loadpath was changed,
+     it will load model with thread called merger
+     */
     void loadModel();
-		
-    // threaded object. Merger
-    agSliceManager merger;
-    bool bLoaded=false;
+    void sliceModel();
+    void checkNeedSlice();
+    agSliceManager threadSlice;// threaded object. Merger
+    bool bModelLoaded=false;
+    agplate plate;//palte
+    agpanel panel;    //GUI
+    agAppPreference apppreference;// store the prefer
+    ofPath layertest;//output layer
+    ofPath layertestDraw;//output layer use to display
+    agOutputManager outputManager;
+    string modelpath;  //drag and drop info
+   
 
     
-    //palte
-    agplate plate;
+    bool bSnapshot=false;
+    ofFbo fbo;
+    ofPixels pixelsbuffer;
+    ofPixels pixelsbuffervoid;
     
-    //GUI
-    agpanel panel;
-    
-    //model load from assimp
-    ofxAssimpModelLoader assimpLoader;
-    private:
-    //
-    ofMesh readyModel;
-
-    // test theory
-    float layertestZlast=0;
-    float layertestZ=0;
-
-    //output layer
-    ofPath layertest;
-    ofMatrix4x4 layertestmove;
-
-      
-    // addons ofxMLL
-    agmll mll;
-    ofVec3f meshScale;
-    
-    
-
-    //drag and drop info
-    string modelpath;
-    bool isModelChanged=false;
-    
+   //timetest
+    easyLogTimer easyLogTime;
 };

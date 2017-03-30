@@ -1,13 +1,48 @@
 #include "ofMain.h"
 #include "ofApp.h"
 
+#ifdef _WIN32
+#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+#endif
+
 //========================================================================
 int main( ){
-	ofSetupOpenGL(1280,768,OF_WINDOW);			// <-------- setup the GL context
+    ofSetupOpenGL(800,600-22, OF_WINDOW);			// <-------- setup the GL context
+    ofRunApp( new ofApp());
+/**
+    ofGLFWWindowSettings mainWindowSetting;
+    ofGLFWWindowSettings sideWindowSetting;
+    mainWindowSetting.width = 800;
+    mainWindowSetting.height = 600;
+    mainWindowSetting.windowMode=OF_WINDOW;
+    //settings.setPosition(ofVec2f(300,0));
+    mainWindowSetting.resizable = true;
+    mainWindowSetting.monitor=0;
+    auto mainWindow = ofCreateWindow(mainWindowSetting);
+    
+    sideWindowSetting.width = 1280;
+    sideWindowSetting.height = 768;
+    
+//    sideWindowSetting.windowMode=OF_WINDOW;
 
-	// this kicks off the running of my app
-	// can be OF_WINDOW or OF_FULLSCREEN
-	// pass in width and height too:
-	ofRunApp(new ofApp());
+    sideWindowSetting.windowMode=OF_FULLSCREEN;
+    sideWindowSetting.visible=false;
+    //settings.setPosition(ofVec2f(0,0));
+    sideWindowSetting.resizable = true;
+    // uncomment next line to share main's OpenGL resources with gui
+    sideWindowSetting.shareContextWith = mainWindow;
 
+    //sideWindowSetting.monitor=1;
+    auto sideWindow = ofCreateWindow(sideWindowSetting);
+    sideWindow->setWindowTitle("sidePlay");
+    sideWindow->setVerticalSync(false);
+ 
+   
+    shared_ptr<ofApp> mainApp(new ofApp);
+    //mainApp->setupGui();
+    ofAddListener(sideWindow->events().draw,mainApp.get(),&ofApp::drawSideWindow);
+    
+    ofRunApp(mainWindow, mainApp);
+    ofRunMainLoop();
+ **/
 }

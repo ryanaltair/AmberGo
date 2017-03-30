@@ -2,92 +2,135 @@
 
 agplate::agplate(){
     
-    boxSize.x=1280;//126.72mm
-    boxSize.y=800;//74.88mm
-    boxSize.z=1393;//138mm
-    groundheight=10;
-    mreset.setTranslation(0, 0, 0);
+    boxSize.x=126.72; //1280;//126.72mm
+    boxSize.y=74.88; //800;//74.88mm
+    boxSize.z=138;//1393;//138mm
+    groundheight=2;
+    
+    
 }
 agplate::~agplate(){
-
+    
 }
 
 
+/**
+ init the playground and box , and cam
+ */
 void agplate::setup(){
+    //cam.orbit(180, 0, cam.getDistance());
+    cam.orbit(0, 40, cam.getDistance());
     playground.set(boxSize.x,boxSize.y,groundheight);
-    mplayground.setTranslation(0, 0,-groundheight*0.5);
-    playground.setTransformMatrix(mplayground);
-    
+    playground.setPosition(0, 0,-groundheight*0.5);
     outsideBox.set(boxSize.x,boxSize.y,boxSize.z);
-    moutsideBox.setTranslation(0, 0, 0);
-    outsideBox.setTransformMatrix(moutsideBox);
-    sliceLayPlane.set(1280,800,0.4);
+    outsideBox.setPosition(0,0,0);
+    sliceLayPlane.set(boxSize.x,boxSize.y,0.4);
+    cam.setDistance(140);
+    cam.move(0,0,40);// lift up the cam so we see clear
+    for(int i=0;i<5;i++){
+        ofLight l;
+        ofNode c;
+        c.setPosition(0, 0, 0);
+        l.lookAt(c);
+        aroundLight.push_back(l);
+        aroundLight[i].setup();
+        
+    }
+    ofNode c;
+    c.setPosition(0, 0, 0);
+    if(1){
+        int x,y,z;
+        x=playground.getWidth()/2+10;
+        y=playground.getHeight()/2+10;
+        z=-10;
+    aroundLight[0].setPosition(x, y, z); 
+    aroundLight[1].setPosition(-x, -y, z);
+    aroundLight[2].setPosition(x, -y, z);
+    aroundLight[3].setPosition(-x, y, z);
+    aroundLight[4].setPosition(0, 0, 120);
     
-    cam.setDistance(2000);
+    }
     
-    mreadyModel.setTranslation(0, 0, modelSize.z*0.5);
 }
 
 void agplate::update(){
-    mreadyModel.setTranslation(0, 0, 0);
-    msliceLayPlane.setTranslation(0, 0, layertestZ);
+    
 }
 
-void agplate::sliceAt(float Z){
-    layertestZ=Z;
 
+
+void agplate::sliceAt(float Z){
+    slicelayerZ=Z;
+    
 }
 
 void agplate::addModel(ofMesh model){
+    drawmode=0;
+    of3dPrimitive nodemodel;
     nodemodel.getMesh()=model;
-    if(models.size()>0){
-        models[0]=model;
+    if(nodemodels.size()>0){
+        nodemodels[0]=nodemodel;
     }else{
-        models.push_back(model);
+        nodemodels.push_back(nodemodel);
+       
     }
     cout<<"add a model in plate"<<endl;
-
-
-}
-void agplate::addModel(string modelpath){
-    assimploader.loadModel(modelpath);
-    nodemodel.getMesh()=assimploader.getMesh(0);
-    cout<<"add a model in plate"<<endl;
     
     
 }
-void agplate::drawincamera(){
-    cam.begin();
 
+void agplate::drawincamera(ofRectangle view){
+    cam.begin(view);
+    ofBackground(255,255,255);// a white with bit yellow
     if(sliceLayPlaneEnable==1){
-
-        ofSetColor(255,0,0,127);
-        sliceLayPlane.setTransformMatrix(msliceLayPlane);
-        sliceLayPlane.draw();
+        
+        ofSetColor(96,185,287);
+        sliceLayPlane.setPosition(0, 0, slicelayerZ);
+                sliceLayPlane.draw();
         
     }
-     drawModel();
-     // the ground
-    ofSetColor(150);
-    playground.draw();
-        // the outsidebox
+    
+    if(1){
+        ofSetSmoothLighting(true);
+        for(auto &light:aroundLight){
+//            light.draw();
+            light.enable();
+        }
+    } 
+    drawModels();
+    ofSetColor(124, 121, 119);// 100,149,237, CornflowerBlue
+    playground.draw();// the ground
+    
     if(outsideBoxEnable==1){
         ofSetColor(20, 20, 20, 50);
-           outsideBox.draw();
-     }
-   
-    cam.end();
-}
-void agplate::drawModel(){
-    ofSetColor(ofColor::darkCyan);
-    if(models.size()>0){
-        // the model
-        //  models[0].draw();
+        //  outsideBox.draw();  // the outsidebox
     }
-    nodemodel.setTransformMatrix(mreadyModel);
-    //nodemodel.draw();
-      ofSetColor(ofColor::black);
-nodemodel.drawWireframe();
+    ofDisableLighting();
+    cam.end();
+    //envlight.disable();
+}
+void agplate::drawModels(){
+    if(drawmode==1){
+        return;
+    }
+    if(drawmode==0){
+        
+    }
+    if(nodemodels.size()>0){
+        
+        ofSetColor(123, 123, 123);//
+        nodemodels[0].draw();
+        ofSetColor(ofColor::black);
+        nodemodels[0].drawWireframe();
+    }
+    //envlight.disable();
+    
 }
 
+void agplate::setPosition(ofVec3f newpostion){
+    if(nodemodels.size()>0){
+        nodemodels[0].setPosition(newpostion);
+        cout<<"position"<<ofToString(newpostion);
+    }
+}
 

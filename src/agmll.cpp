@@ -1,296 +1,164 @@
 #include "agmll.h"
 
 agmll::agmll(){
-
-
+    divdH=1/dH;
+    
 }
-
-void agmll::setup(ofMesh mesh){
+agmll::~agmll(){
+    mergedMesh.clear();
+    
+}
+void agmll::load(ofMesh mesh){
+    mergedMesh.clear();
     mergedMesh=mesh;
-    
-    //clean up
-    pointlist.clear();
-    linelist.clear();// {p0 p1} the index point to point list
-    linehorizonlist.clear();// is this line horizon true horizon // add with addnewline work with adddXdY
-    nearpointlist.clear();//{pa pb} the index point to point list
-    dXdYlist.clear();// add with addnewline work with adddXdY
-    
-    //process -> 0
-    ismeshMerged=0;//100 means done
-    islinelistfilled=0;//100 means filled
-    isdXdYlistfilled=0;//100 means filled
-    isAllReady=0;//100 means all done
-
-    // progress flag
-     linelistloaded=0;
-     dxdylistloaded=0;
+    indexsize=mesh.getNumIndices();
+    supportPolygon.clear();
 }
-
-void agmll::update(){
-    //this update will put inside the app update
+/**
+ use swap to clean the vector
+ */
+void agmll::cleanmermory(){
+    // let us do the clean
+    sliceModel.cleanmermory();
+    //
+}
+void agmll::prepareModel(){
+    cleanmermory();
     //calc work here
-    // step 1: merge mesh points
-    if(ismeshMerged<100){
-        mergedMesh.mergeDuplicateVertices();
-        addpointlist(mergedMesh);
-        getScale(mergedMesh);
-        ismeshMerged=100;
-        return;
-    }
-    // step 2: add line list
-    if(islinelistfilled<100){
-        int loadstep=10;
-        if(linelistloaded>=mergedMesh.getNumIndices()){
-            islinelistfilled=100;
-            for(int i=0;i<linelist.size();i++){
-            ////cout<<i<<":"<<linelist[i]<<"\n";
-            }
-            return;
-        }
-        for(size_t i=linelistloaded;i<mergedMesh.getNumIndices()/3&&i<linelistloaded+loadstep;i+=1){
-            addface(mergedMesh, i);
-        }
-        ////cout<<"linelist:"<<linelist.size()<<"++++++++++++++++++"<<"\n";
-        linelistloaded+=loadstep;
-        return;
-    }
-    
-    // step 3: add dXdY
-    if(isdXdYlistfilled<100){
-        int dxdyloadstep=1;
-        if(dxdylistloaded>=linelist.size()){
-            isdXdYlistfilled=100;
-            return;
-        }
-        for(size_t i=dxdylistloaded;i<linelist.size()/2&&i<dxdylistloaded+dxdyloadstep;i+=1){
-            adddXdY(i);
-            
-        }
-        ////cout<<"dxdylist:"<<dxdylistloaded<<"++++++++++++++++++"<<"\n";
-        dxdylistloaded+=dxdyloadstep;
-        return;
-    }
-    // step 4: to do list
-    if(isAllReady<100){
-    
-    }
-   
+    mergedMesh.mergeDuplicateVertices();// step 1: merge mesh points
+    cout<<"Normals count is "<<mergedMesh.getNumNormals()<<endl;
+    addSupport();
+    getScale();
+    addFacet();  // step 2: add line list
 }
-//step reset
-void agmll::stepreset(){
-
-    //stepreset
-    ipstartL=0;
-    ipstartH=0; // ipstart0<ipstart1 always
-    ipstarta=0;// we never use ipa as next point until we find it
-    ////cout<<"ipstart:"<<ipstartL<<":"<<ipstartH<<"\n";
-    ipnext=0;
-    ipused=0;
-    
-    ip0=0;//linelist[ip0]
-    ip1=0;//linelist[ip1]
-    iplp0=0;//pointlist[iplp0]
-    iplp1=0;//pointlist[iplp1]
-    
-    ipH=0;
-    ipL=0;
-    ipa=0;//ipa=nearpointlist[ip0]
-    ipb=0;//ipb=nearpointlist[ip1]
-    //dX=dXdYlist[ip0]
-    //dY=dXdYlist[ip1]
-    // how to refer a point
-    // point =pointlist[iplp0]
-    // point =pointlist[linelist[ip0]]
-    // point =pointlist[nearpointlist[ip0]]
-    // point =pointlist[ipa]
-    
-    
-
-}
-void agmll::stepstart(ofIndexType i){
-    ip0=i;
-    ip1=ip0+1;
-    ipa=nearpointlist[ip0];
-    ipb=nearpointlist[ip1];
-    ////cout<<"we find the cross point done"<<"\n";
-    // get the first point XY
-    // get the ph pl
-    getipHipLfrom(ip0, ip1);
-
-    //get the XY and move to
-    ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, testatZ);
-    
-    //layertestpath.moveTo(XYpoint.x,XYpoint.y);
-    addPointMoveToPath(XYpoint);
-    // set pstart and pnext
-    ipstarta=ipa;
-    ipstartL=ipL;
-    ipstartH=ipH;
-    //cout<<"now we change the startpoint"<<endl;
-    //cout<<"startA:"<<ipstarta<<endl;
-    //cout<<"line list [a]:"<<linelist[ipstarta]<<endl;
-    //cout<<"start at H L a:"<<ofToString(pointlist[linelist[ipstartH]])<<":"<<ofToString(pointlist[linelist[ipstartL]])<<":"<<ofToString(pointlist[linelist[ipstarta]])<<endl;
-    ipnext=ipb;
-}
-void agmll::getipHipLfrom(ofIndexType indexpoint0, ofIndexType indexpoint1){
-    if (linetypelist[indexpoint0+1]==riseline) {
-        ipL=linelist[indexpoint0];
-        ipH=linelist[indexpoint1];
-    }else{
-        ipL=linelist[indexpoint1];
-        ipH=linelist[indexpoint0];
-    }
-}
-ofIndexType agmll::findnextline(ofIndexType nextlineip0, ofIndexType nextlineip1){
-    iplp0=nextlineip0;
-    iplp1=nextlineip1;
-    if(iplp0<iplp1){
-        //do nothing
-    }else{// ip0>ip1 need swap
-        ofIndexType iplp2=iplp1;
-        iplp1=iplp0;
-        iplp0=iplp2;
-    }
-    //find the iplp0 iplp1
-    for(int i=0;i<linelist.size();i+=2){
-        if(linelist[i]==iplp0&&linelist[i+1]==iplp1){
-            ip0=i;
-            ip1=i+1;
-            ipa=nearpointlist[ip0];
-            ipb=nearpointlist[ip1];
-            justtouch(ip0);
-            debuglinelist(ip0);
-            break;
-        }
-    }
 
 
-}
-void agmll::checkpnextZ(){
-    if(pointlist[ipnext].z<=testatZ){
-        ipused=ipL;
-        iplp0=ipH;
-        iplp1=ipnext;
-        if(pointlist[ipnext].z==testatZ){
-            testatZoffset=0.000001;
-        }
-    }else{
-        ipused=ipH;
-        iplp0=ipL;
-        iplp1=ipnext;
-    }
-
-}
 // public
-ofPath agmll::layertestat(float z){
-    cout<<"------layertest start------"<<endl;
-    alluntouched();
-    continueflag=0;
-    layertestpath.clear();
-    testatZ=z;
+ofPath  agmll::layerAt(float z){
+    z += sliceModel.scaleMin.z;
+    z=sliceModel.getNoHorizonHappenZ(z);
     ofPath returnpath;
-    if(isdXdYlistfilled!=100){
-        return returnpath;
-    }
+    sliceModel.alluntouched();
+    ofIndexType continueflag = 0;
     
-    for(ofIndexType continuepoint=0;continuepoint<linelist.size();continuepoint+=2){
-
-        //continuepoint=linelist.size();
-    stepreset();
-    //step start
-    // find a cross point
-        if(continueflag==linelist.size()){break;}
-        ofIndexType iCross=findcrosspointat(z);
-        if(iCross==1){// iCross== 1 means we failed to find the cross point
+    for (ofIndexType loopcount = 0; loopcount < sliceModel.multilinklinelist.size(); loopcount ++) {// every loop build a closed path
+        ofIndexType iCross = sliceModel.findcrosspointat(continueflag,z);//find a cross point
+        continueflag=iCross+1;
+        if (iCross < sliceModel.multilinklinelist.size()) { // iCross== sliceModel.linelist.size means we failed to find the cross
+            returnpath.append(layerCloseLoop(z,iCross));// add the single closed loop to the returnpath
+        }else{
+            break;// that we failed to a slice layer because there is nothing on this layer
+        }
+    }
+    returnpath.close();
+    sliceModel.refresh();
+    returnpath.setStrokeColor(ofColor::white);
+    returnpath.setFilled(false);
+    returnpath.setStrokeWidth(10);
+    if(1){
+        returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
+        returnpath.setStrokeColor(ofColor::gray);
+        returnpath.setFillColor(ofColor::white);
+        returnpath.setFilled(true);
+        returnpath.setStrokeWidth(1);
+    }
+    return returnpath;
+}
+/**
+ one closed loop path in Z , stalk from that sliceModel.linelist[iBegin]
+ 
+ @param z slice height
+ @param ipbegin sliceModel.linelist[ipbegin,ipbein]
+ @return whole slice layer as ofPath
+ */
+ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
+    
+    
+    vector<ofIndexType> pathindexs;
+    
+    
+    // set the first point
+    ofIndexType i0=iBegin;//multilinklinelist[i0]
+    
+    //step loop
+    agline nextline;
+    for ( unsigned long i = 0; i < sliceModel.multilinklinelist.size() ; i++) {
+        //checkpnextZ, figure out use which side as next line
+        if(sliceModel.checkLineError(sliceModel.multilinklinelist[i0])){
             break;
         }
-        layertestpath.clear();
-        
-        ip0=iCross;
-    //cout<<"find a start"<<ip0<<"at"<<continuepoint<<" flag is:"<<continueflag<<endl;
-        //debuglinelist(ip0);
-    stepstart(ip0);
-    
-  
-    //step loop
-  //  //cout<<"we just going to loop"<<"\n";
-    
-    int loopcount=0;
-    bool isloopover=false;
-    int finalsteptogo=1;
-    for(int i=0;i<linelist.size()+1;i+=2){
-        if(isloopover!=true&&ipnext==ipstarta){
-            isloopover=true;
-           //cout<<"now loop will over soon"<<"\n";
-            //cout<<ipnext<<" to "<<linelist[ipstarta]<<endl;
-            
-        }else{
-           // cout<<ipnext<<" to "<<linelist[ipstarta]<<endl;
-        }
-        
-        loopcount++;
-        //cout<<"loop:"<<loopcount<<endl;
-        // check z with pnext
-        checkpnextZ();
-        //find the lnext that have linelist[i]=iplp0 linelist[i+1]=iplp1
-       // so we find next line
-        findnextline(iplp0,iplp1);
-
-        //then we get the new ipH ipL from new ip0 ip1
-        getipHipLfrom(ip0, ip1);
-        
-        //check if it the last line?
-        if(isloopover==true){
-            if((ipL==ipstartL&&ipH==ipstartH)||(ipL==ipstartH&&ipH==ipstartL)){
-                finalsteptogo=0;
-                cout<<"we find the last line "<<"\n";
-            }else{
-                //cout<<"we are near the last line surely"<<"\n";
-                //cout<<"ipL ipH:"<<ipL<<" "<<ipH<<"start"<<ipstartL<<" "<<ipstartH<<"\n";
-            }
-        }
-        ////cout<<"so we find the pl ph"<<ipL<<","<<ipH<<"\n";
-        ofVec3f XYpoint=getXY(pointlist[ipH], pointlist[ipL], dXdYlist[ip0], dXdYlist[ip1], dH, z);
-        //layertestpath.lineTo(XYpoint.x,XYpoint.y);
-        addPointLineToPath(XYpoint);
-        //cout<<"we now line to x y "<<XYpoint.x<<","<<XYpoint.y<<" to path"<<endl;
-        
-        if(isloopover==true){
-            if(finalsteptogo==0){
-               cout<<"now we go out"<<"\n";
+        if(i>0){
+            if(sliceModel.multilinklinelist[i0].touchUsedLink(nextline.getLastpoint())==false){
                 break;
             }
         }
-        // set pnext
-        if(ipused==ipa){
-            ipnext=ipb;
-        }else{//ipused==ipb
-            ipnext=ipa;
+        sliceModel.multilinklinelist[i0].touch();
+        pathindexs.push_back(i0);
+        // make next line
+        // a complicated work to find out use which line
+        if(sliceModel.multilinklinelist[i0].isFilled()==false){// check first
+            cout<<"now we meet unfilled line so quick break"<<endl;
+            break;
+        }
+        nextline=sliceModel.multilinklinelist[i0].getNextLine(z);;
+        if(sliceModel.checkLineError(nextline)){
+            break;
+        }else{
+            //agline sortnextline=;
+            i0=sliceModel.searchLine(nextline);
+        }
+        if (i0 == iBegin){//check if the last line
+            //cout<<"we end the loop path"<<endl;
+            break;
         }
         
     }
-    layertestpath.close();
-        returnpath.append(layertestpath);
-        cout<<"now we close the sub path"<<endl;
-    }
+    
+    
+    vector<ofVec2f> pathpointsNew;
+    ofVec2f XYpoint0=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[0]], divdH, z,640,384);
+    ofVec2f XYpoint1=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[1]], divdH, z,640,384);
+    ofVec2f XYpoint2=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[2]], divdH, z,640,384);
 
-   // returnpath=layertestpath;
-     cout<<"------layertest end------"<<endl;
-    returnpath.close();
-    returnpath.setPolyWindingMode(OF_POLY_WINDING_ODD);
-    returnpath.setStrokeColor(ofColor::blue);
-    returnpath.setFillColor(ofColor::white);
-    returnpath.setFilled(true);
-    cout<<"windingmode"<<returnpath.getWindingMode()<<endl;
-    returnpath.setStrokeWidth(1);
-    return returnpath;
+    pathpointsNew.push_back(XYpoint0);
+    if(pathindexs.size()>=3){
+        for(ofIndexType i=2;i<pathindexs.size();i++){
+            XYpoint0= XYpoint1;
+            XYpoint1= XYpoint2;
+            XYpoint2=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[i]], divdH, z,640,384);
+            ofVec2f line0=XYpoint1-XYpoint0;
+            ofVec2f line1=XYpoint2-XYpoint0;
+            
+            if(line0.isAligned(line1) ){
+                if(0){ // simpify the pathpoints set zero
+                    pathpointsNew.push_back(XYpoint1);
+                }
+            }else{
+                pathpointsNew.push_back(XYpoint1);
+            }
+        }
+        pathpointsNew.push_back(XYpoint2);
+    }
+    
+
+    //now make the layer island
+        ofPath layerisland;
+    layerisland.moveTo(pathpointsNew[0].x,pathpointsNew[0].y);
+    for(ofIndexType p=1;p<pathpointsNew.size();p++){
+        
+        layerisland.lineTo(pathpointsNew[p].x,pathpointsNew[p].y);
+        
+        //cout<<"path "<<p<<":"<< pathindexs[p]<<":"<<pathpoints[p]<<endl;
+    }
+    layerisland.close();
+    return layerisland;
 }
 
 ofVec3f agmll::getScale(){
     ofMesh mesh=mergedMesh;
-    ofVec3f a;
+    ofVec3f a;// the min
     a.x=a.y=a.z=0;
-    ofVec3f b;
+    ofVec3f b;// the max
     b.x=b.y=b.z=0;
     
     ofVec3f scale;
@@ -324,405 +192,119 @@ ofVec3f agmll::getScale(){
     return scale;
     
 }
-
-ofVec3f agmll::getScale(ofMesh mesh){
-    ofVec3f a;
-    a.x=a.y=a.z=0;
-    ofVec3f b;
-    b.x=b.y=b.z=0;
+ofMesh agmll::getSliceShell(){
     
-    ofVec3f scale;
-    for (ofIndexType i=0; i<mesh.getNumVertices(); i++) {
-        // a
-        if(mesh.getVertex(i).x>=a.x){
-            a.x=mesh.getVertex(i).x;
-        }
-        if(mesh.getVertex(i).y>=a.y){
-            a.y=mesh.getVertex(i).y;
-        }
-        if(mesh.getVertex(i).z>=a.z){
-            a.z=mesh.getVertex(i).z;
-        }
-        
-        //b
-        if(mesh.getVertex(i).x<=b.x){
-            b.x=mesh.getVertex(i).x;
-        }
-        if(mesh.getVertex(i).y<=b.y){
-            b.y=mesh.getVertex(i).y;
-        }
-        if(mesh.getVertex(i).z<=b.z){
-            b.z=mesh.getVertex(i).z;
-        }
-    }
-    scale=a-b;
-    meshScale=scale;
-    meshMin=b;
-    meshMax=a;
-    return scale;
+    
     
 }
-
-void agmll::addface(ofMesh mesh,ofIndexType i){
-    i=i*3;
+void agmll::addSupport(){
+    vector<ofMeshFace> facets;
+    facets=mergedMesh.getUniqueFaces();
+    size_t facesize= facets.size();
+    for(int i=0;i<facesize;i++){
+        agfacet facet;
+        facet.setFromTri(facets[i].getVertex(0),facets[i].getVertex(1),facets[i].getVertex(2));
+        //        facet.setNormal(facets[i].getNormal(0), facets[i].getNormal(1), facets[i].getNormal(2));
+        facet.setFaceNormal(facets[i].getFaceNormal());
+        if(facet.getGradiant()>0){
+            //        cout<<i<<" get gradiant:"<<facet.getGradiant()<<endl;
+            supportPolygon.append(facet.getPath());
+        }
+    }
+    supportPolygon.setPolyWindingMode(OF_POLY_WINDING_ODD);
+    supportPolygon.setStrokeColor(ofColor::white);
+    supportPolygon.setFillColor(ofColor::blue);
+    supportPolygon.setFilled(true);
+    supportPolygon.setStrokeWidth(1);
+}
+/**
+ add sliceModel.linelist and sliceModel.nearpointlist
+ */
+void agmll::addFacet(){
+    addpointlist();//
     // get the point first
-    ofIndexType ia=mesh.getIndex(i);
-    ofIndexType ib=mesh.getIndex(i+1);
-    ofIndexType ic=mesh.getIndex(i+2);
-    ofVec3f pa=mesh.getVertex(ia);
-    ofVec3f pb=mesh.getVertex(ib);
-    ofVec3f pc=mesh.getVertex(ic);
-    //cout<<"ia,ib,ic"<<ia<<ib<<ic<<"\n";
-    if(i==0){// first face
-        //ab
-        addnewline(ia,ib, ic);
-        //ac
-        addnewline(ia,ic,ib);
-        //bc
-        addnewline(ib,ic,ia);
-        //cout<<"first 3 line"<<"\n";
-    }else{//i>0
+    ofIndexType ipA;
+    ofIndexType ipB;
+    ofIndexType ipC;
+    ofIndexType ifacet;
+    counter0=0;
+    counter1=0;
+    ofIndexType facetcount=0;
+    
+    for(ifacet=0;ifacet<mergedMesh.getNumIndices();ifacet+=3){//ifacet>0
+        // get the point first
+        ipA=mergedMesh.getIndex(ifacet);
+        ipB=mergedMesh.getIndex(ifacet+1);
+        ipC=mergedMesh.getIndex(ifacet+2);
+        agline lineAB,lineAC,lineBC;
+        vector<agline> lines;
+        vector<ofIndexType> sidepoint;
+        lines.resize(3);
+        sidepoint.resize(3);
+        //add index to lines
+        //        lines[0].set(ipA,ipB,ipC);
+        lines[0].set(ipA,ipB);
+        sidepoint[0]=ipC;
+        //        lines[1].set(ipA,ipC,ipB);
+        lines[1].set(ipA,ipC);
+        sidepoint[1]=ipB;
         
-        int oldline0=searchline(ia,ib);
+        //        lines[2].set(ipB,ipC,ipA);
+        lines[2].set(ipB,ipC);
+        sidepoint[2]=ipA;
         
-        // line exist and not
-        // ab
-        if(oldline0>=0){
-            addoldline(oldline0, ic);
+        //check if a horizon facet
+        float zhorizon=sliceModel.pointlist[ipA].z;
+        if(zhorizon==sliceModel.pointlist[ipB].z&&zhorizon==sliceModel.pointlist[ipC].z){//
+            if(ofContains(sliceModel.horizonFacetHeightlist, zhorizon)==false){
+                sliceModel.horizonFacetHeightlist.push_back(zhorizon);
+                facetcount++;
+            }
+        }
+        
+        ofSort(sliceModel.horizonFacetHeightlist);// sort the map will help search
+        //add lines to the sliceModel.linelist
+        for(int i=0;i<3;i++){
             
-            ////cout<<"add old line"<<"\n";
-        }else{
-            addnewline(ia, ib, ic);
-        }
-        int oldline1=searchline(ia,ic);
-        
-        //ac
-        if(oldline1>=0){
-            addoldline(oldline1, ib);
-            ////cout<<"add old line"<<"\n";
-        }else{
-            addnewline(ia, ic, ib);
-        }
-        int oldline2=searchline(ic,ib);
-        //bc
-        if(oldline2>=0){
-            addoldline(oldline2, ia);
-            ////cout<<"add old line"<<"\n";
-        }else{
-            addnewline(ic, ib, ia);
-        }
-        // new line
-    }
-
-}
-void agmll::adddXdY(ofIndexType i){
-    if(islinelistfilled<100){// can't work when linelist is not filled
-        return;
-    }
-    ofVec3f p0,p1,pL,pH;
-    i=i*2;
-    p0=pointlist[linelist[i]];
-    p1=pointlist[linelist[i+1]];
-    // if horizonline
-    if(p0.z==p1.z){
-        addlinetype(i,horizonline,evenline);
-        addtouchedlist(i, isUntouched, p0.z);
-        linehorizonlist[i]=true;
-        linehorizonlist[i+1]=true;
-        return;
-    }
-    //if line vertical
-    if(p0.x==p1.x&&p0.y==p1.y){
-        if(p0.z>p1.z){
-            addlinetype(i,verticalline,fallline);
-            addtouchedlist(i, isUntouched, p0.z);
-
-        }else{//p0.z<p1.z
-            addlinetype(i, verticalline, riseline);
-            addtouchedlist(i, isUntouched, p1.z);
-
-        }
-        
-        dXdYlist[i]=0;
-        dXdYlist[i+1]=0;
-    }
-    
-    //get the high point and low point
-    if(p0.z>p1.z){
-        pL=p1;
-        pH=p0;
-        addlinetype(i,bevelline,fallline);
-        addtouchedlist(i, isUntouched, p0.z);
-
-    }else{// p0.z<p1.z
-        pL=p0;
-        pH=p1;
-        addlinetype(i,bevelline,riseline);
-        addtouchedlist(i, isUntouched, p1.z);
-
-    }
-    float H,divH;
-    H=pH.z-pL.z;
-    divH=1/H;
-    if(pH.x==pL.x){
-        dXdYlist[i]=0;
-    }else{
-        dXdYlist[i]=(pH.x-pL.x)*divH*dH;
-    }
-    if(pH.y==pL.y){
-        dXdYlist[i+1]=0;
-    }else{
-        dXdYlist[i+1]=(pH.y-pL.y)*divH*dH;
-    }
-}
-void agmll::addlinetype(ofIndexType i,int linetype,int riseorfall){
-    linetypelist[i]=linetype;
-    linetypelist[i+1]=riseorfall;
-    
-}
-void agmll::addtouchedlist(ofIndexType i,float isTouchedOrNot,float ZMax){
-    touchedlist[i]=isTouchedOrNot;
-    touchedlist[i+1]=ZMax;
-
-}
-void agmll::alluntouched(){
-    for(ofIndexType i=0;i<touchedlist.size();i=i+2){
-        touchedlist[i]=isUntouched;
-    }
-
-}
-void agmll::justtouch(ofIndexType ip){
-    touchedlist[ip]=isTouched;
-}
-// private:
-//do in setup
-void agmll::addpointlist(ofMesh mesh){
-    for(ofIndexType i=0;i<mesh.getNumVertices();i++){
-        pointlist.push_back(mesh.getVertex(i));
-    }
-}
-//do once
-
-
-//do loop
-
-// tools
-ofVec3f agmll::getXY(ofVec3f pH,ofVec3f pL,float dX,float dY,float dH,float z){
-    ofVec3f returnpoint;
-    //z=z;
-    
-    float divdH=1/dH;
-    float h=z-pL.z-testatZoffset;
-    returnpoint.x=pL.x+dX*divdH*h;
-    returnpoint.y=pL.y+dY*divdH*h;
-    returnpoint.z=z;
-    //cout<<"getXY():"<<ofToString(returnpoint)<<" when pH:"<<ofToString(pH)<<" pL:"<<ofToString(pL)<<endl;
-    testatZoffset=0;
-    return returnpoint;
-}
-
-void agmll::addnewline(ofIndexType ip0,ofIndexType ip1,ofIndexType ipn){
-    ////cout<<"ip0,ip1:"<<ip0<<","<<ip1<<"\n";
-    ////cout<<"before"<<linelist.size();
-    if(ip0<ip1){
-        linelist.push_back(ip0);
-        linelist.push_back(ip1);
-        //cout<<"0<1"<<"\n";
-    }else{// ip1<ip0
-        linelist.push_back(ip1);
-        linelist.push_back(ip0);
-        //cout<<"1<0"<<"\n";
-    }
-    ////cout<<linelist[linelist.size()-2];
-    
-    ////cout<<linelist[linelist.size()-1];
-    
-    ////cout<<"\n";
-    ////cout<<":"<<linelist.size()<<"\n";
-    linehorizonlist.push_back(false);
-    linehorizonlist.push_back(false);
-    
-    dXdYlist.push_back(0);
-    dXdYlist.push_back(0);
-    
-    nearpointlist.push_back(ipn);
-    nearpointlist.push_back(ipn);
-    
-    linetypelist.push_back(0);
-    linetypelist.push_back(0);
-    touchedlist.push_back(0);
-    touchedlist.push_back(0);
-}
-void agmll::addoldline(ofIndexType ipl,ofIndexType ipn){
-    if(nearpointlist[ipl]==nearpointlist[ipl+1]){
-        nearpointlist[ipl+1]=ipn;
-        return;
-    }
-}
-ofIndexType agmll::searchline(ofIndexType ip0,ofIndexType ip1){
-    if(ip0<ip1){
-        for(size_t j=0;j<linelist.size();j+=2){
-            if(ip0==linelist[j]&&ip1==linelist[j+1]){
-                
-                ////cout<<"find the same1"<<"\n";
-                return j;
-                
+            if(sliceModel.checkLineError(lines[i])){
+                cout<<"[WARNING]add facet big wrong!!!!!!!!big index>pointlist.size"<<endl;
+                continue;
             }
-        }
-    }else{// ip1<ip0
-        for(size_t j=0;j<linelist.size();j+=2){
-            if(ip1==linelist[j]&&ip0==linelist[j+1]){
+            agline newline=sliceModel.zsortline(lines[i]);// sort the line
+            //[new]
+            if( sliceModel.addLine(newline,sidepoint[i])){//add line with dxdy
                 
-                ////cout<<"find the same2"<<"\n";
-                return j;
+            }else{
+                
+                cout<<"add facet line failed"<<endl;
             }
+            //[new end]
         }
     }
-    return -1;// false
-}
-ofVec3f agmll::getLinePlaneIntersection(ofVec3f pointUp, ofVec3f pointDown, float z){
-    ofVec3f returnPoint;
-    ofVec3f zeroPoint;
-    zeroPoint.x=zeroPoint.y=zeroPoint.z=0;
-    // compare the upper point and the down point
-    if(pointDown.z>pointUp.z){
-        float tempz=pointDown.z;
-        pointDown.z=pointUp.z;
-        pointUp.z=tempz;
+    //check out
+    cout<<"horizong facet:"<<facetcount<<":"<<(counter0+counter1)/3<<", "<<(counter0+counter1)<<"?="<<mergedMesh.getNumIndices()<<endl;
+    cout<<"add new"<<counter1<<":"<<counter0<<endl;
+    if(counter1!=counter0){
+        cout<<"!!!!add face get problem!!!!!"<<endl;
     }
-    //check if the line cross the z plane
-    if(pointUp.z>z||pointDown.z<z){
-        
+    printsize();
+    if(sliceModel.printAllWrongLine()==false){
+        sliceModel.tryFix();
+        cout<<"now we get fixed"<<endl;
+        sliceModel.printAllWrongLine();
     }else{
-        
-        return zeroPoint;
-    }
-    if(pointUp.x==pointDown.x&&pointUp.y==pointDown.y){
-        returnPoint.x=pointDown.x;
-        returnPoint.y=pointDown.y;
-    }else{
-        float zLength=(pointUp.z-pointDown.z);
-        float z1Length=1/zLength;
-        float kx=(pointUp.x-pointDown.x)*z1Length;
-        returnPoint.x=(z-pointUp.z)*kx+pointUp.x;
-        float ky=(pointUp.y-pointDown.y)*z1Length;
-        returnPoint.y=(z-pointUp.z)*ky+pointUp.y;
-    }
-    returnPoint.z=z;
-    return returnPoint;
-}
-ofPath agmll::addPointToPath(ofPath path,float x,float y,ofIndexType i){
-    ofPath returnpath;
-    if(i==0){
-        returnpath.moveTo(x,y);
-        cout<<"we move to x y :"<<x<<","<<y<<"to path"<<"\n";
-    }else{
-        returnpath=path;
-        returnpath.lineTo(x,y);
-        cout<<"we line to  x y :"<<x<<","<<y<<"to path"<<"\n";
-    }
-    
-    return returnpath;
-}
-void agmll::addPointMoveToPath(ofVec3f addpoint){
-    layertestpath.moveTo(addpoint.x,addpoint.y);
-    cout<<"||:"<<ofToString(addpoint)<<endl;
-}
-
-void agmll::addPointLineToPath(ofVec3f addpoint){
-
-    layertestpath.lineTo(addpoint.x,addpoint.y);
- cout<<"|||"<<ofToString(addpoint)<<endl;
-}
-
-ofIndexType agmll::findcrosspointat(float z){
-    ofIndexType ip0=0;//linelist[ip0]
-    ofIndexType ip1=0;//linelist[ip1]
-    // find a cross point
-    for(int i=continueflag;i<linelist.size();i+=2){
-        ip0=i;
-        ip1=i+1;
-        // we don't touch anything that already touched
-        if(touchedlist[ip0]==isTouched){
-           // cout<<"it was touched"<<endl;
-            continue;
-        }else{
-        // cout<<"it untouched "<<ip0<<endl;
-        }
-        
-        justtouch(ip0);
-        // we don't touch when z>zmax 
-        if(z>touchedlist[ip1]){
-           // cout<<"it is ip0:"<<ip0<<">zmax"<<touchedlist[ip1]<<endl;
-            continue;
-        }
-        if( isPointPlaneCross(ip0, ip1, linetypelist[ip1], testatZ)==true){
-            cout<<"we roll"<<endl;
-            continueflag=ip0+2;
-            return ip0;
-            break;
-        }
-        
+        cout<<"now we never fixed "<<endl;
         
     }
-    continueflag=ip0+2;
-    cout<<"we find nothing any more so we quit"<<endl;
-    return 1;
-
 }
-bool agmll::isPointPlaneCross(ofIndexType indexpoint0,ofIndexType indexpoint1,int riseorfall,float planeatz){
-    ofVec3f pointLower,pointHigher;
-    if(riseorfall==evenline){return false;}
-    if(riseorfall==riseline){
-        pointLower=pointlist[linelist[indexpoint0]];
-        pointHigher=pointlist[linelist[indexpoint1]];
-    }else if(riseorfall==fallline){
-        pointLower=pointlist[linelist[indexpoint1]];
-        pointHigher=pointlist[linelist[indexpoint0]];
-
-    }
-    
-    if(pointLower.z<planeatz&&pointHigher.z>planeatz){
-        cout<<"get the cross line: "<<ofToString(pointHigher)<<","<<ofToString(pointLower)<<endl;
-        cout<<"testatZ:"<<planeatz<<endl;
-            return true;
-        }
-    
-    
-    
-    return false;
-    
+void agmll::addpointlist(){
+    ofMesh mesh=mergedMesh;
+    sliceModel.pointlist.swap(mesh.getVertices());
 }
 
-void agmll::debuglinelist(ofIndexType ip){
-    return;
-    cout<<"ip0,ip1:"<<ip<<","<<ip+1<<"   ";
-    if(ip+1>linelist.size()){
-        cout<<"waring:ip>linelist.size"<<endl;
-        return;
-    }else{
-        cout<<"linelist.size:"<<linelist.size()<<"   ";
-    }
-    ofIndexType index0=linelist[ip];
-    ofIndexType index1=linelist[ip+1];
-    cout<<"point index is:"<<index0<<":"<<index1<<"   ";
-    if(index0>pointlist.size()||index1>pointlist.size()){
-        cout<<"waring:index>pointlist.size"<<endl;
-        return;
-    }else{
-        cout<<"pointlist.size:"<<pointlist.size()<<"   ";
-    }
-    ofPoint point0,point1;
-    point0=pointlist[index0];
-    point1=pointlist[index1];
-    cout<<"line from:"<<ofToString(point0)<<" to "<<ofToString(point1)<<"   ";
-    if(point0.x==point1.x&&point0.y==point1.y&&point0.z==point1.z){
-        cout<<"this is a singlepoint;"<<endl;
-    }else{
-     cout<<"this is a line;"<<endl;
-    }
-    //cout<<"nearpointtype:"<<nearpointlist[ip]<<" dir:"<<nearpointlist[ip+1]<<endl;
-    //cout<<"linetype:"<<linetypelist[ip]<<" dir:"<<linetypelist[ip+1]<<endl;
-    //cout<<"zmax:"<<touchedlist[ip+1]<<" when slice at Z:"<<testatZ<<endl;
 
-}
+
+
+
+
+

@@ -4,230 +4,180 @@
 #include "ofThread.h"
 #include "ofxAssimpModelLoader.h"
 #include "agmll.h"
-/// This is a simple example of a agSliceManager created by extending ofThread.
-/// It contains data (count) that will be accessed from within and outside the
-/// thread and demonstrates several of the data protection mechanisms (aka
-/// mutexes).
+#include "agEasyTimeLog.h"
 class agSliceManager: public ofThread
 {
 public:
-    /// Create a agSliceManager and initialize the member
-    /// variable in an initialization list.
-    agSliceManager(): count(0), shouldThrowTestException(false)
-    {
+   
+    agSliceManager(){
     }
-
-    /// Start the thread.
-    void start(string path)
+    /// which Start the thread.
+    void loadModel(string path)
     {
+        assimpmodel.clear();
+        cout<<"-----modelpath:"<<path<<endl;
         assimpmodel.loadModel(path);
+        cout<<"the mesh count:"<<assimpmodel.getMeshCount()<<endl;
         assimpmodel.disableTextures();
-        meshmodel=assimpmodel.getMesh(0);
-        meshmodel.disableTextures();
         // Mutex blocking is set to true by default
         // It is rare that one would want to use startThread(false).
         isThreadEnd=false;
         isModelReadySlice=false;
-        needMerge=true;
+        needLoad=true;
+        easyLogTime.from("load model");
+        ofMesh meshbuffer;
+        for(int i=0;i<assimpmodel.getMeshCount();i++){
+            meshbuffer.append(assimpmodel.getMesh(i));
+        }
+         mll.load(meshbuffer);
+        isAllSliceDone=false;
+        easyLogTime.to("load model");
         startThread();
+        ofResetElapsedTimeCounter();
+        alllayertests.clear();
     }
-    bool sliceat(float zheight)
+    bool sliceAt(float zheight)
     {
         if(isModelReadySlice==false){
             //if mesh have model and get merged?
-            if(meshmodel.getNumIndices()>0&&meshmodel.getNumIndices()>meshmodel.getNumVertices()){
-                
-                if(isThreadRunning()==false){
-                    needLoad=true;
-                    cout<<"now we loading"<<endl;
-                    startThread();
-                }
+            
+            if(isThreadRunning()==false){
+                needLoad=true;
+                cout<<"now we loading"<<endl;
+                startThread();
             }
+            
             return false;
         }else{//if(isModelReadySlice==true){
-        isThreadEnd=false;
+            isThreadEnd=false;
             isSliceChanged=false;
-        needSliceAt=zheight;
-        startThread();
+            layertestZ=zheight;
+            needSliceAt=zheight;
+            startThread();
             return true;
         }
     }
-    
-    /// Signal the thread to stop.  After calling this method,
-    /// isThreadRunning() will return false and the while loop will stop
-    /// next time it has the chance to.
+    bool allSlice(float layerthickness){
+        if(isModelReadySlice==false){
+            //if mesh have model and get merged?
+            if(isThreadRunning()==false){
+                needLoad=true;
+                cout<<"now we loading"<<endl;
+                startThread();
+            }
+            
+            return false;
+        }else{//if(isModelReadySlice==true){
+            isThreadEnd=false;
+            isSliceChanged=false;
+            allthickness=layerthickness;
+            needAllSlice=true;
+            startThread();
+            return true;
+        }
+    }
+    float layertestZ;
+    /**
+     stop the thread mamually
+     */
     void stop()
     {
         stopThread();
     }
-
-    /// Our implementation of threadedFunction.
+    
+    /**
+     thread contains load or sliceAt job
+     */
     void threadedFunction()
     {
         while(isThreadRunning())
         {
             if(isThreadEnd==true){
-            stopThread();
+                stopThread();
             }
             // Attempt to lock the mutex.  If blocking is turned on,
             if(lock())
             {
                 // step merge: the mesh
-                stepMerge();
-                
-                
-                //step load:
-                stepLoad();
-                //
-                stepUpdate();
-                
-                stepSliceAt();
-                isThreadEnd=true;
-
-                unlock();
-
-               
-
-                if(shouldThrowTestException > 0)
-                {
-                    shouldThrowTestException = 0;
-
-                    // Throw an exception to test the global ofBaseThreadErrorHandler.
-                    // Users that require more specialized exception handling,
-                    // should make sure that their threaded objects catch all
-                    // exceptions. ofBaseThreadErrorHandler is only used as a
-                    // way to provide better debugging / logging information in
-                    // the event of an uncaught exception.
-                    throw Poco::ApplicationException("We just threw a test exception!");
+                if(needLoad==true){
+                    stepLoad();
+                    needLoad=false;
                 }
+                if(needSliceAt>=0){
+                    if(isModelReadySlice==true){
+                        stepSliceAt();
+                        needSliceAt=-1;
+                    }
+                }
+                if(needAllSlice==true){
+                    if(isModelReadySlice==true){
+                        stepAllSlice();
+                        needAllSlice=false;
+                    }
+                }
+                isThreadEnd=true;
+                unlock();
             }
-            else
-            {
-                // If we reach this else statement, it means that we could not
-                // lock our mutex, and so we do not need to call unlock().
-                // Calling unlock without locking will lead to problems.
-                ofLogWarning("threadedFunction()") << "Unable to lock mutex.";
-            }
         }
     }
-
-    /// This drawing function cannot be called from the thread itself because
-    /// it includes OpenGL calls (ofDrawBitmapString).
-    void draw()
-    {
-        stringstream ss;
-
-        ss << "I am a slowly increasing thread. " << endl;
-        ss << "My current count is: ";
-
-        if(lock())
-        {
-            // The mutex is now locked and the "count"
-            // variable is protected.  Time to read it.
-            ss << count;
-
-            // Unlock the mutex.  This is only
-            // called if lock() returned true above.
-            unlock();
-        }
-        else
-        {
-            // If we reach this else statement, it means that we could not
-            // lock our mutex, and so we do not need to call unlock().
-            // Calling unlock without locking will lead to problems.
-            ofLogWarning("threadedFunction()") << "Unable to lock mutex.";
-        }
-
-        ofDrawBitmapString(ss.str(), 50, 56);
+    
+    ofMesh getMergedMesh(){
+        return mll.mergedMesh;
     }
-
-    // Use unique_lock to protect a copy of count while getting a copy.
-    int getCount()
-    {
-        unique_lock<std::mutex> lock(mutex);
-        return count;
+    void cleanMesh(){
+        assimpmodel.clear();
     }
-
-    void throwTestException()
-    {
-        shouldThrowTestException = 1;
-    }
-
-    ofxAssimpModelLoader assimpmodel;
-    ofMesh meshmodel;
-    agmll mll;
-    ofPath layertest;
+       agmll mll;// the work slicer
+    ofPath layertest; //the output layer path
+    vector<ofPath> alllayertests;
+    vector<float> alllayertesstsHeight;
     //needing flag
     bool isThreadEnd=false;// true when everything is done
     bool needLoad=false;
-    bool needMerge =false;//
-    bool needSlice=false;
-    
     float needSliceAt=-1;// -1 means no need
+    bool needAllSlice=false;
+    bool isAllSliceDone=false;
+    float allthickness=0.06;
     bool isSliceChanged=false;
-    float isModelReadySlice=false;
+    bool isModelReadySlice=false;
     // work in thread
-    
-    
-    //merge
-    void stepMerge(){
-    
-        if(needMerge==true){
-            meshmodel.mergeDuplicateVertices();
-            needMerge=false;
-            
-        }
-       
-    }
+protected:
     //mll load
     void stepLoad(){
-        if(needLoad==true){
-            mll.setup(meshmodel);
-            needLoad=false;
-            needSlice=true;
-        }
-        
+        easyLogTime.from("load model");
+        mll.prepareModel();
+        isModelReadySlice=true;
+        easyLogTime.to("load model");
     }
-    //mll update loop
-    
-    void stepUpdate(){
-        if(needSlice==true){
-            while(mll.isdXdYlistfilled<100){
-                mll.update();
-            
-            }
-            isModelReadySlice=true;
-            
-            cout<<"ready for slice"<<endl;
-            needSlice=false;
-        }
-    }
+    /**
+     use mll slice at testlayeratZ
+     */
     void stepSliceAt(){
-        
-        if(needSliceAt>=0){
-             cout<<"we are slicing  at"<<needSliceAt<<endl;
-            layertest=mll.layertestat(needSliceAt);
-            isSliceChanged=true;
-        cout<<"we just slice  at"<<needSliceAt<<endl;
-        }
-        needSliceAt=-1;
+        layertest=mll.layerAt(needSliceAt); 
+        isSliceChanged=true;
     }
-protected:
-    // A flag to check and see if we should throw a test exception.
-    Poco::AtomicCounter shouldThrowTestException;
-    // This is a simple variable that we aim to always access from both the
-    // main thread AND this threaded object.  Therefore, we need to protect it
-    // with the mutex.  In the case of simple numerical variables, some
-    // garuntee thread safety for small integral types, but for the sake of
-    // illustration, we use an int.  This int could represent ANY complex data
-    // type that needs to be protected.
-    //
-    // Note, if we simply want to count in a thread-safe manner without worrying
-    // about mutexes, we might use Poco::AtomicCounter instead.
-    int count;
+    void stepAllSlice(){
+        easyLogTime.from("all slice");
+        vector<ofPath> layers;
+        
+        float z;
+        int an=0;
+        for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
+//            cout<<"z"<<z<<endl;//use to check z
+            ofPath p=mll.layerAt(z);
+            layers.push_back(p);
+            alllayertesstsHeight.push_back(z);
+            an++;
+            
+        }
+        alllayertests=layers;
+        isAllSliceDone=true;
+        cout<<"layers:"<<layers.size()<<endl;
+        easyLogTime.to("all slicer");
+    }
+   
+    ofxAssimpModelLoader assimpmodel;
     
-    //
+     easyLogTimer easyLogTime;
     
-    
-
 };

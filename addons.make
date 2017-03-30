@@ -1,3 +1,4 @@
 ofxAssimpModelLoader
+ofxClipper
 ofxDatGui
-ofxVectorGraphics
+ofxEditableSVG
