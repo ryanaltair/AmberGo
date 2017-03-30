@@ -46,7 +46,7 @@ private:
     // prepareModel job
     void addFacet();
     //tools
-    agline zsortline(agline line);
+
 
     //debug only
     ofIndexType indexsize;

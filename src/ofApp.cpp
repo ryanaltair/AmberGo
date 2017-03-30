@@ -275,10 +275,6 @@ void ofApp::drawFBO(ofPath pathdraw){
     
     fbo.begin();
     ofClear(ofColor::black);
-    //        ofBackground(0,0,0);
-    
-    //    pathdraw.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
-    //    pathdraw.draw(1280/2,768/2);
     pathdraw.draw(0,0);
     fbo.end();
 }

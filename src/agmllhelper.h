@@ -149,7 +149,9 @@ public:
         }
     }
     ofIndexType searchLine(agline sortline){
-        auto it=mllcopymap.find(sortline);
+       
+        
+        auto it=mllcopymap.find( zsortline(sortline));
         if(it==mllcopymap.end()){
             //not found
             return multilinklinelist.size();
@@ -294,11 +296,13 @@ public:
         
         if(line.ip0>pointlist.size()||line.ip1>pointlist.size()){
             cout<<"we get a bigggggg ip "<<line.ip0<<"\t"<<line.ip1<<"\t"<<pointlist.size()<<endl;
-        }
         
-        if(pointlist[line.ip0].z<pointlist[line.ip1].z){
+        }
+        float z0=pointlist[line.ip0].z;
+        float z1=pointlist[line.ip1].z;
+        if(z0<z1){
             // line not swap;
-        }else if(pointlist[line.ip0].z>pointlist[line.ip1].z){// ip1<ip0
+        }else if(z0>z1){// ip1<ip0
             line.swap();
         }else{   // if they the same      // make sure ip0<ip1
             if(line.ip0<=line.ip1){

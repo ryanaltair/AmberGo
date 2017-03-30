@@ -3,6 +3,7 @@
 #include "agSliceShell.h" //for quick test
 /**
  use for AmberGo
+ NOTICE:all model in this plate are using mm as unit for stl
  as plate
  include:
  model(s)

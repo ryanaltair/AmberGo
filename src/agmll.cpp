@@ -64,7 +64,6 @@ ofPath  agmll::layerAt(float z){
         returnpath.setFilled(true);
         returnpath.setStrokeWidth(1);
     }
-    
     return returnpath;
 }
 /**
@@ -75,17 +74,17 @@ ofPath  agmll::layerAt(float z){
  @return whole slice layer as ofPath
  */
 ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
-   
+    
     
     vector<ofIndexType> pathindexs;
-    vector<ofVec3f> pathpoints;
-
+    vector<ofVec2f> pathpoints;
+    
     // set the first point
     ofIndexType i0=iBegin;//multilinklinelist[i0]
     pathindexs.push_back(i0);
     //get the XY and move to
-    ofVec3f XYpoint=sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z,640,384);
-    ofVec3f oldpoint=XYpoint;
+    ofVec2f XYpoint=ofVec2f(sliceModel.getXY(sliceModel.multilinklinelist[i0], divdH, z,640,384));
+    ofVec2f oldpoint=  XYpoint ;
     pathpoints.push_back(XYpoint);
     //        cout<<"XY:"<<ofToString(XYpoint)<<endl;
     sliceModel.multilinklinelist[i0].touch();
@@ -104,9 +103,11 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         }
         sliceModel.multilinklinelist[i0].touch();
         pathindexs.push_back(i0);
-        ofVec3f XYpoint = sliceModel.getXY(sliceModel.multilinklinelist[i0],divdH,z,640,384);
-        if(oldpoint!=XYpoint){
-            pathpoints.push_back(XYpoint);
+        ofVec2f XYpoint1 = ofVec2f(sliceModel.getXY(sliceModel.multilinklinelist[i0],divdH,z,640,384));
+        if(oldpoint!=XYpoint1){
+            pathpoints.push_back(XYpoint1);
+        }else{
+        
         }
         oldpoint=XYpoint;
         // make next line
@@ -117,11 +118,10 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         }
         nextline=sliceModel.multilinklinelist[i0].getNextLine(z);;
         if(sliceModel.checkLineError(nextline)){
-            cout<<"now we meet line is over size !!!!!!!!"<<endl;
             break;
         }else{
-            agline sortnextline=sliceModel.zsortline(nextline);
-            i0=sliceModel.searchLine(sortnextline);
+            //agline sortnextline=;
+            i0=sliceModel.searchLine(nextline);
         }
         if (i0 == iBegin){//check if the last line
             //cout<<"we end the loop path"<<endl;
@@ -129,16 +129,50 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         }
         
     }
+    
+    
+    vector<ofVec2f> pathpointsNew;
+    ofVec2f XYpointStart=ofVec2f(sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[0]], divdH, z,640,384));
+    pathpointsNew.push_back(XYpointStart);
+    
+    if(pathindexs.size()>=3){
+        for(ofIndexType i=1;i<pathindexs.size()-1;i++){
+            ofVec2f XYpoint0=ofVec2f(sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[i-1]], divdH, z,640,384));
+            ofVec2f XYpoint1=ofVec2f(sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[i]], divdH, z,640,384));
+            ofVec2f XYpoint2=ofVec2f(sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[i+1]], divdH, z,640,384));
+            
+            ofVec2f line0=XYpoint1-XYpoint0;
+            ofVec2f line1=XYpoint2-XYpoint0;
+            
+            if(line0.isAligned(line1) ){
+                //do nothing
+                if(1){ // simpify the pathpoints set zero
+                    pathpointsNew.push_back(XYpoint1);
+                }
+            }else{
+                pathpointsNew.push_back(XYpoint1);
+            }
+        }
+        
+        ofVec2f XYpointEnd=ofVec2f(sliceModel.getXY(sliceModel.multilinklinelist[pathindexs.size()-1], divdH, z,640,384));
+        pathpointsNew.push_back(XYpointEnd);
+        //  pathpoints.swap(pathpointsNew);
+     
+    }
+    
     //     cout<<"path point count:"<<pathpoints.size()<<endl;
     ofPath layerisland;
     //now make the layer island
     layerisland.moveTo(pathpoints[0].x,pathpoints[0].y);
     ofIndexType p0,p1,p2;
+    
     p0=0;
+    p1=1;
     for(ofIndexType p=1;p<pathpoints.size();p++){
         //TO DO: add stragiht line check out
-
+        
         layerisland.lineTo(pathpoints[p].x,pathpoints[p].y);
+        
         //cout<<"path "<<p<<":"<< pathindexs[p]<<":"<<pathpoints[p]<<endl;
     }
     layerisland.close();
@@ -270,7 +304,6 @@ void agmll::addFacet(){
                 cout<<"add facet line failed"<<endl;
             }
             //[new end]
-            
         }
     }
     //check out
