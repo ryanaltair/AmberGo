@@ -181,9 +181,9 @@ void ofApp::loadModel(){
     plate.modelSize=threadSlice.mll.getScale();
     ofVec3f newposti;
     
-    newposti=threadSlice.mll.meshMin;
-    newposti.x=0;//-plate.modelSize.x/2;
-    newposti.y=0;//-plate.modelSize.y/2;
+    newposti=-threadSlice.mll.meshMin;
+    newposti.x-=threadSlice.mll.meshScale.x/2;//-plate.modelSize.x/2;
+    newposti.y-=threadSlice.mll.meshScale.y/2;//-plate.modelSize.y/2;
     plate.setPosition(newposti);
     panel.sliceMax=plate.modelSize.z;
     cout<<" modelsize:"<<plate.modelSize<<endl;

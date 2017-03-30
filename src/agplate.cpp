@@ -129,7 +129,7 @@ void agplate::drawModels(){
 
 void agplate::setPosition(ofVec3f newpostion){
     if(nodemodels.size()>0){
-        nodemodels[0].setPosition(-newpostion);
+        nodemodels[0].setPosition(newpostion);
         cout<<"position"<<ofToString(newpostion);
     }
 }

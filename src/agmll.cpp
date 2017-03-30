@@ -41,8 +41,6 @@ ofPath  agmll::layerAt(float z){
     sliceModel.alluntouched();
     ofIndexType continueflag = 0;
     
-    
-    
     for (ofIndexType loopcount = 0; loopcount < sliceModel.multilinklinelist.size(); loopcount ++) {// every loop build a closed path
         ofIndexType iCross = sliceModel.findcrosspointat(continueflag,z);//find a cross point
         continueflag=iCross+1;
@@ -96,8 +94,6 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         }
         sliceModel.multilinklinelist[i0].touch();
         pathindexs.push_back(i0);
-        ofVec2f XYpoint1 = ofVec2f(sliceModel.getXY(sliceModel.multilinklinelist[i0],divdH,z,640,384));
-        
         // make next line
         // a complicated work to find out use which line
         if(sliceModel.multilinklinelist[i0].isFilled()==false){// check first

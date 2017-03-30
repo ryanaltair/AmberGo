@@ -205,17 +205,20 @@ public:
         pH= pointlist[mlline.ip1];
         
         ofVec3f returnpoint;
+        returnpoint=-scaleMin-(scaleMax-scaleMin)*0.5;
+        
         float h=z-pL.z;
         float divdHxh=divdH*h;
-        returnpoint.x=pL.x+mlline.dx*divdHxh;
+        
+        returnpoint.x+=pL.x+mlline.dx*divdHxh;
         returnpoint.x*=xm;
-        
         returnpoint.x+=xstart;
-        returnpoint.y=pL.y+mlline.dy*divdHxh;
-        returnpoint.y*=ym;
         
+        returnpoint.y+=pL.y+mlline.dy*divdHxh;
+        returnpoint.y*=ym;
         returnpoint.y+=ystart;
         returnpoint.z=z;
+        
         return returnpoint;
     }
     ofVec2f getXY(agmultilinkline _mlline,float _divdH,float _z,float _xstart,float _ystart){
