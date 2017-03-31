@@ -44,6 +44,7 @@ private:
     void loadModel();
     void sliceModel();
     void checkNeedSlice();
+    void checkSliceHeightChange();
     agSliceManager threadSlice;// threaded object. Merger
     bool bModelLoaded=false;
     agplate plate;//palte

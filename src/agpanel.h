@@ -20,6 +20,7 @@ public:
     void sliderBind();
     float getWidth();
     // set slice state
+    void setSliceShowing();
     void setSliceReady();
     void setSliceUnready();
     void setSliceDone();

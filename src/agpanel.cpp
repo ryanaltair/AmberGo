@@ -144,15 +144,18 @@ float agpanel::getWidth(){
     
 }
 void agpanel::setSliceReady(){
-    sliceReadyLabel->setLabel("Slice is ready");
+    sliceReadyLabel->setLabel("slice is ready");
     
 }
 void agpanel::setSliceUnready(){
-    sliceReadyLabel->setLabel("Slice is not ready");
+    sliceReadyLabel->setLabel("slice is not ready");
     
 }
 void agpanel::setSliceDone(){
-    sliceReadyLabel->setLabel("Ready to show");
+    sliceReadyLabel->setLabel("ready to show");
+}
+void agpanel::setSliceShowing(){
+ sliceReadyLabel->setLabel("now showing");
 }
 void agpanel::setSliceOutputDone(){
     sliceReadyLabel->setLabel("output done now");

@@ -136,11 +136,14 @@ public:
     bool needLoad=false;
     float needSliceAt=-1;// -1 means no need
     bool needAllSlice=false;
-    bool isAllSliceDone=false;
+
     float allthickness=0.06;
     bool isSliceChanged=false;
     bool isModelReadySlice=false;
     // work in thread
+    bool isAllSliced(){
+        return isAllSliceDone;
+    }
 protected:
     //mll load
     void stepLoad(){
@@ -179,5 +182,5 @@ protected:
     ofxAssimpModelLoader assimpmodel;
     
      easyLogTimer easyLogTime;
-    
+    bool isAllSliceDone=false;  
 };
