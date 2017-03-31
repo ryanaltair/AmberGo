@@ -68,11 +68,13 @@ void agplate::addModel(ofMesh model){
     drawmode=0;
     of3dPrimitive nodemodel;
     nodemodel.getMesh()=model;
+//    nodemodel.setUseVbo(true);
     if(nodemodels.size()>0){
         nodemodels[0]=nodemodel;
+        nodemodels[1]=nodemodel;
     }else{
         nodemodels.push_back(nodemodel);
-       
+       nodemodels.push_back(nodemodel);
     }
     cout<<"add a model in plate"<<endl;
     
@@ -117,11 +119,20 @@ void agplate::drawModels(){
         
     }
     if(nodemodels.size()>0){
-        
         ofSetColor(123, 123, 123);//
         nodemodels[0].draw();
+        
         ofSetColor(ofColor::black);
         nodemodels[0].drawWireframe();
+        
+        ofSetColor(ofColor::blue);//
+        nodemodels[1].setPosition(0, 50, 0);
+        
+        nodemodels[1].setScale(0.5, 0.5, 0.5);
+        nodemodels[1].draw();
+        
+        ofSetColor(ofColor::black);
+        nodemodels[1].drawWireframe();
     }
     //envlight.disable();
     

@@ -211,13 +211,13 @@ public:
         float divdHxh=divdH*h;
         
         returnpoint.x+=pL.x+mlline.dx*divdHxh;
-        returnpoint.x*=xm;
+        returnpoint.x*=xm*scaleFactor.x;
         returnpoint.x+=xstart;
         
         returnpoint.y+=pL.y+mlline.dy*divdHxh;
-        returnpoint.y*=ym;
+        returnpoint.y*=ym*scaleFactor.y;
         returnpoint.y+=ystart;
-        returnpoint.z=z;
+        returnpoint.z=z*scaleFactor.z;
         
         return returnpoint;
     }
@@ -322,7 +322,13 @@ public:
         line.markZSortTrue();// mark zsort that we can use it to search or add to linelist correctly
         return line;
     }
+    void setScaleFactor(ofVec3f sf){
+        scaleFactor=sf;
+    }
+    ofVec3f getScaleFactor( ){
+        return scaleFactor;
+    }
 protected:
-    
+    ofVec3f scaleFactor=ofVec3f(1,1,1);
     int zero=0;
 };

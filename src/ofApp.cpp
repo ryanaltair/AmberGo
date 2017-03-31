@@ -37,10 +37,10 @@ void ofApp::update(){
     panel.update();
     loadModel();
     outputManager.checkEnd();
-    if(panel.isSliceHeightChange()){
-        panel.layertestZlast=panel.layertestZ;
+    if(panel.isSliceHeightUpdated()){
+        
         //cout<<"we slice at now "<<endl;
-        plate.sliceAt(panel.layertestZ);
+        plate.sliceAt(panel.getSliceHeight());
         plate.update();
     }
     checkNeedSlice();
@@ -69,12 +69,10 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
     switch(key){
         case OF_KEY_UP:
-            panel.layertestZ++;
-            // panel.sliceHeight=panel.layertestZ;
+            panel.setSliceHeight(panel.getSliceHeight()+1);
             break;
         case OF_KEY_DOWN:
-            panel.layertestZ--;
-            //    panel.sliceHeight=panel.layertestZ;
+            panel.setSliceHeight(panel.getSliceHeight()-1);
             break;
         case OF_KEY_LEFT:
             
@@ -180,7 +178,6 @@ void ofApp::loadModel(){
     panel.setSliceReady();
     plate.modelSize=threadSlice.mll.getScale();
     ofVec3f newposti;
-    
     newposti=-threadSlice.mll.meshMin;
     newposti.x-=threadSlice.mll.meshScale.x/2;//-plate.modelSize.x/2;
     newposti.y-=threadSlice.mll.meshScale.y/2;//-plate.modelSize.y/2;
@@ -221,10 +218,10 @@ void ofApp::sliceModel(){
                     easyLogTime.from("output to thread");
                 }
                 layertest=threadSlice.alllayertests[currentSliceLayer];
-                 panel.layertestZ=threadSlice.alllayertesstsHeight[currentSliceLayer];
+                 panel.setSliceHeight(threadSlice.alllayertesstsHeight[currentSliceLayer]);
                 
                 if(layertest.getCommands().size()>10000){
-                cout<<"now z:"<<panel.layertestZ<<" outline count:"<<layertest.getOutline().size()<<" commands count:"<<layertest.getCommands().size()<<endl;
+                cout<<"now z:"<<panel.getSliceHeight()<<" outline count:"<<layertest.getOutline().size()<<" commands count:"<<layertest.getCommands().size()<<endl;
                     for(int i=0;i<layertest.getOutline().size();i++){
                         if(layertest.getOutline()[i].size()>10000){
                             
@@ -245,11 +242,11 @@ void ofApp::sliceModel(){
                         outputManager.setLastPic();
                     }
                     if(outputManager.usingSVG==true){
-                        outputManager.saveImage(layertest,panel.layertestZ);
+                        outputManager.saveImage(layertest,panel.getSliceHeight());
                     }else{
                         drawFBO(layertest);
                         fbo.readToPixels(pixelsbuffer);
-                        outputManager.saveImage(pixelsbuffer,panel.layertestZ);
+                        outputManager.saveImage(pixelsbuffer,panel.getSliceHeight());
                     }
                 }
                 if(currentSliceLayer==allSliceLayerCount){
