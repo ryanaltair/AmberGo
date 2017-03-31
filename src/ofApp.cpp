@@ -222,7 +222,7 @@ void ofApp::sliceModel(){
                 }
                 layertest=threadSlice.alllayertests[currentSliceLayer];
                  panel.layertestZ=threadSlice.alllayertesstsHeight[currentSliceLayer];
-                 
+                
                 if(layertest.getCommands().size()>10000){
                 cout<<"now z:"<<panel.layertestZ<<" outline count:"<<layertest.getOutline().size()<<" commands count:"<<layertest.getCommands().size()<<endl;
                     for(int i=0;i<layertest.getOutline().size();i++){

@@ -59,7 +59,7 @@ public:
     ofIndexType iShowAllSliceLayerCount=0;
     float layertestZlast=0.1;
     float layertestZ=0.1;
-private:
+protected:
     //componment
     ofxDatGuiSlider* sliceHeightSlider;
     ofxDatGuiSlider* sliceProgressPercentSlider;
