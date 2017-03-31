@@ -20,13 +20,14 @@ agpanel::agpanel(){
     layerthicknessSlider=gui->addSlider("layer thickness", 0.02, 0.50, 0.16);
     exposedTimeSlider=gui->addSlider("exposed time:second", 0, 20,10);
     baseExposedTimeSlider=gui->addSlider("baseExposed time:second", 20, 120,80);
-    scaleSlider=gui->addSlider("scale:",1.0,0,2.0);
+    scaleSlider=gui->addSlider("scale:",0.01,2.0,1.0);
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     layerthicknessSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     exposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     baseExposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    scaleSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     printPauseButton->onButtonEvent(this,&agpanel::onButtonEvent);
     allSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
     showAllSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
@@ -49,19 +50,22 @@ void agpanel::update(){
     
 }
 bool agpanel::isSliceHeightUpdated(){
-    if(layertestZ==layertestZlast){
-        return false;
+    if(isLayerTestZChange){
+        isLayerTestZChange=false;
+        return true;
     }else{
-    layertestZlast=layertestZ;
-    return  false;
+        return false;
     }
+ 
 }
 void agpanel::setOutputDone(bool done){
     outputDone=done;
 }
 void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 {
-    
+    if(e.target==sliceHeightSlider){
+        isLayerTestZChange=true;
+    }
 }
 void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
 {
@@ -131,6 +135,7 @@ void agpanel::sliderBind(){
     layerthicknessSlider->bind(layerthickness);
     exposedTimeSlider->bind(exposedTime);
     baseExposedTimeSlider->bind(baseExposedTime);
+    scaleSlider->bind(scaleFactor);
 }
 
 float agpanel::getWidth(){

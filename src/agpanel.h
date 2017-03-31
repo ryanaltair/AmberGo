@@ -36,11 +36,14 @@ public:
         return false;
         
     }
+    float getScaleFactor(){
+        return scaleFactor;
+    }
     bool needOutput(){
         return outputToggle->getChecked();
-    
     }
     void setSliceHeight(float z){
+        isLayerTestZChange=true;
         layertestZ=z;
     }
     float getSliceHeight(){
@@ -79,10 +82,12 @@ protected:
     ofxDatGuiSlider* scaleSlider;
     
     ofxDatGuiSlider* baseExposedTimeSlider;
+    
+    float scaleFactor;
     bool isSaveDirectoryChanged=false;
     string saveDirectory;
-    float layertestZlast=0.1;
     float layertestZ=0.1;
+    bool isLayerTestZChange=false;
     bool needAllSlice=false;
 
     

@@ -128,7 +128,7 @@ void agplate::drawModels(){
         ofSetColor(ofColor::blue);//
         nodemodels[1].setPosition(0, 50, 0);
         
-        nodemodels[1].setScale(0.5, 0.5, 0.5);
+        nodemodels[1].setScale(scaleFactor.x, scaleFactor.y, scaleFactor.z);
         nodemodels[1].draw();
         
         ofSetColor(ofColor::black);

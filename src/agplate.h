@@ -26,6 +26,11 @@ public:
     void deleteModel();
     void cleanModel();
     void setPosition(ofVec3f newpostion);
+    void setScaleFactor(ofVec3f sf){
+        if(scaleFactor!=sf){
+            scaleFactor=sf;
+        }
+    }
     // workplace:
     ofBoxPrimitive playground;    // ground
     ofBoxPrimitive outsideBox;    // box
@@ -35,6 +40,7 @@ public:
     ofVec3f modelSize;
     ofVec3f boxSize;// the box size
     ofVec3f pixelSize;
+    ofVec3f scaleFactor;
     float groundheight;
     int drawmode=0;//drawmode set 0 for meshes 1 for assimps
     

@@ -43,6 +43,7 @@ void ofApp::update(){
         plate.sliceAt(panel.getSliceHeight());
         plate.update();
     }
+    plate.setScaleFactor(ofVec3f(panel.getScaleFactor()));
     checkNeedSlice();
     sliceModel();
     
@@ -201,6 +202,7 @@ void ofApp::checkNeedSlice(){
     }
     
 }
+
 void ofApp::sliceModel(){
     if(threadSlice.isThreadRunning()==false){
         if(apppreference.bHaveModelLoaded==false){return;}
