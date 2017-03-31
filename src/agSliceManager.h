@@ -4,7 +4,7 @@
 #include "ofThread.h"
 #include "ofxAssimpModelLoader.h"
 #include "agmll.h"
-
+#include "agEasyTimeLog.h"
 class agSliceManager: public ofThread
 {
 public:
@@ -24,14 +24,14 @@ public:
         isThreadEnd=false;
         isModelReadySlice=false;
         needLoad=true;
-        easyLogTime("load model start");
+        easyLogTime.from("load model");
         ofMesh meshbuffer;
         for(int i=0;i<assimpmodel.getMeshCount();i++){
             meshbuffer.append(assimpmodel.getMesh(i));
         }
-         mll.setup(meshbuffer);
+         mll.load(meshbuffer);
         isAllSliceDone=false;
-        easyLogTime("load model end");
+        easyLogTime.to("load model");
         startThread();
         ofResetElapsedTimeCounter();
         alllayertests.clear();
@@ -103,7 +103,6 @@ public:
                     stepLoad();
                     needLoad=false;
                 }
-                //easyLogTime("need we Slice?");
                 if(needSliceAt>=0){
                     if(isModelReadySlice==true){
                         stepSliceAt();
@@ -116,23 +115,24 @@ public:
                         needAllSlice=false;
                     }
                 }
-                //easyLogTime("all we done ?");
                 isThreadEnd=true;
                 unlock();
             }
         }
     }
     
-    
-    ofxAssimpModelLoader assimpmodel;
-    
-    agmll mll;// the work slicer
+    ofMesh getMergedMesh(){
+        return mll.mergedMesh;
+    }
+    void cleanMesh(){
+        assimpmodel.clear();
+    }
+       agmll mll;// the work slicer
     ofPath layertest; //the output layer path
     vector<ofPath> alllayertests;
     vector<float> alllayertesstsHeight;
     //needing flag
     bool isThreadEnd=false;// true when everything is done
-    
     bool needLoad=false;
     float needSliceAt=-1;// -1 means no need
     bool needAllSlice=false;
@@ -144,54 +144,40 @@ public:
 protected:
     //mll load
     void stepLoad(){
-        easyLogTimeFrom("load model");
-        mll.calcaulateModel();
+        easyLogTime.from("load model");
+        mll.prepareModel();
         isModelReadySlice=true;
-        easyLogTimeTo("load model");
+        easyLogTime.to("load model");
     }
     /**
      use mll slice at testlayeratZ
      */
     void stepSliceAt(){
-        layertest=mll.layertestat(needSliceAt);
+        layertest=mll.layerAt(needSliceAt); 
         isSliceChanged=true;
     }
     void stepAllSlice(){
-        easyLogTimeFrom("all slice");
+        easyLogTime.from("all slice");
         vector<ofPath> layers;
         
         float z;
+        int an=0;
         for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
-            layers.push_back(mll.layertestat(z));
+//            cout<<"z"<<z<<endl;//use to check z
+            ofPath p=mll.layerAt(z);
+            layers.push_back(p);
             alllayertesstsHeight.push_back(z);
+            an++;
+            
         }
         alllayertests=layers;
         isAllSliceDone=true;
         cout<<"layers:"<<layers.size()<<endl;
-        easyLogTimeTo("all slicer");
+        easyLogTime.to("all slicer");
     }
-    void easyLogTime(string title){
-        cout<<"------";
-        cout<<title<<":"<<ofToString(ofGetElapsedTimef()) <<" senconds "<<endl;
-    }
-    void easyLogTimeFrom(string title){
-        cout<<"------";
-        timekeep=ofGetElapsedTimef();
-        cout<<title<<" from:"<<ofToString(timekeep) <<" senconds "<<endl;
-    }
-    void easyLogTimeTo(string title){
-        cout<<"------";
-        float timetake=ofGetElapsedTimef()-timekeep;
-        timekeep=ofGetElapsedTimef();
-        cout<<title<<"  to:"<<ofToString(timekeep) <<" senconds "<<endl;
-        cout<<"------";
-        cout<<title<<"take:"<<ofToString(timetake) <<" senconds "<<endl;
-    }
-    void easyPercent(int percent){
-        cout<<"------";
-        cout<<"progress:"<<ofToString(percent) <<"% |" <<ofToString(ofGetElapsedTimef())<<" second"<<endl;
-        
-    }
-    float timekeep;
+   
+    ofxAssimpModelLoader assimpmodel;
+    
+     easyLogTimer easyLogTime;
     
 };

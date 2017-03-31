@@ -1,6 +1,10 @@
 #include "ofMain.h"
 #include "ofApp.h"
 
+#ifdef _WIN32
+#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+#endif
+
 //========================================================================
 int main( ){
     ofSetupOpenGL(800,600-22, OF_WINDOW);			// <-------- setup the GL context

@@ -86,10 +86,6 @@ public:
         pixelpermm=lcd1280768/lcdinch57;
         return pixelpermm;
     };
-    ofVec3f getscalefactor(){
-        ofVec3f f;
-        f.set(1,1,1);
-        return f;
-    };
+    
     
 };

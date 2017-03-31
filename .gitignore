@@ -137,3 +137,13 @@ Desktop.ini
 # End of https://www.gitignore.io/api/openframeworks
 
 *.png
+
+*.zip
+
+*.xcuserstate
+
+*.pbxproj
+
+*.svg
+
+ 

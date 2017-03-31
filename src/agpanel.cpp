@@ -9,7 +9,7 @@ agpanel::agpanel(){
     sliceProgressPercentSlider=gui->addSlider("progress", 0, 100, 0);
     sliceProgressPercentSlider->setVisible(false);
     sliceReadyLabel=gui->addLabel("slice is ready");
-    sliceReadyLabel->setLabel(sliceUnready);
+    sliceReadyLabel->setLabel("ready to add model");
     allSliceButton=gui->addButton("all slice!!");
     showAllSliceButton=gui->addButton("show all");
     printPauseButton=gui->addButton("Pause");
@@ -18,18 +18,20 @@ agpanel::agpanel(){
     showsliceToggle=gui->addToggle("slice Preview");
     showsliceToggle->setChecked(true);
     layerthicknessSlider=gui->addSlider("layer thickness", 0.02, 0.50, 0.16);
-    exposedTimeSlider=gui->addSlider("exposed time:second", 0, 12,3);
+    exposedTimeSlider=gui->addSlider("exposed time:second", 0, 20,10);
+    baseExposedTimeSlider=gui->addSlider("baseExposed time:second", 20, 120,80);
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     layerthicknessSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     exposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    baseExposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     printPauseButton->onButtonEvent(this,&agpanel::onButtonEvent);
     allSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
     showAllSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
     outputToggle->onToggleEvent(this,&agpanel::onToggleEvent);
     showsliceToggle->onToggleEvent(this,&agpanel::onToggleEvent);
-
+    
 }
 
 
@@ -37,7 +39,9 @@ void agpanel::setup(){
     
     // GUI start
     // instantiate and position the gui //
-       exposedTime=exposedTimeSlider->getValue();
+    exposedTime=exposedTimeSlider->getValue();
+    
+    baseExposedTime=baseExposedTimeSlider->getValue();
     sliderBind();
 }
 void agpanel::update(){
@@ -62,22 +66,43 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
         if(isOutput==true){
             bPrint=false;
         }
-        if(bShowAllSlice!=false){
-            bShowAllSlice=false;
+        if(ShowingAllSlice!=false){
+            ShowingAllSlice=false;
         }else{
-            bShowAllSlice=true;
+            ShowingAllSlice=true;
         }
         
     }
     
     if(e.target==allSliceButton){
-        bAllSlice=true;
+        needAllSlice=true;
     }
     if(e.target==showAllSliceButton){
+        if(outputToggle->getChecked()==true){
+            ofFileDialogResult result = ofSystemLoadDialog("fabfiles to Save", true);
+            if(result.bSuccess) {
+                saveDirectory = result.getPath();
+                saveDirectory+="/";
+                cout<<"we will save file at"<<saveDirectory<<endl;
+                // save your file to `path`
+                isSaveDirectoryChanged=true;
+                ShowingAllSlice=true;
+                iShowAllSliceLayerCount=0;
+            }
+        }else{
+            ShowingAllSlice=true;
+            iShowAllSliceLayerCount=0;
+            
+        }
         
-        bShowAllSlice=true;
-        iShowAllSliceLayerCount=0;
     }
+}
+bool agpanel::getSaveDirectoryChanged(){
+    return isSaveDirectoryChanged;
+}
+string agpanel::getSaveDirectory(){
+    isSaveDirectoryChanged=false;
+    return saveDirectory;
 }
 void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
 {
@@ -87,7 +112,7 @@ void agpanel::onTextInputEvent(ofxDatGuiTextInputEvent e)
 void agpanel::onToggleEvent(ofxDatGuiToggleEvent e)
 {
     if(e.target==outputToggle){
-        isOutput=outputToggle->getChecked(); 
+        isOutput=outputToggle->getChecked();
         
     }
     if(e.target==showsliceToggle){
@@ -100,7 +125,7 @@ void agpanel::sliderBind(){
     sliceHeightSlider->bind(layertestZ);
     layerthicknessSlider->bind(layerthickness);
     exposedTimeSlider->bind(exposedTime);
-    
+    baseExposedTimeSlider->bind(baseExposedTime);
 }
 
 float agpanel::getWidth(){
@@ -109,13 +134,19 @@ float agpanel::getWidth(){
     
 }
 void agpanel::setSliceReady(){
-    sliceReadyLabel->setLabel(sliceReady);
+    sliceReadyLabel->setLabel("Slice is ready");
     
 }
 void agpanel::setSliceUnready(){
-    sliceReadyLabel->setLabel(sliceUnready);
+    sliceReadyLabel->setLabel("Slice is not ready");
     
 }
 void agpanel::setSliceDone(){
-    sliceReadyLabel->setLabel(sliceDone);
+    sliceReadyLabel->setLabel("Ready to show");
+}
+void agpanel::setSliceOutputDone(){
+    sliceReadyLabel->setLabel("output done now");
+}
+void agpanel::setSlicing(){
+ sliceReadyLabel->setLabel("slicing,please wait");
 }

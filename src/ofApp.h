@@ -7,6 +7,8 @@
 #include "agSliceManager.h"
 #include "agAppPreference.h"
 #include "agOutputManager.h"
+#include "agEasyTimeLog.h"
+
 class ofApp : public ofBaseApp {
 public:
     //gl loop
@@ -26,7 +28,6 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     void exit();
-    
 private:
     //side window
     void drawSideWindow(ofEventArgs & args);
@@ -41,32 +42,25 @@ private:
      it will load model with thread called merger
      */
     void loadModel();
+    void sliceModel();
+    void checkNeedSlice();
     agSliceManager threadSlice;// threaded object. Merger
     bool bModelLoaded=false;
     agplate plate;//palte
     agpanel panel;    //GUI
     agAppPreference apppreference;// store the prefer
     ofPath layertest;//output layer
+    ofPath layertestDraw;//output layer use to display
     agOutputManager outputManager;
     string modelpath;  //drag and drop info
+   
+
     
     bool bSnapshot=false;
     ofFbo fbo;
     ofPixels pixelsbuffer;
     ofPixels pixelsbuffervoid;
+    
    //timetest
-    float timekeep;
-    void easyLogTimeFrom(string title){
-        cout<<"------";
-        timekeep=ofGetElapsedTimef();
-        cout<<title<<" from:"<<ofToString(timekeep) <<" senconds "<<endl;
-    }
-    void easyLogTimeTo(string title){
-        cout<<"------";
-        float timetake=ofGetElapsedTimef()-timekeep;
-        timekeep=ofGetElapsedTimef();
-        cout<<title<<"  to:"<<ofToString(timekeep) <<" senconds "<<endl;
-        cout<<"------";
-        cout<<title<<"take:"<<ofToString(timetake) <<" senconds "<<endl;
-    } 
+    easyLogTimer easyLogTime;
 };

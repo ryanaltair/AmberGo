@@ -22,7 +22,7 @@ void ofApp::setup(){
     fbosettings.width = 1280;
     fbosettings.height =768;
     fbosettings.textureTarget = GL_TEXTURE_2D;
-//    fbosettings.numSamples=4;
+    //    fbosettings.numSamples=4;
     fbo.allocate(fbosettings);
     pixelsbuffer.allocate(1280, 768,3);
     pixelsbuffervoid.allocate(1280, 768, 3);
@@ -36,59 +36,16 @@ void ofApp::update(){
     apppreference.updatelayerout(panel.getWidth());
     panel.update();
     loadModel();
-    outputManager.check();
+    outputManager.checkEnd();
     if(panel.isSliceHeightChange()){
         panel.layertestZlast=panel.layertestZ;
         //cout<<"we slice at now "<<endl;
         plate.sliceAt(panel.layertestZ);
         plate.update();
     }
-    if(threadSlice.isThreadRunning()==false){
-        if(apppreference.bHaveModelLoaded==false){return;}
-        if(panel.bAllSlice==true){
-            outputManager.init();
-            if(threadSlice.isAllSliceDone==false){
-//                threadSlice.allSlice(panel.layerthickness);r
-                
-                threadSlice.allSlice(0.05);
-            }
-            panel.bAllSlice=false;
-            
-        }
-        if(threadSlice.layertestZ!=panel.layertestZ){
-            //threadSlice.sliceAt(panel.layertestZ);
-        }
-        if(threadSlice.isAllSliceDone==true&&panel.bShowAllSlice==true){
-            if(panel.iShowAllSliceLayerCount<threadSlice.alllayertests.size()){
-                layertest=threadSlice.alllayertests[panel.iShowAllSliceLayerCount];
-                panel.layertestZ=threadSlice.alllayertesstsHeight[panel.iShowAllSliceLayerCount];
-                panel.iShowAllSliceLayerCount++;
-                if(panel.iShowAllSliceLayerCount==1){
-                    easyLogTimeFrom("output");
-                }
-                drawFBO(layertest);
-                fbo.readToPixels(pixelsbuffer);
-                if(panel.outputToggle->getChecked()==true){
-                     if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()){
-                         outputManager.setLastPic();
-                     }
-                    outputManager.saveImage(pixelsbuffer,panel.layertestZ);
-                }
-                
-                
-                if( outputManager.check()){
-                    if(panel.iShowAllSliceLayerCount==threadSlice.alllayertests.size()-1){
-                        panel.setSliceDone();
-                        easyLogTimeTo("output");
-                        
-                    }
-                    
-                }
-            }
-        }
-        
-        
-    }
+    checkNeedSlice();
+    sliceModel();
+    
 }
 
 //--------------------------------------------------------------
@@ -101,6 +58,8 @@ void ofApp::draw(){
     
     
     if(panel.ShowSlice==true){
+//        layertestDraw.setFillColor(ofColor::black);
+//        layertestDraw.draw(apppreference.sliceview.x,apppreference.sliceview.y);
         fbo.draw(apppreference.sliceview);
     }
 }
@@ -118,7 +77,7 @@ void ofApp::keyPressed(int key){
             //    panel.sliceHeight=panel.layertestZ;
             break;
         case OF_KEY_LEFT:
-            panel.bAllSlice=true;
+            
             break;
         case OF_KEY_RIGHT:
             panel.bPrint=true;
@@ -216,20 +175,91 @@ void ofApp::loadModel(){
         bModelLoaded=true;
         return;
     }
-    plate.addModel(threadSlice.mll.mergedMesh);
-    threadSlice.assimpmodel.clear();
+    plate.addModel(threadSlice.getMergedMesh());
+    threadSlice.cleanMesh();
     panel.setSliceReady();
     plate.modelSize=threadSlice.mll.getScale();
     ofVec3f newposti;
     
-    newposti=threadSlice.mll.meshMin;
-    newposti.x=0;//-plate.modelSize.x/2;
-    newposti.y=0;//-plate.modelSize.y/2;
+    newposti=-threadSlice.mll.meshMin;
+    newposti.x-=threadSlice.mll.meshScale.x/2;//-plate.modelSize.x/2;
+    newposti.y-=threadSlice.mll.meshScale.y/2;//-plate.modelSize.y/2;
     plate.setPosition(newposti);
     panel.sliceMax=plate.modelSize.z;
     cout<<" modelsize:"<<plate.modelSize<<endl;
     apppreference.isModelChanged=false;
     apppreference.bHaveModelLoaded=true;
+}
+void ofApp::checkNeedSlice(){
+    if(threadSlice.isThreadRunning()){
+        return;
+    }
+    if(panel.needAllToSlice()==true){
+        outputManager.init();
+        if(threadSlice.isAllSliceDone==false){
+            threadSlice.allSlice(panel.layerthickness);
+            panel.setSlicing();
+            outputManager.setPrint(panel.exposedTime, 6, 6, panel.baseExposedTime, 4, 3000, 4);
+        }
+    }
+    
+}
+void ofApp::sliceModel(){
+    if(threadSlice.isThreadRunning()==false){
+        if(apppreference.bHaveModelLoaded==false){return;}
+        if(threadSlice.isAllSliceDone==false){return;}
+        if(panel.ShowingAllSlice==true){
+            int currentSliceLayer= panel.iShowAllSliceLayerCount;
+            int allSliceLayerCount=threadSlice.alllayertests.size()-1;
+            
+            if(currentSliceLayer<=allSliceLayerCount){
+                if(panel.getSaveDirectoryChanged()==true){
+                    cout<<"now we have new save dir"<<endl;
+                    outputManager.startOutput(panel.getSaveDirectory());
+                }
+                if(currentSliceLayer==0){
+                    easyLogTime.from("output to thread");
+                }
+                layertest=threadSlice.alllayertests[currentSliceLayer];
+                 panel.layertestZ=threadSlice.alllayertesstsHeight[currentSliceLayer];
+                 
+                if(layertest.getCommands().size()>10000){
+                cout<<"now z:"<<panel.layertestZ<<" outline count:"<<layertest.getOutline().size()<<" commands count:"<<layertest.getCommands().size()<<endl;
+                    for(int i=0;i<layertest.getOutline().size();i++){
+                        if(layertest.getOutline()[i].size()>10000){
+                            
+                            cout<<"now "<<i<<":"<<layertest.getOutline()[i].size()<<endl;
+                            cout<<"now we print the line"<<endl;
+                            for(int j=0;j<layertest.getOutline()[i].getVertices().size();j++){
+                                cout<<":"<<layertest.getOutline()[i].getVertices()[j]<<endl;
+                            
+                            }
+                            cout<<"now we end print the line"<<endl;
+                        }
+                    }
+                }
+                
+ drawFBO(layertest);
+                if(panel.needOutput()==true){// need output?
+                    if(currentSliceLayer==allSliceLayerCount){
+                        outputManager.setLastPic();
+                    }
+                    if(outputManager.usingSVG==true){
+                        outputManager.saveImage(layertest,panel.layertestZ);
+                    }else{
+                        drawFBO(layertest);
+                        fbo.readToPixels(pixelsbuffer);
+                        outputManager.saveImage(pixelsbuffer,panel.layertestZ);
+                    }
+                }
+                if(currentSliceLayer==allSliceLayerCount){
+                    panel.setSliceDone();
+                    easyLogTime.to("output to thread");
+                }
+            }
+            panel.iShowAllSliceLayerCount++;
+        }
+    }
 }
 /**
  draw the fbo
@@ -239,10 +269,7 @@ void ofApp::drawFBO(ofPath pathdraw){
     
     fbo.begin();
     ofClear(ofColor::black);
-    //        ofBackground(0,0,0);
-    
-    pathdraw.scale(apppreference.getpixelpermm().x, apppreference.getpixelpermm().y);
-    pathdraw.draw(1280/2,768/2);
+    pathdraw.draw(0,0);
     fbo.end();
 }
 
