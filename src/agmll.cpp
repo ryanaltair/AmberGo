@@ -76,12 +76,15 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     
     vector<ofIndexType> pathindexs;
     
-    
+    //add first point index
+    sliceModel.multilinklinelist[iBegin].touch();
+    pathindexs.push_back(iBegin);
     // set the first point
     ofIndexType i0=iBegin;//multilinklinelist[i0]
     
     //step loop
     agline nextline;
+    
     for ( unsigned long i = 0; i < sliceModel.multilinklinelist.size() ; i++) {
         //checkpnextZ, figure out use which side as next line
         if(sliceModel.checkLineError(sliceModel.multilinklinelist[i0])){
@@ -92,8 +95,7 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
                 break;
             }
         }
-        sliceModel.multilinklinelist[i0].touch();
-        pathindexs.push_back(i0);
+        
         // make next line
         // a complicated work to find out use which line
         if(sliceModel.multilinklinelist[i0].isFilled()==false){// check first
@@ -104,8 +106,9 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
         if(sliceModel.checkLineError(nextline)){
             break;
         }else{
-            //agline sortnextline=;
             i0=sliceModel.searchLine(nextline);
+            pathindexs.push_back(i0);
+            sliceModel.multilinklinelist[i0].touch();
         }
         if (i0 == iBegin){//check if the last line
             //cout<<"we end the loop path"<<endl;
@@ -119,34 +122,36 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     ofVec2f XYpoint0=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[0]], divdH, z,640,384);
     ofVec2f XYpoint1=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[1]], divdH, z,640,384);
     ofVec2f XYpoint2=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[2]], divdH, z,640,384);
-
-    pathpointsNew.push_back(XYpoint0);
+    
+    pathpointsNew.push_back(XYpoint0);//add first point
+    
+    //    pathpointsNew.push_back(XYpoint1);//add first point
     if(pathindexs.size()>=3){
-        for(ofIndexType i=2;i<pathindexs.size();i++){
-            XYpoint0= XYpoint1;
-            XYpoint1= XYpoint2;
-            XYpoint2=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[i]], divdH, z,640,384);
+        for(ofIndexType i=1;i<pathindexs.size()-1;i++){
+            
             ofVec2f line0=XYpoint1-XYpoint0;
             ofVec2f line1=XYpoint2-XYpoint0;
             
             if(line0.isAligned(line1) ){
-                if(0){ // simpify the pathpoints set zero
+                if(1){ // simpify the pathpoints set zero
                     pathpointsNew.push_back(XYpoint1);
                 }
             }else{
                 pathpointsNew.push_back(XYpoint1);
             }
+            XYpoint0= XYpoint1;
+            XYpoint1= XYpoint2;
+            XYpoint2=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[i+1]], divdH, z,640,384);
         }
-        pathpointsNew.push_back(XYpoint2);
+        
     }
-    
-
+    pathpointsNew.push_back(XYpoint1);//add last point
     //now make the layer island
-        ofPath layerisland;
-    layerisland.moveTo(pathpointsNew[0].x,pathpointsNew[0].y);
+    ofPath layerisland;
+    layerisland.moveTo(pathpointsNew[0]);
     for(ofIndexType p=1;p<pathpointsNew.size();p++){
         
-        layerisland.lineTo(pathpointsNew[p].x,pathpointsNew[p].y);
+        layerisland.lineTo(pathpointsNew[p]);
         
         //cout<<"path "<<p<<":"<< pathindexs[p]<<":"<<pathpoints[p]<<endl;
     }
