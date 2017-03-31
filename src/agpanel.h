@@ -19,19 +19,7 @@ public:
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onTextInputEvent(ofxDatGuiTextInputEvent e);
     bool isSliceHeightChange();
-    //componment
-    ofxDatGuiSlider* sliceHeightSlider;
-    ofxDatGuiSlider* sliceProgressPercentSlider;
-    ofxDatGuiButton* printPauseButton;
-    ofxDatGuiButton* allSliceButton;
-    ofxDatGuiButton* showAllSliceButton;
-     ofxDatGuiLabel* sliceReadyLabel;
-    ofxDatGuiToggle* outputToggle;
-    ofxDatGuiToggle* showsliceToggle;
-    ofxDatGuiSlider* layerthicknessSlider;
-    ofxDatGuiSlider* exposedTimeSlider;
-    
-    ofxDatGuiSlider* baseExposedTimeSlider;
+ 
     void setOutputDone(bool done);
     void sliderBind();
     float getWidth();
@@ -52,6 +40,10 @@ public:
         return false;
         
     }
+    bool needOutput(){
+        return outputToggle->getChecked();
+    
+    }
     bool outputDone=false;
     float sliceMin=0.02;
     float sliceMax=0.30;
@@ -68,6 +60,19 @@ public:
     float layertestZlast=0.1;
     float layertestZ=0.1;
 private:
+    //componment
+    ofxDatGuiSlider* sliceHeightSlider;
+    ofxDatGuiSlider* sliceProgressPercentSlider;
+    ofxDatGuiButton* printPauseButton;
+    ofxDatGuiButton* allSliceButton;
+    ofxDatGuiButton* showAllSliceButton;
+    ofxDatGuiLabel* sliceReadyLabel;
+    ofxDatGuiToggle* outputToggle;
+    ofxDatGuiToggle* showsliceToggle;
+    ofxDatGuiSlider* layerthicknessSlider;
+    ofxDatGuiSlider* exposedTimeSlider;
+    
+    ofxDatGuiSlider* baseExposedTimeSlider;
     bool isSaveDirectoryChanged=false;
     string saveDirectory;
     

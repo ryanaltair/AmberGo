@@ -222,12 +222,7 @@ void ofApp::sliceModel(){
                 }
                 layertest=threadSlice.alllayertests[currentSliceLayer];
                  panel.layertestZ=threadSlice.alllayertesstsHeight[currentSliceLayer];
-                if(  panel.layertestZ<1.55|| panel.layertestZ>1.85){
-                    layertestDraw=layertest;
-                    layertestDraw.scale(0.1, 0.1);
-                }else{
-                
-                }
+                 
                 if(layertest.getCommands().size()>10000){
                 cout<<"now z:"<<panel.layertestZ<<" outline count:"<<layertest.getOutline().size()<<" commands count:"<<layertest.getCommands().size()<<endl;
                     for(int i=0;i<layertest.getOutline().size();i++){
@@ -245,12 +240,11 @@ void ofApp::sliceModel(){
                 }
                 
  drawFBO(layertest);
-                if(panel.outputToggle->getChecked()==true){// need output?
+                if(panel.needOutput()==true){// need output?
                     if(currentSliceLayer==allSliceLayerCount){
                         outputManager.setLastPic();
                     }
                     if(outputManager.usingSVG==true){
-                        
                         outputManager.saveImage(layertest,panel.layertestZ);
                     }else{
                         drawFBO(layertest);
