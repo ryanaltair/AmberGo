@@ -27,6 +27,9 @@ public:
     ofVec3f getScale();
     float dH=0.01;
     ofPath layerAt(float z);// [new]
+    ofVec3f setScaleFactor( ofVec3f _sf){
+        sliceModel.setScaleFactor(_sf);
+    }
     ofVec3f meshScale;
     ofVec3f meshMax;
     ofVec3f meshMin;
@@ -35,7 +38,14 @@ public:
     ofMesh getMergedMesh(){
         return mergedMesh;
     }
+    float getRealZ(float z){
+        return z*=sliceModel.getScaleFactor().z;
+    }
+    float getRealthickness(float thickness){
+     return thickness/=sliceModel.getScaleFactor().z;
+    }
 private:
+    
     ofMesh getSliceShell();
     void addSupport();
     ofPath layerCloseLoop(float z,ofIndexType iBegin);

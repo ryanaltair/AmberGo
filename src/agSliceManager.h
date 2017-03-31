@@ -72,9 +72,14 @@ public:
             isSliceChanged=false;
             allthickness=layerthickness;
             needAllSlice=true;
+            
             startThread();
             return true;
         }
+    }
+    bool cleanOldLayers(){
+        vector<float>().swap(alllayertesstsHeight);
+        
     }
     float layertestZ;
     /**
@@ -128,7 +133,7 @@ public:
         assimpmodel.clear();
     }
        agmll mll;// the work slicer
-    ofPath layertest; //the output layer path
+  
     vector<ofPath> alllayertests;
     vector<float> alllayertesstsHeight;
     //needing flag
@@ -143,6 +148,9 @@ public:
     // work in thread
     bool isAllSliced(){
         return isAllSliceDone;
+    }
+    void setScaleFactor(ofVec3f sf){
+        mll.setScaleFactor(sf);
     }
 protected:
     //mll load
@@ -162,23 +170,31 @@ protected:
     void stepAllSlice(){
         easyLogTime.from("all slice");
         vector<ofPath> layers;
-        
-        float z;
+        vector<float> layerHeights;
+        float slicez;
+        float outputZ=0;
         int an=0;
-        for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
-//            cout<<"z"<<z<<endl;//use to check z
-            ofPath p=mll.layerAt(z);
+        float slicethickness=mll.getRealthickness(allthickness);
+        float outputthickness=mll.getRealZ(allthickness);
+        for(slicez=slicethickness;slicez<mll.meshScale.z;slicez+=slicethickness){
+           
+            
+            ofPath p=mll.layerAt(slicez);
             layers.push_back(p);
-            alllayertesstsHeight.push_back(z);
+             outputZ+=allthickness;
+            
+            layerHeights.push_back( outputZ);
+//            cout<<"z slice at :"<<slicez<<" new : "<<outputZ<<endl;//use to check z
             an++;
             
         }
-        alllayertests=layers;
+        alllayertests.swap(layers);
+        alllayertesstsHeight.swap(layerHeights);
         isAllSliceDone=true;
-        cout<<"layers:"<<layers.size()<<endl;
+        cout<<"layers:"<<layers.size()<<":"<<an<<endl;
         easyLogTime.to("all slicer");
     }
-   
+     ofPath layertest; //the output layer path
     ofxAssimpModelLoader assimpmodel;
     
      easyLogTimer easyLogTime;

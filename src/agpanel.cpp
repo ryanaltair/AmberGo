@@ -20,7 +20,7 @@ agpanel::agpanel(){
     layerthicknessSlider=gui->addSlider("layer thickness", 0.02, 0.50, 0.16);
     exposedTimeSlider=gui->addSlider("exposed time:second", 0, 20,10);
     baseExposedTimeSlider=gui->addSlider("baseExposed time:second", 20, 120,80);
-    scaleSlider=gui->addSlider("scale:",0.01,2.0,1.0);
+    scaleSlider=gui->addSlider("scale:",0.01,2,1);
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
@@ -65,6 +65,13 @@ void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 {
     if(e.target==sliceHeightSlider){
         isLayerTestZChange=true;
+    }
+    if(e.target==scaleSlider){
+        isModelChanged=true;
+    }
+    
+    if(e.target==layerthicknessSlider){
+        isLayerThicknessChange=true;
     }
 }
 void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
@@ -136,6 +143,7 @@ void agpanel::sliderBind(){
     exposedTimeSlider->bind(exposedTime);
     baseExposedTimeSlider->bind(baseExposedTime);
     scaleSlider->bind(scaleFactor);
+    scaleFactor=1;
 }
 
 float agpanel::getWidth(){

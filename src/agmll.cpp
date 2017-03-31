@@ -35,6 +35,7 @@ void agmll::prepareModel(){
 
 // public
 ofPath  agmll::layerAt(float z){
+    
     z += sliceModel.scaleMin.z;
     z=sliceModel.getNoHorizonHappenZ(z);
     ofPath returnpath;

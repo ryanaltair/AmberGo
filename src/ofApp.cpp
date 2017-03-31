@@ -52,11 +52,7 @@ void ofApp::draw(){
     ofBackground(ofColor::black);
     plate.drawincamera(apppreference.plateview);
     ofDisableDepthTest();
-    
-    
     if(panel.ShowSlice==true){
-        //        layertestDraw.setFillColor(ofColor::black);
-        //        layertestDraw.draw(apppreference.sliceview.x,apppreference.sliceview.y);
         fbo.draw(apppreference.sliceview);
     }
 }
@@ -195,7 +191,8 @@ void ofApp::checkNeedSlice(){
     }
     if(panel.needAllToSlice()==true){
         outputManager.init();
-        if(threadSlice.isAllSliced()==false){
+        if(threadSlice.isAllSliced()==false||panel.isModelUpdated()==true){
+            threadSlice.setScaleFactor(ofVec3f(panel.getScaleFactor()));
             threadSlice.allSlice(panel.layerthickness);
             panel.setSlicing();
             outputManager.setPrint(panel.exposedTime, 6, 6, panel.baseExposedTime, 4, 3000, 4);
@@ -208,8 +205,8 @@ void ofApp::sliceModel(){
         if(apppreference.bHaveModelLoaded==false){return;}
         if(threadSlice.isAllSliced()==false){return;}
         if(panel.ShowingAllSlice==true){
-            int currentSliceLayer= panel.iShowAllSliceLayerCount;
-            int allSliceLayerCount=threadSlice.alllayertests.size()-1;
+            ofIndexType currentSliceLayer= panel.iShowAllSliceLayerCount;
+            ofIndexType allSliceLayerCount=threadSlice.alllayertests.size()-1;
             
             if(currentSliceLayer<=allSliceLayerCount){
                 if(panel.getSaveDirectoryChanged()==true){
@@ -221,7 +218,7 @@ void ofApp::sliceModel(){
                 }
                 layertest=threadSlice.alllayertests[currentSliceLayer];
                 panel.setSliceHeight(threadSlice.alllayertesstsHeight[currentSliceLayer]);
-                
+
                 if(layertest.getCommands().size()>10000){
                     cout<<"now z:"<<panel.getSliceHeight()<<" outline count:"<<layertest.getOutline().size()<<" commands count:"<<layertest.getCommands().size()<<endl;
                     for(int i=0;i<layertest.getOutline().size();i++){

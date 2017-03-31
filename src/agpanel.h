@@ -15,7 +15,15 @@ public:
     ofxDatGui* gui;
 
     bool isSliceHeightUpdated();
- 
+    bool isModelUpdated(){
+        if(isModelChanged||isLayerThicknessChange){
+            isModelChanged=false;
+            isLayerThicknessChange=false;
+            return true;
+        }else{
+            return false;
+        }
+    }
     void setOutputDone(bool done);
     void sliderBind();
     float getWidth();
@@ -89,6 +97,8 @@ protected:
     string saveDirectory;
     float layertestZ=0.1;
     bool isLayerTestZChange=false;
+    bool isModelChanged=false;
+    bool isLayerThicknessChange=false;
     bool needAllSlice=false;
 
     
