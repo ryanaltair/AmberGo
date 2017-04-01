@@ -197,12 +197,7 @@ ofVec3f agmll::getScale(){
     meshMax=a;
     return scale;
     
-}
-ofMesh agmll::getSliceShell(){
-    
-    
-    
-}
+} 
 void agmll::addSupport(){
     vector<ofMeshFace> facets;
     facets=mergedMesh.getUniqueFaces();

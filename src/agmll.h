@@ -46,7 +46,6 @@ public:
     }
 private:
     
-    ofMesh getSliceShell();
     void addSupport();
     ofPath layerCloseLoop(float z,ofIndexType iBegin);
     agModel sliceModel;
