@@ -37,8 +37,10 @@ public:
     }
     void updatePosition(){
         ofVec3f newpostion=modelMin;
-        newpostion.x-=modelSize.x/2*scaleFactor.x;//-plate.modelSize.x/2;
-        newpostion.y-=modelSize.y/2*scaleFactor.y;//-plate.modelSize.y/2;
+        newpostion.x-=modelSize.x/2;
+        newpostion.x*=scaleFactor.x;//-plate.modelSize.x/2;
+        newpostion.y-=modelSize.y/2;
+        newpostion.y*scaleFactor.y;//-plate.modelSize.y/2;
         if(nodemodels.size()>0){
             nodemodels[0].setPosition(newpostion);
 //            cout<<"position"<<ofToString(newpostion);
