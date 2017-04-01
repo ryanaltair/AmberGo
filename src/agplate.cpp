@@ -83,7 +83,7 @@ void agplate::addModel(ofMesh model){
 
 void agplate::drawincamera(ofRectangle view){
     cam.begin(view);
-    ofBackground(255,255,255);// a white with bit yellow
+    ofBackground(240,240,240);// a white with bit yellow
     if(sliceLayPlaneEnable==1){
         
         ofSetColor(96,185,287);
@@ -109,7 +109,7 @@ void agplate::drawincamera(ofRectangle view){
     }
     ofDisableLighting();
     cam.end();
-    //envlight.disable();
+    
 }
 void agplate::drawModels(){
     if(drawmode==1){
