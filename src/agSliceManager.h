@@ -36,27 +36,6 @@ public:
         ofResetElapsedTimeCounter();
         alllayertests.clear();
     }
-    bool sliceAt(float zheight)
-    {
-        if(isModelReadySlice==false){
-            //if mesh have model and get merged?
-            
-            if(isThreadRunning()==false){
-                needLoad=true;
-                cout<<"now we loading"<<endl;
-                startThread();
-            }
-            
-            return false;
-        }else{//if(isModelReadySlice==true){
-            isThreadEnd=false;
-            isSliceChanged=false;
-            layertestZ=zheight;
-            needSliceAt=zheight;
-            startThread();
-            return true;
-        }
-    }
     bool allSlice(float layerthickness){
         if(isModelReadySlice==false){
             //if mesh have model and get merged?
@@ -72,7 +51,6 @@ public:
             isSliceChanged=false;
             allthickness=layerthickness;
             needAllSlice=true;
-            
             startThread();
             return true;
         }
@@ -108,12 +86,6 @@ public:
                     stepLoad();
                     needLoad=false;
                 }
-                if(needSliceAt>=0){
-                    if(isModelReadySlice==true){
-                        stepSliceAt();
-                        needSliceAt=-1;
-                    }
-                }
                 if(needAllSlice==true){
                     if(isModelReadySlice==true){
                         stepAllSlice();
@@ -139,7 +111,6 @@ public:
     //needing flag
     bool isThreadEnd=false;// true when everything is done
     bool needLoad=false;
-    float needSliceAt=-1;// -1 means no need
     bool needAllSlice=false;
 
     float allthickness=0.06;
@@ -163,10 +134,6 @@ protected:
     /**
      use mll slice at testlayeratZ
      */
-    void stepSliceAt(){
-        layertest=mll.layerAt(needSliceAt); 
-        isSliceChanged=true;
-    }
     void stepAllSlice(){
         easyLogTime.from("all slice");
         vector<ofPath> layers;

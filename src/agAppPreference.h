@@ -8,7 +8,7 @@
  
  
  
- TODO:
+ 
  - print speed is influence by:
  - lift opeteration, fixed
  - axis speed  unfixed
