@@ -11,7 +11,7 @@ agpanel::agpanel(){
     sliceProgressPercentSlider->setVisible(false);
     sliceReadyLabel=gui->addLabel("slice is ready");
     sliceReadyLabel->setLabel("ready to add model");
-    allSliceButton=gui->addButton("all slice!!");
+    allSliceButton=gui->addButton("all slice !!");
     showAllSliceButton=gui->addButton("show all");
     printPauseButton=gui->addButton("Pause");
     outputToggle=gui->addToggle("output");
@@ -24,10 +24,10 @@ agpanel::agpanel(){
     baseExposedTimeSlider=printSettingFolder->addSlider("baseExposed time:second", 20, 120,80);
     modelSettingFolder = gui->addFolder("Model Setting", ofColor::white);
 
-        scaleFactorSlider=modelSettingFolder->addSlider("scale:",0.01,2,1);
-           scaleXSlider=modelSettingFolder->addSlider("X in mm:",0.01,2,1);
-           scaleYSlider=modelSettingFolder->addSlider("Y in mm:",0.01,2,1);
-           scaleZSlider=modelSettingFolder->addSlider("Z in mm:",0.01,2,1);
+        scaleFactorSlider=modelSettingFolder->addSlider("scale:%",0.01,2,1);
+           scaleXSlider=modelSettingFolder->addSlider("X: mm",0.01,2,1);
+           scaleYSlider=modelSettingFolder->addSlider("Y: mm",0.01,2,1);
+           scaleZSlider=modelSettingFolder->addSlider("Z: mm",0.01,2,1);
  
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
@@ -89,17 +89,18 @@ void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
     if(e.target==scaleXSlider){
         double newfactor=scaleXSlider->getValue()/modelScale.x;
         scaleFactor.x=newfactor;
-    
+      isModelChanged=true;
     }
     if(e.target==scaleYSlider){
         double newfactor=scaleYSlider->getValue()/modelScale.y;
         scaleFactor.y=newfactor;
+          isModelChanged=true;
         
     }
     if(e.target==scaleZSlider){
         double newfactor=scaleZSlider->getValue()/modelScale.z;
         scaleFactor.z=newfactor;
-        
+          isModelChanged=true;
     }
 }
 void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
