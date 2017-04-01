@@ -45,7 +45,27 @@ public:
         return false;
         
     }
-    float getScaleFactor(){
+    void setModelScale(ofVec3f orignScaleInMM){
+        modelScale=orignScaleInMM;
+        updateModelSize();
+    }
+    void updateModelSize(){
+        ofVec3f realsize=modelScale*scaleFactor;
+        // set the slider's range //
+        scaleXSlider->setMin(0.01);
+        scaleXSlider->setMax(realsize.x*2);
+        scaleXSlider->setValue( realsize.x);
+        
+        scaleYSlider->setMin(0.01);
+        scaleYSlider->setMax(realsize.y*2);
+        scaleYSlider->setValue( realsize.y);
+        
+        scaleZSlider->setMin(0.01);
+        scaleZSlider->setMax(realsize.z*2);
+        scaleZSlider->setValue( realsize.z);
+    
+    }
+    ofVec3f getScaleFactor(){
         return scaleFactor;
     }
     bool needOutput(){
@@ -78,7 +98,19 @@ protected:
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onTextInputEvent(ofxDatGuiTextInputEvent e);
     //componment
+    ofxDatGuiFolder* printSettingFolder;
+        ofxDatGuiSlider* layerthicknessSlider;
+        ofxDatGuiSlider* exposedTimeSlider;
+        ofxDatGuiSlider* baseExposedTimeSlider;
+    
     ofxDatGuiSlider* sliceHeightSlider;
+    
+    ofxDatGuiFolder* modelSettingFolder;
+        ofxDatGuiSlider* scaleFactorSlider;
+    ofxDatGuiSlider* scaleXSlider;
+        ofxDatGuiSlider* scaleYSlider;
+        ofxDatGuiSlider* scaleZSlider;
+
     ofxDatGuiSlider* sliceProgressPercentSlider;
     ofxDatGuiButton* printPauseButton;
     ofxDatGuiButton* allSliceButton;
@@ -86,13 +118,12 @@ protected:
     ofxDatGuiLabel* sliceReadyLabel;
     ofxDatGuiToggle* outputToggle;
     ofxDatGuiToggle* showsliceToggle;
-    ofxDatGuiSlider* layerthicknessSlider;
-    ofxDatGuiSlider* exposedTimeSlider;
-    ofxDatGuiSlider* scaleSlider;
+
     
-    ofxDatGuiSlider* baseExposedTimeSlider;
+    ofVec3f modelScale;
     
-    float scaleFactor;
+    float scaleFactorSize;
+    ofVec3f scaleFactor;
     bool isSaveDirectoryChanged=false;
     string saveDirectory;
     float layertestZ=0.1;

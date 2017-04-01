@@ -123,8 +123,8 @@ void agplate::drawModels(){
         
         nodemodels[0].setScale(scaleFactor.x, scaleFactor.y, scaleFactor.z);
         nodemodels[0].draw();
-        
-        ofSetColor(ofColor::black);
+         ofSetColor(80, 80, 80);//
+//        ofSetColor(ofColor::black);
         nodemodels[0].drawWireframe();
         
     }
@@ -132,10 +132,4 @@ void agplate::drawModels(){
     
 }
 
-void agplate::setPosition(ofVec3f newpostion){
-    if(nodemodels.size()>0){
-        nodemodels[0].setPosition(newpostion);
-        cout<<"position"<<ofToString(newpostion);
-    }
-}
 

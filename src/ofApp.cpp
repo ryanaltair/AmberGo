@@ -39,7 +39,7 @@ void ofApp::update(){
     outputManager.checkEnd();
     checkSliceHeightChange();
     
-    plate.setScaleFactor(ofVec3f(panel.getScaleFactor()));
+    plate.setScaleFactor(panel.getScaleFactor());
     checkNeedSlice();
     sliceModel();
     
@@ -170,11 +170,11 @@ void ofApp::loadModel(){
     threadSlice.cleanMesh();
     panel.setSliceReady();
     plate.modelSize=threadSlice.mll.getScale();
+    panel.setModelScale(threadSlice.mll.getScale());
     ofVec3f newposti;
     newposti=-threadSlice.mll.meshMin;
-    newposti.x-=threadSlice.mll.meshScale.x/2;//-plate.modelSize.x/2;
-    newposti.y-=threadSlice.mll.meshScale.y/2;//-plate.modelSize.y/2;
-    plate.setPosition(newposti);
+ 
+    plate.setMinPosition(newposti);
     panel.sliceMax=plate.modelSize.z;
     cout<<" modelsize:"<<plate.modelSize<<endl;
     apppreference.isModelChanged=false;
@@ -192,7 +192,7 @@ void ofApp::checkNeedSlice(){
     if(panel.needAllToSlice()==true){
         outputManager.init();
         if(threadSlice.isAllSliced()==false||panel.isModelUpdated()==true){
-            threadSlice.setScaleFactor(ofVec3f(panel.getScaleFactor()));
+            threadSlice.setScaleFactor(panel.getScaleFactor());
             threadSlice.allSlice(panel.layerthickness);
             panel.setSlicing();
             outputManager.setPrint(panel.exposedTime, 6, 6, panel.baseExposedTime, 4, 3000, 4);

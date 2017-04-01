@@ -25,18 +25,32 @@ public:
     void addModel(ofMesh model);// add a model
     void deleteModel();
     void cleanModel();
-    void setPosition(ofVec3f newpostion);
+    void setMinPosition(ofVec3f min){
+        modelMin=min;
+        updatePosition();
+    }
     void setScaleFactor(ofVec3f sf){
         if(scaleFactor!=sf){
             scaleFactor=sf;
         }
+         updatePosition();
     }
+    void updatePosition(){
+        ofVec3f newpostion=modelMin;
+        newpostion.x-=modelSize.x/2*scaleFactor.x;//-plate.modelSize.x/2;
+        newpostion.y-=modelSize.y/2*scaleFactor.y;//-plate.modelSize.y/2;
+        if(nodemodels.size()>0){
+            nodemodels[0].setPosition(newpostion);
+//            cout<<"position"<<ofToString(newpostion);
+        }
+    }
+     
     // workplace:
     ofBoxPrimitive playground;    // ground
     ofBoxPrimitive outsideBox;    // box
     ofBoxPrimitive sliceLayPlane;    // slicelayer
     
-    
+    ofVec3f modelMin;
     ofVec3f modelSize;
     ofVec3f boxSize;// the box size
     ofVec3f pixelSize;
@@ -44,7 +58,7 @@ public:
     float groundheight;
     int drawmode=0;//drawmode set 0 for meshes 1 for assimps
     
-       vector<of3dPrimitive> nodemodels;    //models
+    vector<of3dPrimitive> nodemodels;    //models
     ofEasyCam cam;
  private:
     float slicelayerZ=0;

@@ -5,6 +5,7 @@ agpanel::agpanel(){
     gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     
     gui->addFRM();
+    
     sliceHeightSlider=gui->addSlider("sliceHeight", 0, 139.3,0);
     sliceProgressPercentSlider=gui->addSlider("progress", 0, 100, 0);
     sliceProgressPercentSlider->setVisible(false);
@@ -17,17 +18,27 @@ agpanel::agpanel(){
     outputToggle->setChecked(false);
     showsliceToggle=gui->addToggle("slice Preview");
     showsliceToggle->setChecked(true);
-    layerthicknessSlider=gui->addSlider("layer thickness", 0.02, 0.50, 0.16);
-    exposedTimeSlider=gui->addSlider("exposed time:second", 0, 20,10);
-    baseExposedTimeSlider=gui->addSlider("baseExposed time:second", 20, 120,80);
-    scaleSlider=gui->addSlider("scale:",0.01,2,1);
+    printSettingFolder=gui->addFolder("Print Setting", ofColor::white);
+    layerthicknessSlider=printSettingFolder->addSlider("layer thickness", 0.02, 0.50, 0.16);
+    exposedTimeSlider=printSettingFolder->addSlider("exposed time:second", 0, 20,10);
+    baseExposedTimeSlider=printSettingFolder->addSlider("baseExposed time:second", 20, 120,80);
+    modelSettingFolder = gui->addFolder("Model Setting", ofColor::white);
+
+        scaleFactorSlider=modelSettingFolder->addSlider("scale:",0.01,2,1);
+           scaleXSlider=modelSettingFolder->addSlider("X in mm:",0.01,2,1);
+           scaleYSlider=modelSettingFolder->addSlider("Y in mm:",0.01,2,1);
+           scaleZSlider=modelSettingFolder->addSlider("Z in mm:",0.01,2,1);
+ 
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     layerthicknessSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     exposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     baseExposedTimeSlider->onSliderEvent(this, &agpanel::onSliderEvent);
-    scaleSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    scaleFactorSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    scaleXSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    scaleYSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    scaleZSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     printPauseButton->onButtonEvent(this,&agpanel::onButtonEvent);
     allSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
     showAllSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
@@ -66,12 +77,29 @@ void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
     if(e.target==sliceHeightSlider){
         isLayerTestZChange=true;
     }
-    if(e.target==scaleSlider){
+    if(e.target==scaleFactorSlider){
         isModelChanged=true;
+        scaleFactor=ofVec3f(scaleFactorSize);
+        updateModelSize();
     }
     
     if(e.target==layerthicknessSlider){
         isLayerThicknessChange=true;
+    }
+    if(e.target==scaleXSlider){
+        double newfactor=scaleXSlider->getValue()/modelScale.x;
+        scaleFactor.x=newfactor;
+    
+    }
+    if(e.target==scaleYSlider){
+        double newfactor=scaleYSlider->getValue()/modelScale.y;
+        scaleFactor.y=newfactor;
+        
+    }
+    if(e.target==scaleZSlider){
+        double newfactor=scaleZSlider->getValue()/modelScale.z;
+        scaleFactor.z=newfactor;
+        
     }
 }
 void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
@@ -142,8 +170,9 @@ void agpanel::sliderBind(){
     layerthicknessSlider->bind(layerthickness);
     exposedTimeSlider->bind(exposedTime);
     baseExposedTimeSlider->bind(baseExposedTime);
-    scaleSlider->bind(scaleFactor);
-    scaleFactor=1;
+    scaleFactorSlider->bind(scaleFactorSize);
+    scaleFactorSize=1;
+    scaleFactor=ofVec3f(scaleFactorSize);
 }
 
 float agpanel::getWidth(){
