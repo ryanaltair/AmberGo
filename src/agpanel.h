@@ -71,6 +71,11 @@ public:
             positionZSlider->setMin(-100);
             
         }
+        ofRectangle rect;
+        rect.setPosition(-orignScaleInMM.x, -orignScaleInMM.y);
+        rect.setSize(orignScaleInMM.x*2,orignScaleInMM.y*2);
+        positionXYPad->setBounds( rect  );
+        
     }
   
     void updateModelSize(){
@@ -87,6 +92,9 @@ public:
         scaleZSlider->setMin(0.01);
         scaleZSlider->setMax(realsize.z*2);
         scaleZSlider->setValue( realsize.z);
+        
+       
+        
         
     }
     ofVec3f getPositionOffset(){
@@ -124,6 +132,7 @@ protected:
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onTextInputEvent(ofxDatGuiTextInputEvent e);
+    void on2dPadEvent(ofxDatGui2dPadEvent e);
     //componment
     ofxDatGuiFolder* printSettingFolder;
     ofxDatGuiSlider* layerthicknessSlider;
@@ -139,6 +148,8 @@ protected:
     ofxDatGuiSlider* scaleYSlider;
     ofxDatGuiSlider* scaleZSlider;
     ofxDatGuiFolder* positionSettingFolder;// position
+    
+    ofxDatGui2dPad* positionXYPad;
     ofxDatGuiSlider* positionXSlider;
     ofxDatGuiSlider* positionYSlider;
     ofxDatGuiSlider* positionZSlider;
@@ -150,7 +161,7 @@ protected:
     ofxDatGuiLabel* sliceReadyLabel;
     ofxDatGuiToggle* outputToggle;
     ofxDatGuiToggle* showsliceToggle;
-    
+    ofxDatGuiToggle* moreOptionToggle;
     
     ofVec3f modelScale;
     ofVec3f modelPositionOffset;

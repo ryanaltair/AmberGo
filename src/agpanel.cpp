@@ -16,6 +16,7 @@ agpanel::agpanel(){
     printPauseButton=gui->addButton("Pause");
     outputToggle=gui->addToggle("output");
     outputToggle->setChecked(false);
+
     showsliceToggle=gui->addToggle("slice Preview");
     showsliceToggle->setChecked(true);
     printSettingFolder=gui->addFolder("Print Setting", ofColor::white);
@@ -30,10 +31,18 @@ agpanel::agpanel(){
            scaleZSlider=scaleSettingFolder->addSlider("Z: mm",0.01,2,1);
  
     positionSettingFolder = gui->addFolder("Position Setting", ofColor::white);
+
+positionXYPad=positionSettingFolder->add2dPad("XY");
+    ofRectangle rect;
+    rect.setPosition(-50, -25);
+    rect.setSize(100,50);
+    positionXYPad->setBounds( rect  );
     positionXSlider=positionSettingFolder->addSlider("X: mm",-20,20,0);
     positionYSlider=positionSettingFolder->addSlider("Y: mm",-20,20,0);
     positionZSlider=positionSettingFolder->addSlider("Z: mm",-100,100,0);
-    
+    moreOptionToggle=gui->addToggle("moreOption");
+    moreOptionToggle->setChecked(true);
+    gui->addFooter();
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
@@ -52,7 +61,8 @@ agpanel::agpanel(){
     showAllSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
     outputToggle->onToggleEvent(this,&agpanel::onToggleEvent);
     showsliceToggle->onToggleEvent(this,&agpanel::onToggleEvent);
-    
+    moreOptionToggle->onToggleEvent(this,&agpanel::onToggleEvent);
+    positionXYPad->on2dPadEvent(this, &agpanel::on2dPadEvent);
 }
 
 
@@ -79,6 +89,12 @@ bool agpanel::isSliceHeightUpdated(){
 }
 void agpanel::setOutputDone(bool done){
     outputDone=done;
+}
+void agpanel::on2dPadEvent(ofxDatGui2dPadEvent e){
+cout << "point coordinates have changed to: x=" << e.x << " & y=" << e.y << endl;
+    modelPositionOffset.x=e.x;
+    modelPositionOffset.y=-e.y;
+    
 }
 void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
 {
@@ -180,6 +196,22 @@ void agpanel::onToggleEvent(ofxDatGuiToggleEvent e)
     if(e.target==showsliceToggle){
         ShowSlice=outputToggle->getChecked();
         
+    }
+    if(e.target==moreOptionToggle){
+        if(moreOptionToggle->getChecked()){
+            scaleSettingFolder->setVisible(true);
+            printSettingFolder->setVisible(true);
+            positionSettingFolder->setVisible(true);
+            showsliceToggle->setVisible(true);
+        }else{
+            scaleSettingFolder->collapse();
+         scaleSettingFolder->setVisible(false);
+            printSettingFolder->collapse();
+            printSettingFolder->setVisible(false);
+            positionSettingFolder->collapse();
+            positionSettingFolder->setVisible(false);
+            showsliceToggle->setVisible(false);
+        }
     }
 }
 void agpanel::sliderBind(){

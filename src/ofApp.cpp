@@ -200,6 +200,17 @@ void ofApp::checkNeedSlice(){
         }
     }
     if(panel.needAllToSlice()==true){
+        if(apppreference.bHaveModelLoaded==false){
+        //there is no model so need we need to add one
+            ofFileDialogResult result = ofSystemLoadDialog("Load file");
+            if(result.bSuccess) {
+                apppreference.isModelChanged=true;
+                modelpath=result.getPath();
+                // load  file using dialog 
+            }
+            return;
+        }
+        
         outputManager.init();
         if(threadSlice.isAllSliced()==false||panel.isModelUpdated()==true){
             threadSlice.setScaleFactor(panel.getScaleFactor());
