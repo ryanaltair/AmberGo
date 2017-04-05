@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     //for app looks like a app
-    ofSetWindowTitle("Amber Go Demo");//
+    ofSetWindowTitle("CreateBot");//
     ofSetEscapeQuitsApp(false);
     panel.setup();
     
@@ -27,15 +27,19 @@ void ofApp::setup(){
     pixelsbuffervoid.allocate(1280, 768, 3);
     // fbo end
     welcomeImage.load("welcome");
-    
+    welcomeImage.resize(1280/4, 768/4);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     if(welcomeNow){
-        if(ofGetElapsedTimef()>1.8){
+        
+        if(ofGetElapsedTimef()>3.8){
+             panel.show();
             welcomeNow=false;
             welcomeImage.clear();
+        }else{
+        panel.hide();
         }
     }
     apppreference.updatelayerout(panel.getWidth());
@@ -55,7 +59,7 @@ void ofApp::draw(){
     if(welcomeNow){
          ofEnableDepthTest();
         
-        ofBackground(ofColor::black);
+        ofBackground(ofColor::white);
         welcomeImage.draw(ofGetWindowSize().x/2-welcomeImage.getWidth()/2,ofGetWindowSize().y/2-welcomeImage.getHeight()/2);
     }else{
     ofEnableDepthTest();
@@ -104,7 +108,14 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    
+    if(welcomeNow){
+        
+        
+            panel.show();
+            welcomeNow=false;
+            welcomeImage.clear();
+       
+    }
 }
 
 //--------------------------------------------------------------
@@ -206,7 +217,7 @@ void ofApp::checkNeedSlice(){
             if(result.bSuccess) {
                 apppreference.isModelChanged=true;
                 modelpath=result.getPath();
-                // load  file using dialog 
+                // load  file using dialog
             }
             return;
         }

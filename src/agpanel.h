@@ -24,6 +24,12 @@ public:
             return false;
         }
     }
+    void show(){
+        gui->setVisible(true);
+    }
+    void hide(){
+        gui->setVisible(false);
+    }
     void setOutputDone(bool done);
     void sliderBind();
     float getWidth();
