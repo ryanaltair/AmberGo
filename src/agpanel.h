@@ -3,7 +3,7 @@
 #include "ofxDatGui.h"
 /**
  use for AmberGo
- as panel 
+ as panel
  and output work
  **/
 
@@ -13,7 +13,7 @@ public:
     void setup();
     void update();
     ofxDatGui* gui;
-
+    
     bool isSliceHeightUpdated();
     bool isModelUpdated(){
         if(isModelChanged||isLayerThicknessChange){
@@ -48,7 +48,31 @@ public:
     void setModelScale(ofVec3f orignScaleInMM){
         modelScale=orignScaleInMM;
         updateModelSize();
+        if(orignScaleInMM.x>100){
+        positionXSlider->setMax(orignScaleInMM.x);
+        positionXSlider->setMin(-orignScaleInMM.x);
+        }else{
+            positionXSlider->setMax( 100);
+            positionXSlider->setMin(-100);
+        
+        }
+        if(orignScaleInMM.y>100){
+        positionYSlider->setMax(orignScaleInMM.y);
+        positionYSlider->setMin(-orignScaleInMM.y);
+        }else{
+            positionYSlider->setMax( 100);
+            positionYSlider->setMin(-100);
+        }
+        if(orignScaleInMM.z>100){
+        positionZSlider->setMax(orignScaleInMM.z);
+        positionZSlider->setMin(-orignScaleInMM.z);
+        }else{
+            positionZSlider->setMax( 100);
+            positionZSlider->setMin(-100);
+            
+        }
     }
+  
     void updateModelSize(){
         ofVec3f realsize=modelScale*scaleFactor;
         // set the slider's range //
@@ -63,7 +87,10 @@ public:
         scaleZSlider->setMin(0.01);
         scaleZSlider->setMax(realsize.z*2);
         scaleZSlider->setValue( realsize.z);
-    
+        
+    }
+    ofVec3f getPositionOffset(){
+        return modelPositionOffset;
     }
     ofVec3f getScaleFactor(){
         return scaleFactor;
@@ -82,7 +109,7 @@ public:
     float sliceMin=0.02;
     float sliceMax=0.30;
     float layerthickness=0.05;
-   //    string slice
+    //    string slice
     bool isOutput=false;
     bool bPrint=false;
     int exposedTime=1000;//ms
@@ -99,18 +126,23 @@ protected:
     void onTextInputEvent(ofxDatGuiTextInputEvent e);
     //componment
     ofxDatGuiFolder* printSettingFolder;
-        ofxDatGuiSlider* layerthicknessSlider;
-        ofxDatGuiSlider* exposedTimeSlider;
-        ofxDatGuiSlider* baseExposedTimeSlider;
+    ofxDatGuiSlider* layerthicknessSlider;
+    ofxDatGuiSlider* exposedTimeSlider;
+    ofxDatGuiSlider* baseExposedTimeSlider;
     
     ofxDatGuiSlider* sliceHeightSlider;
     
-    ofxDatGuiFolder* modelSettingFolder;
-        ofxDatGuiSlider* scaleFactorSlider;
+    
+    ofxDatGuiFolder* scaleSettingFolder;//scale
+    ofxDatGuiSlider* scaleFactorSlider;
     ofxDatGuiSlider* scaleXSlider;
-        ofxDatGuiSlider* scaleYSlider;
-        ofxDatGuiSlider* scaleZSlider;
-
+    ofxDatGuiSlider* scaleYSlider;
+    ofxDatGuiSlider* scaleZSlider;
+    ofxDatGuiFolder* positionSettingFolder;// position
+    ofxDatGuiSlider* positionXSlider;
+    ofxDatGuiSlider* positionYSlider;
+    ofxDatGuiSlider* positionZSlider;
+    
     ofxDatGuiSlider* sliceProgressPercentSlider;
     ofxDatGuiButton* printPauseButton;
     ofxDatGuiButton* allSliceButton;
@@ -118,10 +150,10 @@ protected:
     ofxDatGuiLabel* sliceReadyLabel;
     ofxDatGuiToggle* outputToggle;
     ofxDatGuiToggle* showsliceToggle;
-
+    
     
     ofVec3f modelScale;
-    
+    ofVec3f modelPositionOffset;
     float scaleFactorSize;
     ofVec3f scaleFactor;
     bool isSaveDirectoryChanged=false;
@@ -131,6 +163,6 @@ protected:
     bool isModelChanged=false;
     bool isLayerThicknessChange=false;
     bool needAllSlice=false;
-
+    
     
 };

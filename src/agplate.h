@@ -29,6 +29,9 @@ public:
         modelMin=min;
         updatePosition();
     }
+    void setPositionOffset(ofVec3f translate){
+        modelPositionOffset =translate;
+    }
     void setScaleFactor(ofVec3f sf){
         if(scaleFactor!=sf){
             scaleFactor=sf;
@@ -41,6 +44,7 @@ public:
         newpostion.x*=scaleFactor.x;//-plate.modelSize.x/2;
         newpostion.y-=modelSize.y/2;
         newpostion.y*scaleFactor.y;//-plate.modelSize.y/2;
+        newpostion+=modelPositionOffset;
         if(nodemodels.size()>0){
             nodemodels[0].setPosition(newpostion);
 //            cout<<"position"<<ofToString(newpostion);
@@ -62,7 +66,11 @@ public:
     
     vector<of3dPrimitive> nodemodels;    //models
     ofEasyCam cam;
+    void orbit(float a, float b){
+     cam.orbit(a, b, cam.getDistance());
+    }
  private:
+    ofVec3f modelPositionOffset;
     float slicelayerZ=0;
     // enables
     int outsideBoxEnable=0;

@@ -14,7 +14,6 @@ void ofApp::setup(){
     // init the modelpath
     //    modelpath="testcube.stl";
     //    apppreference.isModelChanged=true;
-    
     // init the plate which hold the 3D model we see
     plate.setup();
     //setup fbo which will for export images
@@ -27,18 +26,24 @@ void ofApp::setup(){
     pixelsbuffer.allocate(1280, 768,3);
     pixelsbuffervoid.allocate(1280, 768, 3);
     // fbo end
-    
+    welcomeImage.load("welcome");
     
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    if(welcomeNow){
+        if(ofGetElapsedTimef()>1.8){
+            welcomeNow=false;
+            welcomeImage.clear();
+        }
+    }
     apppreference.updatelayerout(panel.getWidth());
     panel.update();
     loadModel();
     outputManager.checkEnd();
     checkSliceHeightChange();
-    
+    plate.setPositionOffset(panel.getPositionOffset());
     plate.setScaleFactor(panel.getScaleFactor());
     checkNeedSlice();
     sliceModel();
@@ -47,13 +52,19 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
+    if(welcomeNow){
+         ofEnableDepthTest();
+        
+        ofBackground(ofColor::black);
+        welcomeImage.draw(ofGetWindowSize().x/2-welcomeImage.getWidth()/2,ofGetWindowSize().y/2-welcomeImage.getHeight()/2);
+    }else{
     ofEnableDepthTest();
     ofBackground(ofColor::black);
     plate.drawincamera(apppreference.plateview);
     ofDisableDepthTest();
     if(panel.ShowSlice==true){
         fbo.draw(apppreference.sliceview);
+    }
     }
 }
 
@@ -167,7 +178,6 @@ void ofApp::loadModel(){
         return;
     }
     plate.addModel(threadSlice.getMergedMesh());
-    threadSlice.cleanMesh();
     panel.setSliceReady();
     plate.modelSize=threadSlice.mll.getScale();
     panel.setModelScale(threadSlice.mll.getScale());
@@ -193,6 +203,7 @@ void ofApp::checkNeedSlice(){
         outputManager.init();
         if(threadSlice.isAllSliced()==false||panel.isModelUpdated()==true){
             threadSlice.setScaleFactor(panel.getScaleFactor());
+            threadSlice.setModelOffset(panel.getPositionOffset());
             threadSlice.allSlice(panel.layerthickness);
             panel.setSlicing();
             outputManager.setPrint(panel.exposedTime, 6, 6, panel.baseExposedTime, 4, 3000, 4);
@@ -256,6 +267,7 @@ void ofApp::sliceModel(){
                 }
             }
             panel.iShowAllSliceLayerCount++;
+
         }
     }
 }

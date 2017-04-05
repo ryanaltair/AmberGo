@@ -22,13 +22,18 @@ agpanel::agpanel(){
     layerthicknessSlider=printSettingFolder->addSlider("layer thickness", 0.02, 0.50, 0.16);
     exposedTimeSlider=printSettingFolder->addSlider("exposed time:second", 0, 20,10);
     baseExposedTimeSlider=printSettingFolder->addSlider("baseExposed time:second", 20, 120,80);
-    modelSettingFolder = gui->addFolder("Model Setting", ofColor::white);
-
-        scaleFactorSlider=modelSettingFolder->addSlider("scale:%",0.01,2,1);
-           scaleXSlider=modelSettingFolder->addSlider("X: mm",0.01,2,1);
-           scaleYSlider=modelSettingFolder->addSlider("Y: mm",0.01,2,1);
-           scaleZSlider=modelSettingFolder->addSlider("Z: mm",0.01,2,1);
+    
+ scaleSettingFolder = gui->addFolder("Scale Setting", ofColor::white);
+        scaleFactorSlider=scaleSettingFolder->addSlider("scale:%",0.01,2,1);
+           scaleXSlider=scaleSettingFolder->addSlider("X: mm",0.01,2,1);
+           scaleYSlider=scaleSettingFolder->addSlider("Y: mm",0.01,2,1);
+           scaleZSlider=scaleSettingFolder->addSlider("Z: mm",0.01,2,1);
  
+    positionSettingFolder = gui->addFolder("Position Setting", ofColor::white);
+    positionXSlider=positionSettingFolder->addSlider("X: mm",-20,20,0);
+    positionYSlider=positionSettingFolder->addSlider("Y: mm",-20,20,0);
+    positionZSlider=positionSettingFolder->addSlider("Z: mm",-100,100,0);
+    
     gui->setTheme(new ofxDatGuiThemeSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
@@ -39,6 +44,9 @@ agpanel::agpanel(){
     scaleXSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     scaleYSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     scaleZSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    positionXSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    positionYSlider->onSliderEvent(this, &agpanel::onSliderEvent);
+    positionZSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     printPauseButton->onButtonEvent(this,&agpanel::onButtonEvent);
     allSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
     showAllSliceButton->onButtonEvent(this,&agpanel::onButtonEvent);
@@ -101,6 +109,15 @@ void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
         double newfactor=scaleZSlider->getValue()/modelScale.z;
         scaleFactor.z=newfactor;
           isModelChanged=true;
+    }
+    if(e.target==positionXSlider){
+        isModelChanged=true;
+    }
+    if(e.target==positionYSlider){
+        isModelChanged=true;
+    }
+    if(e.target==positionZSlider){
+        isModelChanged=true;
     }
 }
 void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
@@ -174,6 +191,10 @@ void agpanel::sliderBind(){
     scaleFactorSlider->bind(scaleFactorSize);
     scaleFactorSize=1;
     scaleFactor=ofVec3f(scaleFactorSize);
+    positionXSlider->bind(modelPositionOffset.x);
+    positionYSlider->bind(modelPositionOffset.y);
+    positionZSlider->bind(modelPositionOffset.z);
+    
 }
 
 float agpanel::getWidth(){

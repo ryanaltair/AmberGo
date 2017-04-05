@@ -56,12 +56,12 @@ private:
     string modelpath;  //drag and drop info
    
 
-    
+    ofImage welcomeImage;
     bool bSnapshot=false;
     ofFbo fbo;
     ofPixels pixelsbuffer;
     ofPixels pixelsbuffervoid;
-    
+    bool welcomeNow=true;
    //timetest
     easyLogTimer easyLogTime;
 };
