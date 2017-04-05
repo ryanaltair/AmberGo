@@ -30,21 +30,27 @@ public:
         updatePosition();
     }
     void setPositionOffset(ofVec3f translate){
+        if(translate!=modelPositionOffset){
         modelPositionOffset =translate;
+        updatePosition();
+        }
     }
     void setScaleFactor(ofVec3f sf){
         if(scaleFactor!=sf){
             scaleFactor=sf;
-        }
+        
          updatePosition();
+        }
     }
     void updatePosition(){
         ofVec3f newpostion=modelMin;
         newpostion.x-=modelSize.x/2;
         newpostion.x*=scaleFactor.x;//-plate.modelSize.x/2;
         newpostion.y-=modelSize.y/2;
-        newpostion.y*scaleFactor.y;//-plate.modelSize.y/2;
+        newpostion.y*=scaleFactor.y;//-plate.modelSize.y/2;
+        newpostion.z*=scaleFactor.z;
         newpostion+=modelPositionOffset;
+        
         if(nodemodels.size()>0){
             nodemodels[0].setPosition(newpostion);
 //            cout<<"position"<<ofToString(newpostion);

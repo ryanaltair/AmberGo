@@ -121,9 +121,13 @@ void agmll::addpointlist(){
 // public
 ofPath  agmll::layerAt(float z){
     
-    z += sliceModel.scaleMin.z;
+        
     z=sliceModel.getNoHorizonHappenZ(z);
     ofPath returnpath;
+    
+    if(z<sliceModel.scaleMin.z||z>sliceModel.scaleMax.z){
+        return returnpath;
+    }
     sliceModel.alluntouched();
     ofIndexType continueflag = 0;
     

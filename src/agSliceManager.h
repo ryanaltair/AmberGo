@@ -128,7 +128,7 @@ public:
     }
     void setModelOffset(ofVec3f mo){
         mll.setPositionOffset(mo);
-        startZ=-mo.z;
+        startZ=mo.z;
     }
 protected:
     //mll load
@@ -146,21 +146,44 @@ protected:
         vector<ofPath> layers;
         vector<float> layerHeights;
         float slicez;
+        
         float outputZ=0;
         int an=0;
-        float slicethickness=mll.getRealthickness(allthickness);
-        float outputthickness=mll.getRealZ(allthickness);
-        for(slicez=slicethickness+startZ;slicez<mll.meshScale.z;slicez+=slicethickness){
-           
-            
-            ofPath p=mll.layerAt(slicez);
+        float slicethickness=mll.getSliceZ(allthickness);
+        float sliceStartZ=mll.meshMin.z+mll.getSliceZ(allthickness-startZ);
+        float realZmax=mll.getRealZ(mll.meshScale.z)+startZ;
+        cout<<"slice Z min max scale "<< mll.meshMin.z<<":"<<mll.meshMax.z<<":"<<mll.meshScale.z<<endl;
+               slicez=sliceStartZ;
+        cout<<"slice Z for real min max scale "<<mll.getRealZ(mll.meshMin.z)<<":"<<mll.getRealZ(mll.meshMax.z)<<":"<<mll.getRealZ(mll.meshScale.z)<<endl;
+        slicez=sliceStartZ;
+        cout<<"real z from   "<<slicez<<" to "<<realZmax <<endl;
+
+        if(allthickness<realZmax){
+                for(outputZ=allthickness ;outputZ<realZmax; outputZ+=allthickness){
+                    
+                    slicez+=slicethickness;
+                    ofPath p=mll.layerAt(slicez);
+                    layers.push_back(p);
+                    layerHeights.push_back( outputZ);
+        //            cout<<"z slice at :"<<slicez<<" new : "<<outputZ<<endl;//use to check z
+                    an++;
+                    
+                }
+        }else{
+            ofPath p;
             layers.push_back(p);
-             outputZ+=allthickness;
-            layerHeights.push_back( outputZ);
-//            cout<<"z slice at :"<<slicez<<" new : "<<outputZ<<endl;//use to check z
-            an++;
-            
+            layerHeights.push_back(0);
         }
+//        for(slicez=mll.meshMin.z+slicethickness+sliceStartZ;slicez<mll.meshMax.z;slicez+=slicethickness){
+//            ofPath p=mll.layerAt(slicez);
+//            layers.push_back(p);
+//             outputZ+=allthickness;
+//            layerHeights.push_back( outputZ);
+////            cout<<"z slice at :"<<slicez<<" new : "<<outputZ<<endl;//use to check z
+//            an++;
+//            
+//        }
+        
         
         alllayertests.swap(layers);
         alllayertesstsHeight.swap(layerHeights);

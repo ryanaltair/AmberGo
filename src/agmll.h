@@ -44,8 +44,12 @@ public:
     float getRealZ(float z){
         return z*=sliceModel.getScaleFactor().z;
     }
-    float getRealthickness(float thickness){
-     return thickness/=sliceModel.getScaleFactor().z;
+    float getSliceZ(float realZ){
+        if(realZ==0){
+            return realZ;
+        }else{
+     return realZ/=sliceModel.getScaleFactor().z;
+        }
     }
 private:
     

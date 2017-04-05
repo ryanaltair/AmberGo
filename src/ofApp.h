@@ -61,7 +61,7 @@ private:
     ofFbo fbo;
     ofPixels pixelsbuffer;
     ofPixels pixelsbuffervoid;
-    bool welcomeNow=true;
+    bool welcomeNow=false;
    //timetest
     easyLogTimer easyLogTime;
 };
