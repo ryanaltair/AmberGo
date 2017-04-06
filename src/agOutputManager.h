@@ -108,7 +108,7 @@ public:
             picname="0"+strz;
         }
         addPicToWaiting(path,picname);
-        tryAddFrameToThread();
+//        tryAddFrameToThread();
         
     }
     void saveImage(ofPixels pixels,float z){
@@ -130,7 +130,7 @@ public:
             picname="0"+strz;
         }
         addPicToWaiting(pixels,picname);
-        tryAddFrameToThread();
+//        tryAddFrameToThread();
         
     }
     
@@ -144,9 +144,9 @@ public:
             if(isFinish==true){
                 if(needAlert==true){
                     needAlert=false;
-                    ofSystemAlertDialog("output end");
+             return true;
                 }
-                return true;
+                return false;
             }
         }else{
             tryAddFrameToThread();
@@ -167,10 +167,10 @@ public:
         int Annnn=1;
 private:
     vector<ImageFiles> pixelsWaiting;
-    vector<SVGFiles> pathWaiting;
+    
     bool checkWaitingVoid(){
         if(usingSVG==true){
-            if(pathWaiting.size()>0){
+            if(pathToAdd>0){
                 return false;
             }
         }else{
@@ -197,10 +197,10 @@ private:
             return false;
         }
         if(usingSVG==true){
-            for(int i=0; i<pathWaiting.size();i++){
-                cout<<"try add frame as svg"<<endl;
-                threadImageSaver.addFrame(pathWaiting[i].path,Annnn,pathWaiting[i].fileName);
-                Annnn++;
+            int psize=pathToAdd;
+            cout<<"try add frame as svg"<<endl;
+            for(int i=0; i<psize;i++){
+                pathToAdd--;
             }
         }else{
             for(int i=0; i<pixelsWaiting.size();i++){
@@ -208,13 +208,12 @@ private:
                 threadImageSaver.addFrame(pixelsWaiting[i].image,Annnn,pixelsWaiting[i].fileName);
                 Annnn++;
             }
+            
+            vector<ImageFiles> pixelsWaitingVoid;
+            pixelsWaiting.swap(pixelsWaitingVoid); // clear mem
+
         }
-        
-        vector<ImageFiles> pixelsWaitingVoid;
-        vector<SVGFiles> pathWaitingVoid;
-        pixelsWaiting.swap(pixelsWaitingVoid); // clear mem
-        pathWaiting.swap(pathWaitingVoid); // clear mem
-        threadImageSaver.startThread();
+                threadImageSaver.startThread();
         cout<<"start output thread"<<endl;
         return true;
     }
@@ -236,7 +235,10 @@ private:
         SVGFiles q;
         q.path=_path;
         q.fileName=_filename;
-        pathWaiting.push_back(q);
+        pathToAdd++;
+         threadImageSaver.addFrame(_path,Annnn,_filename);
+        Annnn++;
+        pathToAdd++;
     }
     string makeSetupFileName(char cmdType,int setup){
         string setupString;
@@ -253,7 +255,7 @@ private:
     bool needAlert=false;
     agImageSequenceRecorder threadImageSaver; // use for save image
     
-    
+    int pathToAdd=0;
     float exposedSeconds=12;
     int upspeed=6;
     int downspeed=6;

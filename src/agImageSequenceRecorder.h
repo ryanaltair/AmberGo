@@ -73,7 +73,7 @@ public:
             if(usingSVG==false){
                 while(!q.empty()){
                     QueuedImage i = q.front();
-                    cout<<"thread-add image:"<<i.fileName<<endl;
+//                    cout<<"thread-add image:"<<i.fileName<<endl;
                     ofSaveImage(i.image, i.fileName);
                     q.pop();
                     picSavedCount++;
@@ -84,7 +84,7 @@ public:
             }else{
                 while(!qSVG.empty()){
                     QueuedSVG i = qSVG.front();
-                    cout<<"thread-save svg:"<<i.fileName<<endl;
+//                    cout<<"thread-save svg:"<<i.fileName<<endl;
                     ofxEditableSVG svg;
                     svg.setSize(1280, 768,"px");
                     svg.setViewbox(0, 0, 1280, 768);
@@ -129,7 +129,7 @@ public:
         counter++;
         QueuedImage qImage;
         qImage.fileName = fileName;
-        cout<<"main-add pic:"<<fileName<<endl;
+        ofLogNotice()<<"main-add pic:"<<fileName<<endl;
         qImage.image = imageToSave;
         q.push(qImage);
         
@@ -139,7 +139,7 @@ public:
         counter++;
         QueuedSVG quenedSVG;
         quenedSVG.fileName = fileName;
-        cout<<"main-add svg:"<<fileName<<endl;
+        ofLogNotice()<<"main-add svg:"<<fileName<<endl;
         quenedSVG.path = pathToSave;
         qSVG.push(quenedSVG);
     }

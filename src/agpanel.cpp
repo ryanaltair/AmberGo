@@ -82,7 +82,7 @@ void agpanel::update(){
     
 }
 void agpanel::drawProgressBar(){
-    sliceProgressBar.draw();
+//    sliceProgressBar.draw();
 
 
 }

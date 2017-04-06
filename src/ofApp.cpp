@@ -28,7 +28,7 @@ void ofApp::setup(){
     // fbo end
     welcomeImage.load("welcome");
     welcomeImage.resize(1280/4, 768/4);
-   
+    ofSetLogLevel(OF_LOG_SILENT);
 }
 
 //--------------------------------------------------------------
@@ -47,7 +47,9 @@ void ofApp::update(){
     panel.update();
     panel.setProgress(outputManager.getPicSavedCount());
     loadModel();
-    outputManager.checkEnd();
+    if(outputManager.checkEnd()){
+           ofSystemAlertDialog("output end");
+    }
     
     checkSliceHeightChange();
     plate.setPositionOffset(panel.getPositionOffset());
