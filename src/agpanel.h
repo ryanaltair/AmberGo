@@ -1,6 +1,7 @@
 #pragma once
 #include "ofMain.h"
 #include "ofxDatGui.h"
+#include "ofxProgressBar.h"
 /**
  use for AmberGo
  as panel
@@ -12,6 +13,13 @@ public:
     agpanel();
     void setup();
     void update();
+    void drawProgressBar();
+    void setProgressBarMax(int max){
+       sliceProgressBar.setMax( max);
+    }
+    void setProgress(int p){
+        sliceProgress=p;
+    }
     ofxDatGui* gui;
     
     bool isSliceHeightUpdated();
@@ -133,7 +141,7 @@ public:
     int baseExposedTime=60000;//ms
     bool ShowSlice=true;
     bool ShowingAllSlice=false;
-    ofIndexType iShowAllSliceLayerCount=0;
+    int iShowAllSliceLayerCount=0;
     
 protected:
     void moreOptionToggleJob(bool checked);
@@ -185,7 +193,8 @@ protected:
     bool isModelChanged=false;
     bool isLayerThicknessChange=false;
     bool needAllSlice=false;
-    
+    ofxProgressBar sliceProgressBar;
+    int sliceProgress;
     
 };
 class ofxDatGuiThemeNewSmoke : public ofxDatGuiTheme{

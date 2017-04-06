@@ -28,6 +28,7 @@ void ofApp::setup(){
     // fbo end
     welcomeImage.load("welcome");
     welcomeImage.resize(1280/4, 768/4);
+   
 }
 
 //--------------------------------------------------------------
@@ -44,8 +45,10 @@ void ofApp::update(){
     }
     apppreference.updatelayerout(panel.getWidth());
     panel.update();
+    panel.setProgress(outputManager.getPicSavedCount());
     loadModel();
     outputManager.checkEnd();
+    
     checkSliceHeightChange();
     plate.setPositionOffset(panel.getPositionOffset());
     plate.setScaleFactor(panel.getScaleFactor());
@@ -62,11 +65,13 @@ void ofApp::draw(){
         ofBackground(ofColor::white);
         welcomeImage.draw(ofGetWindowSize().x/2-welcomeImage.getWidth()/2,ofGetWindowSize().y/2-welcomeImage.getHeight()/2);
     }else{
+       
     ofEnableDepthTest();
     ofBackground(ofColor::black);
     plate.drawincamera(apppreference.plateview);
     ofDisableDepthTest();
     if(panel.ShowSlice==true){
+        panel.drawProgressBar();
         fbo.draw(apppreference.sliceview);
     }
     }
@@ -161,7 +166,6 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 void ofApp::drawSideWindow(ofEventArgs & args){
     fbo.draw(0,0);
-    //savePic();
 }
 
 
@@ -249,6 +253,7 @@ void ofApp::sliceModel(){
                     outputManager.startOutput(panel.getSaveDirectory());
                 }
                 if(currentSliceLayer==0){
+                    panel.setProgressBarMax(allSliceLayerCount);
                     easyLogTime.from("output to thread");
                 }
                 layertest=threadSlice.alllayertests[currentSliceLayer];

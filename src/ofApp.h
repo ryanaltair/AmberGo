@@ -54,8 +54,7 @@ private:
     ofPath layertestDraw;//output layer use to display
     agOutputManager outputManager;
     string modelpath;  //drag and drop info
-   
-
+ 
     ofImage welcomeImage;
     bool bSnapshot=false;
     ofFbo fbo;
@@ -64,4 +63,5 @@ private:
     bool welcomeNow=true;
    //timetest
     easyLogTimer easyLogTime;
+    
 };

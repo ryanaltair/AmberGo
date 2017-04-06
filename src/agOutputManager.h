@@ -32,6 +32,12 @@ public:
         isFinish=false;
         baseCount=4;
         outputCount=0;
+        picSaved=0;
+        threadImageSaver.init();
+    }
+    int getPicSavedCount(){
+        picSaved+=threadImageSaver.getSavedCount();
+        return picSaved;
     }
     void setPrint(float _exposedSeconds,int _upspeed,int _downspeed,float _baseExposedSeconds,int _baseCount,int _outputCount,float _quickLiftHeight ){
         exposedSeconds=_exposedSeconds;
@@ -158,6 +164,7 @@ public:
         needAlert=true;
         isFinish=true;
     }
+        int Annnn=1;
 private:
     vector<ImageFiles> pixelsWaiting;
     vector<SVGFiles> pathWaiting;
@@ -241,7 +248,7 @@ private:
     
     bool isBegin=true;
     bool isFinish=false;
-    int Annnn=1;
+
     bool needAlert=false;
     agImageSequenceRecorder threadImageSaver; // use for save image
     
@@ -253,4 +260,5 @@ private:
     int baseCount=4;
     float quickLiftHeight=4;
     bool uploadEnd=false;
+    int picSaved=0;
 };

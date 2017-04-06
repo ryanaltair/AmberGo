@@ -7,8 +7,8 @@ agpanel::agpanel(){
     FrameRateMonitor  = gui->addFRM();
     sliceHeightSlider=gui->addSlider("sliceHeight", 0, 139.3,0);
     sliceProgressPercentSlider=gui->addSlider("progress", 0, 100, 0);
-    sliceProgressPercentSlider->setVisible(false)   ;
-        moreOptionToggle=gui->addToggle("STATE: TRY drag model in");
+    sliceProgressPercentSlider->setVisible(false);
+        moreOptionToggle=gui->addToggle("TRY drag model in");
    
     allSliceButton=gui->addButton("load stl file");// when setup up it should be load stl file
     showAllSliceButton=gui->addButton("preview and save as ");
@@ -41,7 +41,7 @@ agpanel::agpanel(){
     positionZSlider=positionSettingFolder->addSlider("Z: mm",-100,100,0);
 
     moreOptionToggle->setChecked(false);
-    gui->addFooter();
+    
     gui->setTheme(new ofxDatGuiThemeNewSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
@@ -65,6 +65,7 @@ agpanel::agpanel(){
     
     
     moreOptionToggleJob(false);
+     sliceProgressBar= ofxProgressBar(10,10,500,20,&sliceProgress,2000);
 }
 
 
@@ -79,6 +80,11 @@ void agpanel::setup(){
 }
 void agpanel::update(){
     
+}
+void agpanel::drawProgressBar(){
+    sliceProgressBar.draw();
+
+
 }
 bool agpanel::isSliceHeightUpdated(){
     if(isLayerTestZChange){
@@ -254,22 +260,22 @@ float agpanel::getWidth(){
     
 }
 void agpanel::setSliceReady(){
-    moreOptionToggle->setLabel("STATE: slice is ready");
+    moreOptionToggle->setLabel("slice is ready");
     
 }
 void agpanel::setSliceUnready(){
-    moreOptionToggle->setLabel("STATE: slice is not ready");
+    moreOptionToggle->setLabel("slice is not ready");
     
 }
 void agpanel::setSliceDone(){
-    moreOptionToggle->setLabel("STATE: slice is finish");
+    moreOptionToggle->setLabel("slice is finish");
 }
 void agpanel::setSliceShowing(){
-    moreOptionToggle->setLabel("STATE: now preview");
+    moreOptionToggle->setLabel("now preview");
 }
 void agpanel::setSliceOutputDone(){
-    moreOptionToggle->setLabel("STATE: output done now");
+    moreOptionToggle->setLabel("output done now");
 }
 void agpanel::setSlicing(){
-    moreOptionToggle->setLabel("STATE: slicing,please wait");
+    moreOptionToggle->setLabel("slicing,please wait");
 }

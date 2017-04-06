@@ -20,7 +20,6 @@ class agImageSequenceRecorder : public ofThread {
 public:
     int counter;
     queue<QueuedImage> q;
-    
     queue<QueuedSVG> qSVG;
     string prefix;
     string format;
@@ -30,7 +29,17 @@ public:
         numberWidth=4;
         
     }
+    int getSavedCount(){
+        if(isThreadRunning()){
+            return 0;
+        }else{
+            int p=picSavedCount;
+            picSavedCount=0;
+        return p;
+        }
+    }
     void init(){
+        picSavedCount=0;
         //        counter=1000;
     }
     void end(){
@@ -62,17 +71,18 @@ public:
     void threadedFunction() {
         while(isThreadRunning()) {
             if(usingSVG==false){
-                if(!q.empty()){
+                while(!q.empty()){
                     QueuedImage i = q.front();
                     cout<<"thread-add image:"<<i.fileName<<endl;
                     ofSaveImage(i.image, i.fileName);
                     q.pop();
+                    picSavedCount++;
                     if(q.empty()){
                         cout<<"thread empty:" <<endl;
                     }
                 }
             }else{
-                if(!qSVG.empty()){
+                while(!qSVG.empty()){
                     QueuedSVG i = qSVG.front();
                     cout<<"thread-save svg:"<<i.fileName<<endl;
                     ofxEditableSVG svg;
@@ -82,6 +92,7 @@ public:
                     svg.addPath(i.path);
                     svg.save(i.fileName);
                     qSVG.pop();
+                    picSavedCount++;
                     if(qSVG.empty()){
                         cout<<"thread svg empty:" <<endl;
                     }
@@ -133,4 +144,5 @@ public:
         qSVG.push(quenedSVG);
     }
      bool usingSVG=true;
+    int picSavedCount=0;
 };
