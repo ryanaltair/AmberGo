@@ -107,9 +107,6 @@ public:
         scaleZSlider->setMax(realsize.z*2);
         scaleZSlider->setValue( realsize.z);
         
-       
-        
-        
     }
     ofVec3f getPositionOffset(){
         return modelPositionOffset;

@@ -209,6 +209,7 @@ private:
                 Annnn++;
             }
         }
+        
         vector<ImageFiles> pixelsWaitingVoid;
         vector<SVGFiles> pathWaitingVoid;
         pixelsWaiting.swap(pixelsWaitingVoid); // clear mem
