@@ -200,6 +200,7 @@ void ofApp::loadModel(){
     cout<<" modelsize:"<<plate.modelSize<<endl;
     apppreference.isModelChanged=false;
     apppreference.bHaveModelLoaded=true;
+    panel.fileLoaded();
 }
 void ofApp::checkNeedSlice(){
     if(threadSlice.isThreadRunning()){
@@ -217,6 +218,7 @@ void ofApp::checkNeedSlice(){
             if(result.bSuccess) {
                 apppreference.isModelChanged=true;
                 modelpath=result.getPath();
+                 panel.fileLoaded();
                 // load  file using dialog
             }
             return;

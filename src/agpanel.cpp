@@ -4,35 +4,34 @@ agpanel::agpanel(){
     
     gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     
-    gui->addFRM();
-    
+    FrameRateMonitor  = gui->addFRM();
     sliceHeightSlider=gui->addSlider("sliceHeight", 0, 139.3,0);
     sliceProgressPercentSlider=gui->addSlider("progress", 0, 100, 0);
-    sliceProgressPercentSlider->setVisible(false);
-    sliceReadyLabel=gui->addLabel("slice is ready");
-    sliceReadyLabel->setLabel("ready to add model");
-    allSliceButton=gui->addButton("all slice !!");
-    showAllSliceButton=gui->addButton("show all");
-    printPauseButton=gui->addButton("Pause");
+    sliceProgressPercentSlider->setVisible(false)   ;
+        moreOptionToggle=gui->addToggle("STATE: TRY drag model in");
+   
+    allSliceButton=gui->addButton("load stl file");// when setup up it should be load stl file
+    showAllSliceButton=gui->addButton("preview and save as ");
+    printPauseButton=gui->addButton("pause");
     outputToggle=gui->addToggle("output");
-    outputToggle->setChecked(false);
-
+    outputToggle->setChecked(true);
+    
     showsliceToggle=gui->addToggle("slice Preview");
     showsliceToggle->setChecked(true);
-    printSettingFolder=gui->addFolder("Print Setting", ofColor::white);
+    printSettingFolder=gui->addFolder("print setting", ofColor::white);
     layerthicknessSlider=printSettingFolder->addSlider("layer thickness", 0.02, 0.50, 0.16);
     exposedTimeSlider=printSettingFolder->addSlider("exposed time:second", 0, 20,10);
     baseExposedTimeSlider=printSettingFolder->addSlider("baseExposed time:second", 20, 120,80);
     
- scaleSettingFolder = gui->addFolder("Scale Setting", ofColor::white);
-        scaleFactorSlider=scaleSettingFolder->addSlider("scale:%",0.01,2,1);
-           scaleXSlider=scaleSettingFolder->addSlider("X: mm",0.01,2,1);
-           scaleYSlider=scaleSettingFolder->addSlider("Y: mm",0.01,2,1);
-           scaleZSlider=scaleSettingFolder->addSlider("Z: mm",0.01,2,1);
- 
+    scaleSettingFolder = gui->addFolder("scale setting", ofColor::white);
+    scaleFactorSlider=scaleSettingFolder->addSlider("scale:%",0.01,2,1);
+    scaleXSlider=scaleSettingFolder->addSlider("X: mm",0.01,2,1);
+    scaleYSlider=scaleSettingFolder->addSlider("Y: mm",0.01,2,1);
+    scaleZSlider=scaleSettingFolder->addSlider("Z: mm",0.01,2,1);
+    
     positionSettingFolder = gui->addFolder("Position Setting", ofColor::white);
-
-positionXYPad=positionSettingFolder->add2dPad("XY");
+    
+    positionXYPad=positionSettingFolder->add2dPad("XY");
     ofRectangle rect;
     rect.setPosition(-50, -25);
     rect.setSize(100,50);
@@ -40,10 +39,10 @@ positionXYPad=positionSettingFolder->add2dPad("XY");
     positionXSlider=positionSettingFolder->addSlider("X: mm",-20,20,0);
     positionYSlider=positionSettingFolder->addSlider("Y: mm",-20,20,0);
     positionZSlider=positionSettingFolder->addSlider("Z: mm",-100,100,0);
-    moreOptionToggle=gui->addToggle("moreOption");
-    moreOptionToggle->setChecked(true);
+
+    moreOptionToggle->setChecked(false);
     gui->addFooter();
-    gui->setTheme(new ofxDatGuiThemeSmoke());
+    gui->setTheme(new ofxDatGuiThemeNewSmoke());
     //GUI end
     sliceHeightSlider->onSliderEvent(this, &agpanel::onSliderEvent);
     layerthicknessSlider->onSliderEvent(this, &agpanel::onSliderEvent);
@@ -63,6 +62,9 @@ positionXYPad=positionSettingFolder->add2dPad("XY");
     showsliceToggle->onToggleEvent(this,&agpanel::onToggleEvent);
     moreOptionToggle->onToggleEvent(this,&agpanel::onToggleEvent);
     positionXYPad->on2dPadEvent(this, &agpanel::on2dPadEvent);
+    
+    
+    moreOptionToggleJob(false);
 }
 
 
@@ -85,13 +87,13 @@ bool agpanel::isSliceHeightUpdated(){
     }else{
         return false;
     }
- 
+    
 }
 void agpanel::setOutputDone(bool done){
     outputDone=done;
 }
 void agpanel::on2dPadEvent(ofxDatGui2dPadEvent e){
-cout << "point coordinates have changed to: x=" << e.x << " & y=" << e.y << endl;
+    cout << "point coordinates have changed to: x=" << e.x << " & y=" << e.y << endl;
     modelPositionOffset.x=e.x;
     modelPositionOffset.y=-e.y;
     
@@ -113,18 +115,18 @@ void agpanel::onSliderEvent(ofxDatGuiSliderEvent e)
     if(e.target==scaleXSlider){
         double newfactor=scaleXSlider->getValue()/modelScale.x;
         scaleFactor.x=newfactor;
-      isModelChanged=true;
+        isModelChanged=true;
     }
     if(e.target==scaleYSlider){
         double newfactor=scaleYSlider->getValue()/modelScale.y;
         scaleFactor.y=newfactor;
-          isModelChanged=true;
+        isModelChanged=true;
         
     }
     if(e.target==scaleZSlider){
         double newfactor=scaleZSlider->getValue()/modelScale.z;
         scaleFactor.z=newfactor;
-          isModelChanged=true;
+        isModelChanged=true;
     }
     if(e.target==positionXSlider){
         isModelChanged=true;
@@ -191,27 +193,44 @@ void agpanel::onToggleEvent(ofxDatGuiToggleEvent e)
 {
     if(e.target==outputToggle){
         isOutput=outputToggle->getChecked();
+        if(isOutput){
+            showAllSliceButton->setLabel("preview and save as ");
         
+        }else{
+            showAllSliceButton->setLabel("preview");
+        }
     }
     if(e.target==showsliceToggle){
         ShowSlice=outputToggle->getChecked();
         
     }
     if(e.target==moreOptionToggle){
-        if(moreOptionToggle->getChecked()){
-            scaleSettingFolder->setVisible(true);
-            printSettingFolder->setVisible(true);
-            positionSettingFolder->setVisible(true);
-            showsliceToggle->setVisible(true);
-        }else{
-            scaleSettingFolder->collapse();
-         scaleSettingFolder->setVisible(false);
-            printSettingFolder->collapse();
-            printSettingFolder->setVisible(false);
-            positionSettingFolder->collapse();
-            positionSettingFolder->setVisible(false);
-            showsliceToggle->setVisible(false);
-        }
+        moreOptionToggleJob(moreOptionToggle->getChecked());
+    }
+}
+void agpanel::moreOptionToggleJob(bool checked){
+
+    if(checked){
+        FrameRateMonitor->setVisible(true);
+        sliceHeightSlider->setVisible(true);
+        printPauseButton->setVisible(true);
+        scaleSettingFolder->setVisible(true);
+        printSettingFolder->setVisible(true);
+        positionSettingFolder->setVisible(true);
+        showsliceToggle->setVisible(true);
+        outputToggle->setVisible(true);
+    }else{
+        scaleSettingFolder->collapse();
+        printSettingFolder->collapse();
+        positionSettingFolder->collapse();
+        FrameRateMonitor->setVisible(false);
+        sliceHeightSlider->setVisible(false);
+        printPauseButton->setVisible(false);
+        scaleSettingFolder->setVisible(false);
+        printSettingFolder->setVisible(false);
+        positionSettingFolder->setVisible(false);
+        showsliceToggle->setVisible(false);
+        outputToggle->setVisible(false);
     }
 }
 void agpanel::sliderBind(){
@@ -235,22 +254,22 @@ float agpanel::getWidth(){
     
 }
 void agpanel::setSliceReady(){
-    sliceReadyLabel->setLabel("slice is ready");
+    moreOptionToggle->setLabel("STATE: slice is ready");
     
 }
 void agpanel::setSliceUnready(){
-    sliceReadyLabel->setLabel("slice is not ready");
+    moreOptionToggle->setLabel("STATE: slice is not ready");
     
 }
 void agpanel::setSliceDone(){
-    sliceReadyLabel->setLabel("ready to show");
+    moreOptionToggle->setLabel("STATE: slice is finish");
 }
 void agpanel::setSliceShowing(){
- sliceReadyLabel->setLabel("now showing");
+    moreOptionToggle->setLabel("STATE: now preview");
 }
 void agpanel::setSliceOutputDone(){
-    sliceReadyLabel->setLabel("output done now");
+    moreOptionToggle->setLabel("STATE: output done now");
 }
 void agpanel::setSlicing(){
- sliceReadyLabel->setLabel("slicing,please wait");
+    moreOptionToggle->setLabel("STATE: slicing,please wait");
 }

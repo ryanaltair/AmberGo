@@ -119,6 +119,9 @@ public:
     float getSliceHeight(){
         return layertestZ;
     }
+    void fileLoaded(){
+        allSliceButton->setLabel("slice");
+    }
     bool outputDone=false;
     float sliceMin=0.02;
     float sliceMax=0.30;
@@ -133,6 +136,7 @@ public:
     ofIndexType iShowAllSliceLayerCount=0;
     
 protected:
+    void moreOptionToggleJob(bool checked);
     //events
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
@@ -140,6 +144,8 @@ protected:
     void onTextInputEvent(ofxDatGuiTextInputEvent e);
     void on2dPadEvent(ofxDatGui2dPadEvent e);
     //componment
+    ofxDatGuiFRM* FrameRateMonitor;
+    ofxDatGuiTextInput* stateTextBar;
     ofxDatGuiFolder* printSettingFolder;
     ofxDatGuiSlider* layerthicknessSlider;
     ofxDatGuiSlider* exposedTimeSlider;
@@ -164,7 +170,6 @@ protected:
     ofxDatGuiButton* printPauseButton;
     ofxDatGuiButton* allSliceButton;
     ofxDatGuiButton* showAllSliceButton;
-    ofxDatGuiLabel* sliceReadyLabel;
     ofxDatGuiToggle* outputToggle;
     ofxDatGuiToggle* showsliceToggle;
     ofxDatGuiToggle* moreOptionToggle;
@@ -182,4 +187,29 @@ protected:
     bool needAllSlice=false;
     
     
+};
+class ofxDatGuiThemeNewSmoke : public ofxDatGuiTheme{
+    
+public:
+    
+    ofxDatGuiThemeNewSmoke(){
+        stripe.visible = false;
+        color.label = hex(0xF8F3F0);
+        color.guiBackground = hex(0x2C3137);
+        color.background = hex(0x343B41);
+        color.slider.fill = hex(0x60B9ED);
+        color.slider.text = hex(0xFFFFFF);
+        color.inputAreaBackground = hex(0x434A50);
+        color.textInput.text = hex(0xFFF0F8);
+        color.textInput.highlight = hex(0x434A50);
+        color.textInput.backgroundOnActive = hex(0x2C3137);
+        color.backgroundOnMouseOver = hex(0x434A50);
+        color.backgroundOnMouseDown = hex(0x2C3137);
+        color.matrix.hover.button = hex(0x60B9ED);
+        color.matrix.selected.button = hex(0x2C3137);
+        color.inputAreaBackground=hex(0x444B51);
+        layout.upperCaseLabels=true;
+        layout.textInput.forceUpperCase=true;
+        init();
+    }
 };
