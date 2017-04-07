@@ -20,7 +20,6 @@ class agImageSequenceRecorder : public ofThread {
 public:
     int counter;
     queue<QueuedImage> q;
-    
     queue<QueuedSVG> qSVG;
     string prefix;
     string format;
@@ -30,7 +29,17 @@ public:
         numberWidth=4;
         
     }
+    int getSavedCount(){
+        
+            lock();
+            int p=picSavedCount;
+            picSavedCount=0;
+            unlock();
+        return p;
+        
+    }
     void init(){
+        picSavedCount=0;
         //        counter=1000;
     }
     void end(){
@@ -64,9 +73,12 @@ public:
             if(usingSVG==false){
                 if(!q.empty()){
                     QueuedImage i = q.front();
-                    cout<<"thread-add image:"<<i.fileName<<endl;
+//                    cout<<"thread-add image:"<<i.fileName<<endl;
                     ofSaveImage(i.image, i.fileName);
                     q.pop();
+                    lock();
+                    picSavedCount++;
+                    unlock();
                     if(q.empty()){
                         cout<<"thread empty:" <<endl;
                     }
@@ -74,7 +86,7 @@ public:
             }else{
                 if(!qSVG.empty()){
                     QueuedSVG i = qSVG.front();
-                    cout<<"thread-save svg:"<<i.fileName<<endl;
+//                    cout<<"thread-save svg:"<<i.fileName<<endl;
                     ofxEditableSVG svg;
                     svg.setSize(1280, 768,"px");
                     svg.setViewbox(0, 0, 1280, 768);
@@ -82,6 +94,7 @@ public:
                     svg.addPath(i.path);
                     svg.save(i.fileName);
                     qSVG.pop();
+                    picSavedCount++;
                     if(qSVG.empty()){
                         cout<<"thread svg empty:" <<endl;
                     }
@@ -118,7 +131,7 @@ public:
         counter++;
         QueuedImage qImage;
         qImage.fileName = fileName;
-        cout<<"main-add pic:"<<fileName<<endl;
+        ofLogNotice()<<"main-add pic:"<<fileName<<endl;
         qImage.image = imageToSave;
         q.push(qImage);
         
@@ -128,9 +141,10 @@ public:
         counter++;
         QueuedSVG quenedSVG;
         quenedSVG.fileName = fileName;
-        cout<<"main-add svg:"<<fileName<<endl;
+        ofLogNotice()<<"main-add svg:"<<fileName<<endl;
         quenedSVG.path = pathToSave;
         qSVG.push(quenedSVG);
     }
      bool usingSVG=true;
+    int picSavedCount=0;
 };

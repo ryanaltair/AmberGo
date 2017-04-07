@@ -29,15 +29,105 @@ void agmll::prepareModel(){
     cout<<"Normals count is "<<mergedMesh.getNumNormals()<<endl;
     addSupport();
     getScale();
+    addpointlist();//
     addFacet();  // step 2: add line list
+    // now will not use mergedMesh anymore
 }
 
+/**
+ add sliceModel.linelist and sliceModel.nearpointlist
+ */
+void agmll::addFacet(){
+    // get the point first
+    ofIndexType ipA;
+    ofIndexType ipB;
+    ofIndexType ipC;
+    ofIndexType ifacet;
+    counter0=0;
+    counter1=0;
+    ofIndexType facetcount=0;
+    
+    for(ifacet=0;ifacet<mergedMesh.getNumIndices();ifacet+=3){//ifacet>0
+        // get the point first
+        ipA=mergedMesh.getIndex(ifacet);
+        ipB=mergedMesh.getIndex(ifacet+1);
+        ipC=mergedMesh.getIndex(ifacet+2);
+        agline lineAB,lineAC,lineBC;
+        vector<agline> lines;
+        vector<ofIndexType> sidepoint;
+        lines.resize(3);
+        sidepoint.resize(3);
+        //add index to lines
+        //        lines[0].set(ipA,ipB,ipC);
+        lines[0].set(ipA,ipB);
+        sidepoint[0]=ipC;
+        //        lines[1].set(ipA,ipC,ipB);
+        lines[1].set(ipA,ipC);
+        sidepoint[1]=ipB;
+        
+        //        lines[2].set(ipB,ipC,ipA);
+        lines[2].set(ipB,ipC);
+        sidepoint[2]=ipA;
+        
+        //check if a horizon facet
+        float zhorizon=sliceModel.pointlist[ipA].z;
+        if(zhorizon==sliceModel.pointlist[ipB].z&&zhorizon==sliceModel.pointlist[ipC].z){//
+            if(ofContains(sliceModel.horizonFacetHeightlist, zhorizon)==false){
+                sliceModel.horizonFacetHeightlist.push_back(zhorizon);
+                facetcount++;
+            }
+        }
+        
+        ofSort(sliceModel.horizonFacetHeightlist);// sort the map will help search
+        //add lines to the sliceModel.linelist
+        for(int i=0;i<3;i++){
+            
+            if(sliceModel.checkLineError(lines[i])){
+                cout<<"[WARNING]add facet big wrong!!!!!!!!big index>pointlist.size"<<endl;
+                continue;
+            }
+            agline newline=sliceModel.zsortline(lines[i]);// sort the line
+            //[new]
+            if( sliceModel.addLine(newline,sidepoint[i])){//add line with dxdy
+                
+            }else{
+                
+                cout<<"add facet line failed"<<endl;
+            }
+            //[new end]
+        }
+    }
+    //check out
+    
+    cout<<"add new"<<counter1<<":"<<counter0<<endl;
+    if(counter1!=counter0){
+        cout<<"!!!!add face get problem!!!!!"<<endl;
+    }
+    printsize();
+    if(sliceModel.printAllWrongLine()==false){
+        sliceModel.tryFix();
+        cout<<"now we get fixed"<<endl;
+        sliceModel.printAllWrongLine();
+    }else{
+        cout<<"now we never fixed "<<endl;
+        
+    }
+}
+void agmll::addpointlist(){
+    ofMesh mesh=mergedMesh;
+    sliceModel.pointlist.swap(mesh.getVertices());
+}
 
 // public
 ofPath  agmll::layerAt(float z){
-    z += sliceModel.scaleMin.z;
+    
+        
     z=sliceModel.getNoHorizonHappenZ(z);
     ofPath returnpath;
+    
+    if(z<sliceModel.scaleMin.z||z>sliceModel.scaleMax.z){
+        return returnpath;
+    }
     sliceModel.alluntouched();
     ofIndexType continueflag = 0;
     
@@ -119,9 +209,9 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
     
     
     vector<ofVec2f> pathpointsNew;
-    ofVec2f XYpoint0=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[0]], divdH, z,640,384);
-    ofVec2f XYpoint1=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[1]], divdH, z,640,384);
-    ofVec2f XYpoint2=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[2]], divdH, z,640,384);
+    ofVec2f XYpoint0=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[0]], divdH, z,positionOffset);
+    ofVec2f XYpoint1=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[1]], divdH, z,positionOffset);
+    ofVec2f XYpoint2=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[2]], divdH, z,positionOffset);
     
     pathpointsNew.push_back(XYpoint0);//add first point
     
@@ -141,7 +231,7 @@ ofPath  agmll::layerCloseLoop(float z,ofIndexType iBegin){
             }
             XYpoint0= XYpoint1;
             XYpoint1= XYpoint2;
-            XYpoint2=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[i+1]], divdH, z,640,384);
+            XYpoint2=sliceModel.getXY(sliceModel.multilinklinelist[pathindexs[i+1]], divdH, z,positionOffset);
         }
         
     }
@@ -196,115 +286,26 @@ ofVec3f agmll::getScale(){
     meshMax=a;
     return scale;
     
-}
-ofMesh agmll::getSliceShell(){
-    
-    
-    
-}
+} 
 void agmll::addSupport(){
-    vector<ofMeshFace> facets;
-    facets=mergedMesh.getUniqueFaces();
-    size_t facesize= facets.size();
-    for(int i=0;i<facesize;i++){
-        agfacet facet;
-        facet.setFromTri(facets[i].getVertex(0),facets[i].getVertex(1),facets[i].getVertex(2));
-        //        facet.setNormal(facets[i].getNormal(0), facets[i].getNormal(1), facets[i].getNormal(2));
-        facet.setFaceNormal(facets[i].getFaceNormal());
-        if(facet.getGradiant()>0){
-            //        cout<<i<<" get gradiant:"<<facet.getGradiant()<<endl;
-            supportPolygon.append(facet.getPath());
-        }
-    }
-    supportPolygon.setPolyWindingMode(OF_POLY_WINDING_ODD);
-    supportPolygon.setStrokeColor(ofColor::white);
-    supportPolygon.setFillColor(ofColor::blue);
-    supportPolygon.setFilled(true);
-    supportPolygon.setStrokeWidth(1);
-}
-/**
- add sliceModel.linelist and sliceModel.nearpointlist
- */
-void agmll::addFacet(){
-    addpointlist();//
-    // get the point first
-    ofIndexType ipA;
-    ofIndexType ipB;
-    ofIndexType ipC;
-    ofIndexType ifacet;
-    counter0=0;
-    counter1=0;
-    ofIndexType facetcount=0;
-    
-    for(ifacet=0;ifacet<mergedMesh.getNumIndices();ifacet+=3){//ifacet>0
-        // get the point first
-        ipA=mergedMesh.getIndex(ifacet);
-        ipB=mergedMesh.getIndex(ifacet+1);
-        ipC=mergedMesh.getIndex(ifacet+2);
-        agline lineAB,lineAC,lineBC;
-        vector<agline> lines;
-        vector<ofIndexType> sidepoint;
-        lines.resize(3);
-        sidepoint.resize(3);
-        //add index to lines
-        //        lines[0].set(ipA,ipB,ipC);
-        lines[0].set(ipA,ipB);
-        sidepoint[0]=ipC;
-        //        lines[1].set(ipA,ipC,ipB);
-        lines[1].set(ipA,ipC);
-        sidepoint[1]=ipB;
-        
-        //        lines[2].set(ipB,ipC,ipA);
-        lines[2].set(ipB,ipC);
-        sidepoint[2]=ipA;
-        
-        //check if a horizon facet
-        float zhorizon=sliceModel.pointlist[ipA].z;
-        if(zhorizon==sliceModel.pointlist[ipB].z&&zhorizon==sliceModel.pointlist[ipC].z){//
-            if(ofContains(sliceModel.horizonFacetHeightlist, zhorizon)==false){
-                sliceModel.horizonFacetHeightlist.push_back(zhorizon);
-                facetcount++;
-            }
-        }
-        
-        ofSort(sliceModel.horizonFacetHeightlist);// sort the map will help search
-        //add lines to the sliceModel.linelist
-        for(int i=0;i<3;i++){
-            
-            if(sliceModel.checkLineError(lines[i])){
-                cout<<"[WARNING]add facet big wrong!!!!!!!!big index>pointlist.size"<<endl;
-                continue;
-            }
-            agline newline=sliceModel.zsortline(lines[i]);// sort the line
-            //[new]
-            if( sliceModel.addLine(newline,sidepoint[i])){//add line with dxdy
-                
-            }else{
-                
-                cout<<"add facet line failed"<<endl;
-            }
-            //[new end]
-        }
-    }
-    //check out
-    cout<<"horizong facet:"<<facetcount<<":"<<(counter0+counter1)/3<<", "<<(counter0+counter1)<<"?="<<mergedMesh.getNumIndices()<<endl;
-    cout<<"add new"<<counter1<<":"<<counter0<<endl;
-    if(counter1!=counter0){
-        cout<<"!!!!add face get problem!!!!!"<<endl;
-    }
-    printsize();
-    if(sliceModel.printAllWrongLine()==false){
-        sliceModel.tryFix();
-        cout<<"now we get fixed"<<endl;
-        sliceModel.printAllWrongLine();
-    }else{
-        cout<<"now we never fixed "<<endl;
-        
-    }
-}
-void agmll::addpointlist(){
-    ofMesh mesh=mergedMesh;
-    sliceModel.pointlist.swap(mesh.getVertices());
+//    vector<ofMeshFace> facets;
+//    facets=mergedMesh.getUniqueFaces();
+//    size_t facesize= facets.size();
+//    for(int i=0;i<facesize;i++){
+//        agfacet facet;
+//        facet.setFromTri(facets[i].getVertex(0),facets[i].getVertex(1),facets[i].getVertex(2));
+//        //        facet.setNormal(facets[i].getNormal(0), facets[i].getNormal(1), facets[i].getNormal(2));
+//        facet.setFaceNormal(facets[i].getFaceNormal());
+//        if(facet.getGradiant()>0){
+//            //        cout<<i<<" get gradiant:"<<facet.getGradiant()<<endl;
+//            supportPolygon.append(facet.getPath());
+//        }
+//    }
+//    supportPolygon.setPolyWindingMode(OF_POLY_WINDING_ODD);
+//    supportPolygon.setStrokeColor(ofColor::white);
+//    supportPolygon.setFillColor(ofColor::blue);
+//    supportPolygon.setFilled(true);
+//    supportPolygon.setStrokeWidth(1);
 }
 
 

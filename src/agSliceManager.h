@@ -14,6 +14,12 @@ public:
     /// which Start the thread.
     void loadModel(string path)
     {
+        isThreadEnd=false;
+        isModelReadySlice=false;
+        needLoad=true;
+        easyLogTime.from("load model");
+
+        ofxAssimpModelLoader assimpmodel;
         assimpmodel.clear();
         cout<<"-----modelpath:"<<path<<endl;
         assimpmodel.loadModel(path);
@@ -21,50 +27,29 @@ public:
         assimpmodel.disableTextures();
         // Mutex blocking is set to true by default
         // It is rare that one would want to use startThread(false).
-        isThreadEnd=false;
-        isModelReadySlice=false;
-        needLoad=true;
-        easyLogTime.from("load model");
         ofMesh meshbuffer;
         for(int i=0;i<assimpmodel.getMeshCount();i++){
             meshbuffer.append(assimpmodel.getMesh(i));
         }
+          assimpmodel.clear();
          mll.load(meshbuffer);
         isAllSliceDone=false;
         easyLogTime.to("load model");
+        progressZ=0;
         startThread();
-        ofResetElapsedTimeCounter();
         alllayertests.clear();
     }
-    bool sliceAt(float zheight)
-    {
-        if(isModelReadySlice==false){
-            //if mesh have model and get merged?
-            
-            if(isThreadRunning()==false){
-                needLoad=true;
-                cout<<"now we loading"<<endl;
-                startThread();
-            }
-            
-            return false;
-        }else{//if(isModelReadySlice==true){
-            isThreadEnd=false;
-            isSliceChanged=false;
-            layertestZ=zheight;
-            needSliceAt=zheight;
-            startThread();
-            return true;
-        }
-    }
     bool allSlice(float layerthickness){
+        if(isThreadRunning()){
+            return false;
+        }
         if(isModelReadySlice==false){
             //if mesh have model and get merged?
-            if(isThreadRunning()==false){
+            
                 needLoad=true;
                 cout<<"now we loading"<<endl;
                 startThread();
-            }
+            
             
             return false;
         }else{//if(isModelReadySlice==true){
@@ -75,6 +60,30 @@ public:
             startThread();
             return true;
         }
+    }
+    float getSliceProgress(){
+       
+        float pz;
+        float mz;
+        lock();
+        pz=progressZ;
+        mz=maxZ;
+        unlock();
+        if(pz==0){
+            return 0;
+        }
+        
+        if(mz-pz<5){
+        return 1;
+        }
+        
+        float progress= pz / mz;
+        return progress;
+    }
+    
+    bool cleanOldLayers(){
+        vector<float>().swap(alllayertesstsHeight);
+        
     }
     float layertestZ;
     /**
@@ -103,81 +112,126 @@ public:
                     stepLoad();
                     needLoad=false;
                 }
-                if(needSliceAt>=0){
-                    if(isModelReadySlice==true){
-                        stepSliceAt();
-                        needSliceAt=-1;
-                    }
-                }
+               
+                unlock();
+            }
+            
                 if(needAllSlice==true){
                     if(isModelReadySlice==true){
+                        
+                        
                         stepAllSlice();
                         needAllSlice=false;
+                        
                     }
                 }
                 isThreadEnd=true;
-                unlock();
-            }
+            
+                
         }
     }
     
     ofMesh getMergedMesh(){
-        return mll.mergedMesh;
+        cout<<"mergedMesh"<<mll.mergedMesh.getIndices().size()<<":"<<mll.mergedMesh.getVertices().size()<<endl;
+        ofMesh returnMesh=mll.mergedMesh;
+        ofMesh meshVoid;
+//        mll.mergedMesh=meshVoid;
+        return returnMesh;
     }
-    void cleanMesh(){
-        assimpmodel.clear();
-    }
-       agmll mll;// the work slicer
-    ofPath layertest; //the output layer path
+    agmll mll;// the work slicer
+  
     vector<ofPath> alllayertests;
     vector<float> alllayertesstsHeight;
     //needing flag
     bool isThreadEnd=false;// true when everything is done
     bool needLoad=false;
-    float needSliceAt=-1;// -1 means no need
     bool needAllSlice=false;
-    bool isAllSliceDone=false;
+
     float allthickness=0.06;
     bool isSliceChanged=false;
     bool isModelReadySlice=false;
     // work in thread
+    bool isAllSliced(){
+        return isAllSliceDone;
+    }
+    void setScaleFactor(ofVec3f sf){
+        mll.setScaleFactor(sf);
+    }
+    void setModelOffset(ofVec3f mo){
+        mll.setPositionOffset(mo);
+        startZ=mo.z;
+    }
 protected:
     //mll load
     void stepLoad(){
-        easyLogTime.from("load model");
+        easyLogTime.from("prepare model");
         mll.prepareModel();
         isModelReadySlice=true;
-        easyLogTime.to("load model");
+        easyLogTime.to("prepare model");
     }
     /**
      use mll slice at testlayeratZ
      */
-    void stepSliceAt(){
-        layertest=mll.layerAt(needSliceAt); 
-        isSliceChanged=true;
-    }
     void stepAllSlice(){
         easyLogTime.from("all slice");
         vector<ofPath> layers;
+        vector<float> layerHeights;
+        float slicez;
         
-        float z;
+        float outputZ=0;
         int an=0;
-        for(z=allthickness;z<mll.meshScale.z;z+=allthickness){
-//            cout<<"z"<<z<<endl;//use to check z
-            ofPath p=mll.layerAt(z);
+        float slicethickness=mll.getSliceZ(allthickness);
+        float sliceStartZ=mll.meshMin.z+mll.getSliceZ(allthickness-startZ);
+        float realZmax=mll.getRealZ(mll.meshScale.z)+startZ;
+        cout<<"slice Z min max scale "<< mll.meshMin.z<<":"<<mll.meshMax.z<<":"<<mll.meshScale.z<<endl;
+               slicez=sliceStartZ;
+        cout<<"slice Z for real min max scale "<<mll.getRealZ(mll.meshMin.z)<<":"<<mll.getRealZ(mll.meshMax.z)<<":"<<mll.getRealZ(mll.meshScale.z)<<endl;
+        slicez=sliceStartZ;
+        cout<<"real z from   "<<slicez<<" to "<<realZmax <<endl;
+        lock();
+        maxZ=realZmax/allthickness;
+        int calloutMax=maxZ/1000;
+        int lastCallOut=0;
+        unlock();
+        if(allthickness<realZmax){
+                for(outputZ=allthickness ;outputZ<realZmax; outputZ+=allthickness){
+                    
+                    slicez+=slicethickness;
+                    ofPath p=mll.layerAt(slicez);
+                    layers.push_back(p);
+                    layerHeights.push_back( outputZ);
+                    if(layers.size()-lastCallOut>calloutMax){
+                      lock();
+                    progressZ=layers.size();
+                        lastCallOut=progressZ;
+                    unlock();
+                    }
+                    lock();
+                    progressZ=layers.size();
+                    lastCallOut=progressZ;
+                    unlock();
+        //            cout<<"z slice at :"<<slicez<<" new : "<<outputZ<<endl;//use to check z
+                    an++;
+                    
+                }
+        }else{
+            ofPath p;
             layers.push_back(p);
-            alllayertesstsHeight.push_back(z);
-            an++;
-            
+            layerHeights.push_back(0);
         }
-        alllayertests=layers;
+        
+        
+        alllayertests.swap(layers);
+        alllayertesstsHeight.swap(layerHeights);
         isAllSliceDone=true;
-        cout<<"layers:"<<layers.size()<<endl;
+        cout<<"layers:"<<layers.size()<<":"<<an<<endl;
         easyLogTime.to("all slicer");
     }
-   
-    ofxAssimpModelLoader assimpmodel;
-    
+     ofPath layertest; //the output layer path
+
+    float startZ=10;//allSliceFromHere;
      easyLogTimer easyLogTime;
-    
+    bool isAllSliceDone=false;
+    int progressZ=0;
+    int maxZ=1;
 };

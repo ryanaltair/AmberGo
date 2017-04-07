@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     //for app looks like a app
-    ofSetWindowTitle("Amber Go Demo");//
+    ofSetWindowTitle("CreateBot");//
     ofSetEscapeQuitsApp(false);
     panel.setup();
     
@@ -14,7 +14,6 @@ void ofApp::setup(){
     // init the modelpath
     //    modelpath="testcube.stl";
     //    apppreference.isModelChanged=true;
-    
     // init the plate which hold the 3D model we see
     plate.setup();
     //setup fbo which will for export images
@@ -27,22 +26,35 @@ void ofApp::setup(){
     pixelsbuffer.allocate(1280, 768,3);
     pixelsbuffervoid.allocate(1280, 768, 3);
     // fbo end
-    
-    
+    welcomeImage.load("welcome");
+    welcomeImage.resize(1280/4, 768/4);
+//    ofSetLogLevel(OF_LOG_SILENT);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    apppreference.updatelayerout(panel.getWidth());
-    panel.update();
-    loadModel();
-    outputManager.checkEnd();
-    if(panel.isSliceHeightChange()){
-        panel.layertestZlast=panel.layertestZ;
-        //cout<<"we slice at now "<<endl;
-        plate.sliceAt(panel.layertestZ);
-        plate.update();
+    if(welcomeNow){
+        
+        if(ofGetElapsedTimef()>3.8){
+            panel.show();
+            welcomeNow=false;
+            welcomeImage.clear();
+        }else{
+        panel.hide();
+        }
     }
+ 
+    panel.update();
+    panel.setOutputProgress(outputManager.getPicSavedCount());
+    panel.setSliceProgress(threadSlice.getSliceProgress());
+    loadModel();
+    if(outputManager.checkEnd()){
+        ofLogVerbose()<<"out put end now "<<endl;
+    }
+    
+    checkSliceHeightChange();
+    plate.setPositionOffset(panel.getPositionOffset());
+    plate.setScaleFactor(panel.getScaleFactor());
     checkNeedSlice();
     sliceModel();
     
@@ -50,17 +62,21 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
+    if(welcomeNow){
+         ofEnableDepthTest();
+        
+        ofBackground(ofColor::white);
+        welcomeImage.draw(ofGetWindowSize().x/2-welcomeImage.getWidth()/2,ofGetWindowSize().y/2-welcomeImage.getHeight()/2);
+    }else{
+       
     ofEnableDepthTest();
     ofBackground(ofColor::black);
     plate.drawincamera(apppreference.plateview);
     ofDisableDepthTest();
-    
-    
     if(panel.ShowSlice==true){
-//        layertestDraw.setFillColor(ofColor::black);
-//        layertestDraw.draw(apppreference.sliceview.x,apppreference.sliceview.y);
+        panel.drawProgressBar();
         fbo.draw(apppreference.sliceview);
+    }
     }
 }
 
@@ -69,12 +85,10 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
     switch(key){
         case OF_KEY_UP:
-            panel.layertestZ++;
-            // panel.sliceHeight=panel.layertestZ;
+            panel.setSliceHeight(panel.getSliceHeight()+1);
             break;
         case OF_KEY_DOWN:
-            panel.layertestZ--;
-            //    panel.sliceHeight=panel.layertestZ;
+            panel.setSliceHeight(panel.getSliceHeight()-1);
             break;
         case OF_KEY_LEFT:
             
@@ -102,7 +116,14 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    
+    if(welcomeNow){
+        
+        
+            panel.show();
+            welcomeNow=false;
+            welcomeImage.clear();
+       
+    }
 }
 
 //--------------------------------------------------------------
@@ -125,7 +146,8 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-    
+       apppreference.updatelayerout(panel.getWidth());
+    panel.setProgressBarWidth(w-panel.getWidth());
 }
 
 //--------------------------------------------------------------
@@ -148,7 +170,6 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 void ofApp::drawSideWindow(ofEventArgs & args){
     fbo.draw(0,0);
-    //savePic();
 }
 
 
@@ -176,27 +197,45 @@ void ofApp::loadModel(){
         return;
     }
     plate.addModel(threadSlice.getMergedMesh());
-    threadSlice.cleanMesh();
     panel.setSliceReady();
     plate.modelSize=threadSlice.mll.getScale();
+    panel.setModelScale(threadSlice.mll.getScale());
     ofVec3f newposti;
-    
     newposti=-threadSlice.mll.meshMin;
-    newposti.x-=threadSlice.mll.meshScale.x/2;//-plate.modelSize.x/2;
-    newposti.y-=threadSlice.mll.meshScale.y/2;//-plate.modelSize.y/2;
-    plate.setPosition(newposti);
+ 
+    plate.setMinPosition(newposti);
     panel.sliceMax=plate.modelSize.z;
     cout<<" modelsize:"<<plate.modelSize<<endl;
     apppreference.isModelChanged=false;
     apppreference.bHaveModelLoaded=true;
+    panel.fileLoaded();
 }
 void ofApp::checkNeedSlice(){
     if(threadSlice.isThreadRunning()){
         return;
     }
+    if(panel.ShowingAllSlice==false){
+        if(threadSlice.isAllSliced()){
+            panel.setSliceDone();
+        }
+    }
     if(panel.needAllToSlice()==true){
+        if(apppreference.bHaveModelLoaded==false){
+        //there is no model so need we need to add one
+            ofFileDialogResult result = ofSystemLoadDialog("Load file");
+            if(result.bSuccess) {
+                apppreference.isModelChanged=true;
+                modelpath=result.getPath();
+                 panel.fileLoaded();
+                // load  file using dialog
+            }
+            return;
+        }
+        
         outputManager.init();
-        if(threadSlice.isAllSliceDone==false){
+        if(threadSlice.isAllSliced()==false||panel.isModelUpdated()==true){
+            threadSlice.setScaleFactor(panel.getScaleFactor());
+            threadSlice.setModelOffset(panel.getPositionOffset());
             threadSlice.allSlice(panel.layerthickness);
             panel.setSlicing();
             outputManager.setPrint(panel.exposedTime, 6, 6, panel.baseExposedTime, 4, 3000, 4);
@@ -207,10 +246,10 @@ void ofApp::checkNeedSlice(){
 void ofApp::sliceModel(){
     if(threadSlice.isThreadRunning()==false){
         if(apppreference.bHaveModelLoaded==false){return;}
-        if(threadSlice.isAllSliceDone==false){return;}
+        if(threadSlice.isAllSliced()==false){return;}
         if(panel.ShowingAllSlice==true){
-            int currentSliceLayer= panel.iShowAllSliceLayerCount;
-            int allSliceLayerCount=threadSlice.alllayertests.size()-1;
+            ofIndexType currentSliceLayer= panel.iShowAllSliceLayerCount;
+            ofIndexType allSliceLayerCount=threadSlice.alllayertests.size()-1;
             
             if(currentSliceLayer<=allSliceLayerCount){
                 if(panel.getSaveDirectoryChanged()==true){
@@ -218,13 +257,14 @@ void ofApp::sliceModel(){
                     outputManager.startOutput(panel.getSaveDirectory());
                 }
                 if(currentSliceLayer==0){
+                    panel.setOutputProgressBarMax(allSliceLayerCount);
                     easyLogTime.from("output to thread");
                 }
                 layertest=threadSlice.alllayertests[currentSliceLayer];
-                 panel.layertestZ=threadSlice.alllayertesstsHeight[currentSliceLayer];
-                 
+                panel.setSliceHeight(threadSlice.alllayertesstsHeight[currentSliceLayer]);
+
                 if(layertest.getCommands().size()>10000){
-                cout<<"now z:"<<panel.layertestZ<<" outline count:"<<layertest.getOutline().size()<<" commands count:"<<layertest.getCommands().size()<<endl;
+                    cout<<"now z:"<<panel.getSliceHeight()<<" outline count:"<<layertest.getOutline().size()<<" commands count:"<<layertest.getCommands().size()<<endl;
                     for(int i=0;i<layertest.getOutline().size();i++){
                         if(layertest.getOutline()[i].size()>10000){
                             
@@ -232,38 +272,61 @@ void ofApp::sliceModel(){
                             cout<<"now we print the line"<<endl;
                             for(int j=0;j<layertest.getOutline()[i].getVertices().size();j++){
                                 cout<<":"<<layertest.getOutline()[i].getVertices()[j]<<endl;
-                            
+                                
                             }
                             cout<<"now we end print the line"<<endl;
                         }
                     }
                 }
                 
- drawFBO(layertest);
+                drawFBO(layertest);
                 if(panel.needOutput()==true){// need output?
                     if(currentSliceLayer==allSliceLayerCount){
                         outputManager.setLastPic();
                     }
                     if(outputManager.usingSVG==true){
-                        outputManager.saveImage(layertest,panel.layertestZ);
+                        outputManager.saveImage(layertest,panel.getSliceHeight());
                     }else{
                         drawFBO(layertest);
                         fbo.readToPixels(pixelsbuffer);
-                        outputManager.saveImage(pixelsbuffer,panel.layertestZ);
+                        outputManager.saveImage(pixelsbuffer,panel.getSliceHeight());
                     }
                 }
                 if(currentSliceLayer==allSliceLayerCount){
-                    panel.setSliceDone();
                     easyLogTime.to("output to thread");
+                    panel.ShowingAllSlice=false;
+                }else{
+                    panel.setSliceShowing();
                 }
             }
             panel.iShowAllSliceLayerCount++;
+
+        }
+    }
+}
+
+void ofApp::checkSliceHeightChange(){
+    if(panel.isSliceHeightUpdated()){
+        //cout<<"we slice at now "<<endl;
+        plate.sliceAt(panel.getSliceHeight());
+        plate.update();
+        if(panel.ShowingAllSlice==false){
+            if(threadSlice.isAllSliced()){
+                ofIndexType layerindex= panel.getSliceHeight()/threadSlice.allthickness;
+                if(layerindex<threadSlice.alllayertests.size()){
+                    drawFBO(threadSlice.alllayertests[layerindex]);
+                }else{
+                    ofPath pclean;
+                    drawFBO(pclean);
+                }
+            }
         }
     }
 }
 /**
  draw the fbo
  */
+
 void ofApp::drawFBO(ofPath pathdraw){
     // now we try fbo
     

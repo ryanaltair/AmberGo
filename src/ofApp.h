@@ -44,6 +44,7 @@ private:
     void loadModel();
     void sliceModel();
     void checkNeedSlice();
+    void checkSliceHeightChange();
     agSliceManager threadSlice;// threaded object. Merger
     bool bModelLoaded=false;
     agplate plate;//palte
@@ -53,14 +54,14 @@ private:
     ofPath layertestDraw;//output layer use to display
     agOutputManager outputManager;
     string modelpath;  //drag and drop info
-   
-
-    
+ 
+    ofImage welcomeImage;
     bool bSnapshot=false;
     ofFbo fbo;
     ofPixels pixelsbuffer;
     ofPixels pixelsbuffervoid;
-    
+    bool welcomeNow=true;
    //timetest
     easyLogTimer easyLogTime;
+    
 };

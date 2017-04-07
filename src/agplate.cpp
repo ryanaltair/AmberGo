@@ -43,12 +43,12 @@ void agplate::setup(){
         x=playground.getWidth()/2+10;
         y=playground.getHeight()/2+10;
         z=-10;
-    aroundLight[0].setPosition(x, y, z); 
-    aroundLight[1].setPosition(-x, -y, z);
-    aroundLight[2].setPosition(x, -y, z);
-    aroundLight[3].setPosition(-x, y, z);
-    aroundLight[4].setPosition(0, 0, 120);
-    
+        aroundLight[0].setPosition(x, y, z);
+        aroundLight[1].setPosition(-x, -y, z);
+        aroundLight[2].setPosition(x, -y, z);
+        aroundLight[3].setPosition(-x, y, z);
+        aroundLight[4].setPosition(0, 0, 120);
+        
     }
     
 }
@@ -61,18 +61,19 @@ void agplate::update(){
 
 void agplate::sliceAt(float Z){
     slicelayerZ=Z;
-    
+//    cout<<"plate slice at "<<Z<<endl;
 }
 
 void agplate::addModel(ofMesh model){
     drawmode=0;
     of3dPrimitive nodemodel;
     nodemodel.getMesh()=model;
+    
+        nodemodel.setUseVbo(true);
     if(nodemodels.size()>0){
         nodemodels[0]=nodemodel;
     }else{
         nodemodels.push_back(nodemodel);
-       
     }
     cout<<"add a model in plate"<<endl;
     
@@ -81,22 +82,22 @@ void agplate::addModel(ofMesh model){
 
 void agplate::drawincamera(ofRectangle view){
     cam.begin(view);
-    ofBackground(255,255,255);// a white with bit yellow
+    ofBackground(240,240,240);// a white with bit yellow
     if(sliceLayPlaneEnable==1){
         
         ofSetColor(96,185,287);
         sliceLayPlane.setPosition(0, 0, slicelayerZ);
-                sliceLayPlane.draw();
+        sliceLayPlane.draw();
         
     }
     
     if(1){
         ofSetSmoothLighting(true);
         for(auto &light:aroundLight){
-//            light.draw();
+            //            light.draw();
             light.enable();
         }
-    } 
+    }
     drawModels();
     ofSetColor(124, 121, 119);// 100,149,237, CornflowerBlue
     playground.draw();// the ground
@@ -107,7 +108,7 @@ void agplate::drawincamera(ofRectangle view){
     }
     ofDisableLighting();
     cam.end();
-    //envlight.disable();
+    
 }
 void agplate::drawModels(){
     if(drawmode==1){
@@ -117,20 +118,17 @@ void agplate::drawModels(){
         
     }
     if(nodemodels.size()>0){
-        
         ofSetColor(123, 123, 123);//
+        
+        nodemodels[0].setScale(scaleFactor.x, scaleFactor.y, scaleFactor.z);
         nodemodels[0].draw();
+//         ofSetColor(80, 80, 80);//
         ofSetColor(ofColor::black);
         nodemodels[0].drawWireframe();
+        
     }
     //envlight.disable();
     
 }
 
-void agplate::setPosition(ofVec3f newpostion){
-    if(nodemodels.size()>0){
-        nodemodels[0].setPosition(newpostion);
-        cout<<"position"<<ofToString(newpostion);
-    }
-}
 

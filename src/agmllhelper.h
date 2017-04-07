@@ -195,12 +195,17 @@ public:
         return zNew;
     }
     
-    ofVec3f getXYZ(agmultilinkline mlline,float divdH,float z,float xstart,float ystart){
+    ofVec3f getXYZ(agmultilinkline mlline,float divdH,float z,ofVec3f posOffset){
         //TO DO:
-        ofVec3f pH;
-        ofVec3f pL;
-        const float xm=1280/126.72;
-        const float ym=768/74.88;
+        ofVec3f pL= pointlist[mlline.ip0];
+        ofVec3f pH= pointlist[mlline.ip1];
+        ofVec3f d=ofVec3f(mlline.dx,mlline.dy,0);
+//        ofVec3f positonOffset=ofVec3f(xstart,ystart,0);
+        ofVec3f positonOffset=ofVec3f(30,0,0);
+        const ofVec3f screenPixel=ofVec3f(1280,768,1);
+        const ofVec3f screenMM=ofVec3f(126.72,74.88,1);
+        const ofVec3f pixelsPerMM=screenPixel/screenMM;
+
         pL= pointlist[mlline.ip0];
         pH= pointlist[mlline.ip1];
         
@@ -209,20 +214,18 @@ public:
         
         float h=z-pL.z;
         float divdHxh=divdH*h;
+        returnpoint+=pL+d*divdHxh;
+        returnpoint*=scaleFactor;
+        returnpoint+=posOffset;
+                returnpoint*=pixelsPerMM;
+                returnpoint+=screenPixel/2;
         
-        returnpoint.x+=pL.x+mlline.dx*divdHxh;
-        returnpoint.x*=xm;
-        returnpoint.x+=xstart;
-        
-        returnpoint.y+=pL.y+mlline.dy*divdHxh;
-        returnpoint.y*=ym;
-        returnpoint.y+=ystart;
-        returnpoint.z=z;
+        returnpoint.z=z*scaleFactor.z;
         
         return returnpoint;
     }
-    ofVec2f getXY(agmultilinkline _mlline,float _divdH,float _z,float _xstart,float _ystart){
-       ofVec2f p= ofVec2f(getXYZ(  _mlline,  _divdH,  _z,  _xstart,  _ystart));
+    ofVec2f getXY(agmultilinkline _mlline,float _divdH,float _z,ofVec3f _positionOffset){
+       ofVec2f p= ofVec2f(getXYZ(  _mlline,  _divdH,  _z,_positionOffset));
         return p;
     }
 
@@ -322,7 +325,14 @@ public:
         line.markZSortTrue();// mark zsort that we can use it to search or add to linelist correctly
         return line;
     }
+    void setScaleFactor(ofVec3f sf){
+        scaleFactor=sf;
+    }
+    ofVec3f getScaleFactor( ){
+        return scaleFactor;
+    }
 protected:
-    
+    ofVec3f scaleFactor=ofVec3f(1,1,1);
+
     int zero=0;
 };

@@ -25,22 +25,58 @@ public:
     void addModel(ofMesh model);// add a model
     void deleteModel();
     void cleanModel();
-    void setPosition(ofVec3f newpostion);
+    void setMinPosition(ofVec3f min){
+        modelMin=min;
+        updatePosition();
+    }
+    void setPositionOffset(ofVec3f translate){
+        if(translate!=modelPositionOffset){
+        modelPositionOffset =translate;
+        updatePosition();
+        }
+    }
+    void setScaleFactor(ofVec3f sf){
+        if(scaleFactor!=sf){
+            scaleFactor=sf;
+        
+         updatePosition();
+        }
+    }
+    void updatePosition(){
+        ofVec3f newpostion=modelMin;
+        newpostion.x-=modelSize.x/2;
+        newpostion.x*=scaleFactor.x;//-plate.modelSize.x/2;
+        newpostion.y-=modelSize.y/2;
+        newpostion.y*=scaleFactor.y;//-plate.modelSize.y/2;
+        newpostion.z*=scaleFactor.z;
+        newpostion+=modelPositionOffset;
+        
+        if(nodemodels.size()>0){
+            nodemodels[0].setPosition(newpostion);
+//            cout<<"position"<<ofToString(newpostion);
+        }
+    }
+     
     // workplace:
     ofBoxPrimitive playground;    // ground
     ofBoxPrimitive outsideBox;    // box
     ofBoxPrimitive sliceLayPlane;    // slicelayer
     
-    
+    ofVec3f modelMin;
     ofVec3f modelSize;
     ofVec3f boxSize;// the box size
     ofVec3f pixelSize;
+    ofVec3f scaleFactor;
     float groundheight;
     int drawmode=0;//drawmode set 0 for meshes 1 for assimps
     
-       vector<of3dPrimitive> nodemodels;    //models
+    vector<of3dPrimitive> nodemodels;    //models
     ofEasyCam cam;
+    void orbit(float a, float b){
+     cam.orbit(a, b, cam.getDistance());
+    }
  private:
+    ofVec3f modelPositionOffset;
     float slicelayerZ=0;
     // enables
     int outsideBoxEnable=0;

@@ -27,6 +27,12 @@ public:
     ofVec3f getScale();
     float dH=0.01;
     ofPath layerAt(float z);// [new]
+    void setScaleFactor( ofVec3f _sf){
+        sliceModel.setScaleFactor(_sf);
+    }
+    void setPositionOffset(ofVec3f _offset){
+        positionOffset=_offset;
+    }
     ofVec3f meshScale;
     ofVec3f meshMax;
     ofVec3f meshMin;
@@ -35,8 +41,18 @@ public:
     ofMesh getMergedMesh(){
         return mergedMesh;
     }
+    float getRealZ(float z){
+        return z*=sliceModel.getScaleFactor().z;
+    }
+    float getSliceZ(float realZ){
+        if(realZ==0){
+            return realZ;
+        }else{
+     return realZ/=sliceModel.getScaleFactor().z;
+        }
+    }
 private:
-    ofMesh getSliceShell();
+    
     void addSupport();
     ofPath layerCloseLoop(float z,ofIndexType iBegin);
     agModel sliceModel;
@@ -47,7 +63,7 @@ private:
     void addFacet();
     //tools
 
-
+    ofVec3f positionOffset=ofVec3f(0,0,0);
     //debug only
     ofIndexType indexsize;
     ofIndexType counter0=0;
@@ -56,7 +72,7 @@ private:
         ofIndexType linecount=sliceModel.multilinklinelist.size();
         ofIndexType trianglecount=indexsize/3;
         cout<<"indices size:"<<indexsize<<endl;
-        cout<<"line count :"<<linecount<<endl;
+        cout<<"multi linked line count :"<<linecount<<endl;
         cout<<"point count :"<<sliceModel.pointlist.size()<<endl;
         cout<<"triganel count :"<<trianglecount<<endl;
         if(linecount*2==indexsize){
@@ -64,9 +80,6 @@ private:
         }else{
             cout<<"it seems calc in wrong way "<<endl;
         }
-    }
-    void debuglinelist(ofIndexType index){
-        
     }
     int layerCount=0;
     
