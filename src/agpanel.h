@@ -14,13 +14,30 @@ public:
     void setup();
     void update();
     void drawProgressBar();
-    void setProgressBarMax(int max){
-       sliceProgressBar.setMax( max);
+    void setOutputProgressBarMax(int max){
+       outputProgressBar.setMax( max);
     }
-    void setProgress(int p){
-        sliceProgress=p;
-        if(sliceProgress==sliceProgressBar.getMax()){
+    void setProgressBarWidth(int w){
+        w-=20;
+        if(w>0){
+        outputProgressBar.setWidth(w);
+        sliceProgressBar.setWidth(w);
+        }
+    }
+    void setOutputProgress(int p){
+        
+        outputProgress=p;
+        if(outputProgress==outputProgressBar.getMax()){
+            outputProgressBar.hide();
+        }
+    }
+    void setSliceProgress(float p){
+       
+        if(p==1||p==0){
             sliceProgressBar.hide();
+        }else{
+             sliceProgress=p*1000;
+             sliceProgressBar.show();
         }
     }
     ofxDatGui* gui;
@@ -193,9 +210,10 @@ protected:
     bool isModelChanged=false;
     bool isLayerThicknessChange=false;
     bool needAllSlice=false;
+    ofxProgressBar outputProgressBar;
+    int outputProgress;
     ofxProgressBar sliceProgressBar;
     int sliceProgress;
-    
 };
 class ofxDatGuiThemeNewSmoke : public ofxDatGuiTheme{
     

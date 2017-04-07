@@ -35,17 +35,21 @@ public:
          mll.load(meshbuffer);
         isAllSliceDone=false;
         easyLogTime.to("load model");
+        progressZ=0;
         startThread();
         alllayertests.clear();
     }
     bool allSlice(float layerthickness){
+        if(isThreadRunning()){
+            return false;
+        }
         if(isModelReadySlice==false){
             //if mesh have model and get merged?
-            if(isThreadRunning()==false){
+            
                 needLoad=true;
                 cout<<"now we loading"<<endl;
                 startThread();
-            }
+            
             
             return false;
         }else{//if(isModelReadySlice==true){
@@ -58,13 +62,23 @@ public:
         }
     }
     float getSliceProgress(){
-        float progress;
-//        lock();
-//        progress=progressZ/maxZ;
-//        
-//        unlock();
+       
+        float pz;
+        float mz;
+        lock();
+        pz=progressZ;
+        mz=maxZ;
+        unlock();
+        if(pz==0){
+            return 0;
+        }
+        
+        if(mz-pz<5){
+        return 1;
+        }
+        
+        float progress= pz / mz;
         return progress;
-    
     }
     
     bool cleanOldLayers(){
@@ -98,15 +112,22 @@ public:
                     stepLoad();
                     needLoad=false;
                 }
+               
+                unlock();
+            }
+            
                 if(needAllSlice==true){
                     if(isModelReadySlice==true){
+                        
+                        
                         stepAllSlice();
                         needAllSlice=false;
+                        
                     }
                 }
                 isThreadEnd=true;
-                unlock();
-            }
+            
+                
         }
     }
     
@@ -167,7 +188,11 @@ protected:
         cout<<"slice Z for real min max scale "<<mll.getRealZ(mll.meshMin.z)<<":"<<mll.getRealZ(mll.meshMax.z)<<":"<<mll.getRealZ(mll.meshScale.z)<<endl;
         slicez=sliceStartZ;
         cout<<"real z from   "<<slicez<<" to "<<realZmax <<endl;
-  
+        lock();
+        maxZ=realZmax/allthickness;
+        int calloutMax=maxZ/1000;
+        int lastCallOut=0;
+        unlock();
         if(allthickness<realZmax){
                 for(outputZ=allthickness ;outputZ<realZmax; outputZ+=allthickness){
                     
@@ -175,6 +200,16 @@ protected:
                     ofPath p=mll.layerAt(slicez);
                     layers.push_back(p);
                     layerHeights.push_back( outputZ);
+                    if(layers.size()-lastCallOut>calloutMax){
+                      lock();
+                    progressZ=layers.size();
+                        lastCallOut=progressZ;
+                    unlock();
+                    }
+                    lock();
+                    progressZ=layers.size();
+                    lastCallOut=progressZ;
+                    unlock();
         //            cout<<"z slice at :"<<slicez<<" new : "<<outputZ<<endl;//use to check z
                     an++;
                     
@@ -197,6 +232,6 @@ protected:
     float startZ=10;//allSliceFromHere;
      easyLogTimer easyLogTime;
     bool isAllSliceDone=false;
-    int progressZ;
-    int maxZ;
+    int progressZ=0;
+    int maxZ=1;
 };

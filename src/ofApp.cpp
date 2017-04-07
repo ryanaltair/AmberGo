@@ -36,16 +36,17 @@ void ofApp::update(){
     if(welcomeNow){
         
         if(ofGetElapsedTimef()>3.8){
-             panel.show();
+            panel.show();
             welcomeNow=false;
             welcomeImage.clear();
         }else{
         panel.hide();
         }
     }
-    apppreference.updatelayerout(panel.getWidth());
+ 
     panel.update();
-    panel.setProgress(outputManager.getPicSavedCount());
+    panel.setOutputProgress(outputManager.getPicSavedCount());
+    panel.setSliceProgress(threadSlice.getSliceProgress());
     loadModel();
     if(outputManager.checkEnd()){
         ofLogVerbose()<<"out put end now "<<endl;
@@ -145,7 +146,8 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-    
+       apppreference.updatelayerout(panel.getWidth());
+    panel.setProgressBarWidth(w-panel.getWidth());
 }
 
 //--------------------------------------------------------------
@@ -255,7 +257,7 @@ void ofApp::sliceModel(){
                     outputManager.startOutput(panel.getSaveDirectory());
                 }
                 if(currentSliceLayer==0){
-                    panel.setProgressBarMax(allSliceLayerCount);
+                    panel.setOutputProgressBarMax(allSliceLayerCount);
                     easyLogTime.from("output to thread");
                 }
                 layertest=threadSlice.alllayertests[currentSliceLayer];

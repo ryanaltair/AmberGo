@@ -65,7 +65,9 @@ agpanel::agpanel(){
     
     
     moreOptionToggleJob(false);
-     sliceProgressBar= ofxProgressBar(10,10,500,20,&sliceProgress,2000);
+     outputProgressBar= ofxProgressBar(10,10,500,20,&outputProgress,2000);
+    outputProgressBar.hide();
+    sliceProgressBar= ofxProgressBar(10,10,500,20,&sliceProgress,1000);
     sliceProgressBar.hide();
 }
 
@@ -83,8 +85,8 @@ void agpanel::update(){
     
 }
 void agpanel::drawProgressBar(){
+    outputProgressBar.draw();
     sliceProgressBar.draw();
-
 
 }
 bool agpanel::isSliceHeightUpdated(){
@@ -177,7 +179,7 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
                 isSaveDirectoryChanged=true;
                 ShowingAllSlice=true;
                 iShowAllSliceLayerCount=0;
-                sliceProgressBar.show();
+                outputProgressBar.show();
             }
         }else{
             ShowingAllSlice=true;
