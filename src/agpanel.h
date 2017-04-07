@@ -19,6 +19,9 @@ public:
     }
     void setProgress(int p){
         sliceProgress=p;
+        if(sliceProgress==sliceProgressBar.getMax()){
+            sliceProgressBar.hide();
+        }
     }
     ofxDatGui* gui;
     

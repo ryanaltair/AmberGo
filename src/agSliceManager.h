@@ -57,6 +57,16 @@ public:
             return true;
         }
     }
+    float getSliceProgress(){
+        float progress;
+//        lock();
+//        progress=progressZ/maxZ;
+//        
+//        unlock();
+        return progress;
+    
+    }
+    
     bool cleanOldLayers(){
         vector<float>().swap(alllayertesstsHeight);
         
@@ -157,7 +167,7 @@ protected:
         cout<<"slice Z for real min max scale "<<mll.getRealZ(mll.meshMin.z)<<":"<<mll.getRealZ(mll.meshMax.z)<<":"<<mll.getRealZ(mll.meshScale.z)<<endl;
         slicez=sliceStartZ;
         cout<<"real z from   "<<slicez<<" to "<<realZmax <<endl;
-
+  
         if(allthickness<realZmax){
                 for(outputZ=allthickness ;outputZ<realZmax; outputZ+=allthickness){
                     
@@ -174,15 +184,6 @@ protected:
             layers.push_back(p);
             layerHeights.push_back(0);
         }
-//        for(slicez=mll.meshMin.z+slicethickness+sliceStartZ;slicez<mll.meshMax.z;slicez+=slicethickness){
-//            ofPath p=mll.layerAt(slicez);
-//            layers.push_back(p);
-//             outputZ+=allthickness;
-//            layerHeights.push_back( outputZ);
-////            cout<<"z slice at :"<<slicez<<" new : "<<outputZ<<endl;//use to check z
-//            an++;
-//            
-//        }
         
         
         alllayertests.swap(layers);
@@ -195,5 +196,7 @@ protected:
 
     float startZ=10;//allSliceFromHere;
      easyLogTimer easyLogTime;
-    bool isAllSliceDone=false;  
+    bool isAllSliceDone=false;
+    int progressZ;
+    int maxZ;
 };

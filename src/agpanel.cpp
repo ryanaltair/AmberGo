@@ -66,6 +66,7 @@ agpanel::agpanel(){
     
     moreOptionToggleJob(false);
      sliceProgressBar= ofxProgressBar(10,10,500,20,&sliceProgress,2000);
+    sliceProgressBar.hide();
 }
 
 
@@ -82,7 +83,7 @@ void agpanel::update(){
     
 }
 void agpanel::drawProgressBar(){
-//    sliceProgressBar.draw();
+    sliceProgressBar.draw();
 
 
 }
@@ -161,10 +162,12 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
     }
     
     if(e.target==allSliceButton){
+        
         needAllSlice=true;
     }
     if(e.target==showAllSliceButton){
         if(outputToggle->getChecked()==true){
+            
             ofFileDialogResult result = ofSystemLoadDialog("fabfiles to Save", true);
             if(result.bSuccess) {
                 saveDirectory = result.getPath();
@@ -174,6 +177,7 @@ void agpanel::onButtonEvent(ofxDatGuiButtonEvent e)
                 isSaveDirectoryChanged=true;
                 ShowingAllSlice=true;
                 iShowAllSliceLayerCount=0;
+                sliceProgressBar.show();
             }
         }else{
             ShowingAllSlice=true;

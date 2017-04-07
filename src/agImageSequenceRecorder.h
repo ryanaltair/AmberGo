@@ -30,13 +30,13 @@ public:
         
     }
     int getSavedCount(){
-        if(isThreadRunning()){
-            return 0;
-        }else{
+        
+            lock();
             int p=picSavedCount;
             picSavedCount=0;
+            unlock();
         return p;
-        }
+        
     }
     void init(){
         picSavedCount=0;
@@ -71,18 +71,20 @@ public:
     void threadedFunction() {
         while(isThreadRunning()) {
             if(usingSVG==false){
-                while(!q.empty()){
+                if(!q.empty()){
                     QueuedImage i = q.front();
 //                    cout<<"thread-add image:"<<i.fileName<<endl;
                     ofSaveImage(i.image, i.fileName);
                     q.pop();
+                    lock();
                     picSavedCount++;
+                    unlock();
                     if(q.empty()){
                         cout<<"thread empty:" <<endl;
                     }
                 }
             }else{
-                while(!qSVG.empty()){
+                if(!qSVG.empty()){
                     QueuedSVG i = qSVG.front();
 //                    cout<<"thread-save svg:"<<i.fileName<<endl;
                     ofxEditableSVG svg;

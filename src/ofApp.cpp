@@ -28,7 +28,7 @@ void ofApp::setup(){
     // fbo end
     welcomeImage.load("welcome");
     welcomeImage.resize(1280/4, 768/4);
-    ofSetLogLevel(OF_LOG_SILENT);
+//    ofSetLogLevel(OF_LOG_SILENT);
 }
 
 //--------------------------------------------------------------
@@ -48,7 +48,7 @@ void ofApp::update(){
     panel.setProgress(outputManager.getPicSavedCount());
     loadModel();
     if(outputManager.checkEnd()){
-           ofSystemAlertDialog("output end");
+        ofLogVerbose()<<"out put end now "<<endl;
     }
     
     checkSliceHeightChange();
