@@ -75,6 +75,7 @@ public:
     void orbit(float a, float b){
      cam.orbit(a, b, cam.getDistance());
     }
+   
  private:
     ofVec3f modelPositionOffset;
     float slicelayerZ=0;

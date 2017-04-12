@@ -27,7 +27,7 @@ public:
     ofVec3f getScale();
     float dH=0.01;
     ofPath layerAt(float z);// [new]
-    void setScaleFactor( ofVec3f _sf){
+    void setScaleFactor(ofVec3f _sf){
         sliceModel.setScaleFactor(_sf);
     }
     void setPositionOffset(ofVec3f _offset){

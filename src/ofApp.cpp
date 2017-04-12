@@ -3,7 +3,9 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     //for app looks like a app
-    ofSetWindowTitle("CreateBot");//
+//    ofSetWindowTitle("CreateBot");//
+    
+    ofSetWindowTitle("Amber Go Demo");//
     ofSetEscapeQuitsApp(false);
     panel.setup();
     
@@ -11,11 +13,7 @@ void ofApp::setup(){
     //     ofSetVerticalSync(true);
     ofSetFrameRate(60);
     
-    // init the modelpath
-    //    modelpath="testcube.stl";
-    //    apppreference.isModelChanged=true;
-    // init the plate which hold the 3D model we see
-    plate.setup();
+        plate.setup();
     //setup fbo which will for export images
     ofFbo::Settings fbosettings;
     fbosettings.width = 1280;
@@ -29,6 +27,7 @@ void ofApp::setup(){
     welcomeImage.load("welcome");
     welcomeImage.resize(1280/4, 768/4);
 //    ofSetLogLevel(OF_LOG_SILENT);
+    welcomeNow=false;
 }
 
 //--------------------------------------------------------------
@@ -117,12 +116,9 @@ void ofApp::mouseDragged(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
     if(welcomeNow){
-        
-        
             panel.show();
             welcomeNow=false;
             welcomeImage.clear();
-       
     }
 }
 
