@@ -28,6 +28,9 @@ void ofApp::setup(){
     welcomeImage.resize(1280/4, 768/4);
 //    ofSetLogLevel(OF_LOG_SILENT);
     welcomeNow=false;
+    
+    
+     apppreference.updatelayerout(panel.getWidth());
 }
 
 //--------------------------------------------------------------
@@ -72,8 +75,9 @@ void ofApp::draw(){
     ofBackground(ofColor::black);
     plate.drawincamera(apppreference.plateview);
     ofDisableDepthTest();
-    if(panel.ShowSlice==true){
+        
         panel.drawProgressBar();
+    if(panel.ShowSlice==true){
         fbo.draw(apppreference.sliceview);
     }
     }
