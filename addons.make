@@ -2,4 +2,6 @@ ofxAssimpModelLoader
 ofxClipper
 ofxDatGui
 ofxEditableSVG
+ofxMakeMesh
+ofxMakeShell
 ofxProgressBar
